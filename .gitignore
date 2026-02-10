@@ -1,0 +1,18 @@
+node_modules
+dist
+*.local
+
+# Editor / IDE
+.vscode/
+.github/
+
+# Linting config (local preference)
+.markdownlint.json
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Planning notes (design docs, not part of the app)
+Planning notes/
+scripts/
