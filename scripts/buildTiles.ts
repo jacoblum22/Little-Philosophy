@@ -219,6 +219,7 @@ function build() {
   const combinations: CombinationJSON[] = [];
   const recipes: RecipeJSON[] = [];
   const seenCombos = new Set<string>();
+  const seenTileIds = new Set<string>();
   const errors: string[] = [];
 
   for (const file of files) {
@@ -256,6 +257,11 @@ function build() {
       if (fm.tradition) tile.tradition = fm.tradition;
     }
     tiles.push(tile);
+
+    if (seenTileIds.has(fm.id)) {
+      errors.push(`Duplicate tile ID "${fm.id}" found in ${file}`);
+    }
+    seenTileIds.add(fm.id);
 
     // --- Combinations ---
     if (fm.combinations) {
@@ -309,12 +315,6 @@ function build() {
   }
 
   // Check for tiles with no way to obtain them (not starting, not combo output, not recipe)
-  const startingTiles = tiles
-    .filter(
-      (t) => t.tags.includes("starting") || !combinations.some((c) => c.output === t.id)
-    )
-    .filter((t) => !recipes.some((r) => r.tileId === t.id));
-
   const comboOutputs = new Set(combinations.map((c) => c.output));
   const recipeTiles = new Set(recipes.map((r) => r.tileId));
   for (const tile of tiles) {
