@@ -52,7 +52,11 @@ export function subscribe(listener: Listener): () => void {
 
 function notify(): void {
   for (const listener of listeners) {
-    listener();
+    try {
+      listener();
+    } catch (e) {
+      console.error("Error in game state listener:", e);
+    }
   }
 }
 
@@ -60,9 +64,9 @@ function notify(): void {
 // Getters (read-only access to state)
 // ---------------------------------------------------------------------------
 
-/** Returns a frozen copy of the current state to prevent accidental mutation. */
-export function getState(): Readonly<GameState> {
-  return Object.freeze({ ...state });
+/** Returns a deep copy of the current state to prevent accidental mutation. */
+export function getState(): GameState {
+  return structuredClone(state);
 }
 
 export function getUnlockedIds(): Set<string> {
