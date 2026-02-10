@@ -18,6 +18,3 @@ src/data/build/
 
 # Planning notes (design docs, not part of the app)
 Planning notes/
-
-# Legacy script (restored from OneDrive, not needed)
-scripts/update_tiles.py

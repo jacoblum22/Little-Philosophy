@@ -90,26 +90,26 @@ function parseFrontmatter(raw: string): {
   const yamlStr = match[1];
   const body = match[2];
 
-  const raw_data = parseSimpleYaml(yamlStr);
+  const rawData = parseSimpleYaml(yamlStr);
 
   // Validate required fields
-  if (typeof raw_data.id !== "string" || !raw_data.id) {
+  if (typeof rawData.id !== "string" || !rawData.id) {
     throw new Error("Missing required field: id");
   }
-  if (typeof raw_data.name !== "string" || !raw_data.name) {
+  if (typeof rawData.name !== "string" || !rawData.name) {
     throw new Error("Missing required field: name");
   }
   if (
-    raw_data.type !== "concept" &&
-    raw_data.type !== "philosopher" &&
-    raw_data.type !== "writing"
+    rawData.type !== "concept" &&
+    rawData.type !== "philosopher" &&
+    rawData.type !== "writing"
   ) {
     throw new Error(
-      `Invalid or missing type: "${raw_data.type}" (must be concept, philosopher, or writing)`
+      `Invalid or missing type: "${rawData.type}" (must be concept, philosopher, or writing)`
     );
   }
 
-  const data = raw_data as TileFrontmatter;
+  const data = rawData as TileFrontmatter;
   return { data, body };
 }
 
@@ -145,8 +145,19 @@ function parseSimpleYaml(yaml: string): Record<string, unknown> {
 
     if (inlineValue !== "") {
       // Scalar value — strip surrounding quotes if present
-      result[key] = inlineValue.replace(/^["']|["']$/g, "");
+      let value = inlineValue.replace(/^["']|["']$/g, "");
       i++;
+      // Handle multi-line plain scalars (continuation lines indented with spaces)
+      while (i < lines.length) {
+        const contLine = lines[i];
+        if (/^\s+\S/.test(contLine) && !contLine.match(/^\s*- /)) {
+          value += " " + contLine.trim();
+          i++;
+        } else {
+          break;
+        }
+      }
+      result[key] = value;
     } else {
       // Could be a list or list-of-objects
       const items: unknown[] = [];
@@ -359,6 +370,7 @@ function build() {
       console.error(`   • ${err}`);
     }
     console.error("");
+    process.exit(1);
   }
 
   fs.mkdirSync(BUILD_DIR, { recursive: true });
@@ -381,10 +393,6 @@ function build() {
   console.log(`   ${combinations.length} combinations`);
   console.log(`   ${recipes.length} recipes`);
   console.log(`   Output: ${BUILD_DIR}/\n`);
-
-  if (errors.length > 0) {
-    process.exit(1);
-  }
 }
 
 build();
