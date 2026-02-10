@@ -52,10 +52,11 @@ interface TileJSON {
   quoteAuthor?: string;
   description: string;
   tags: string[];
+  // Shared extras (philosopher & writing)
+  tradition?: string;
   // Philosopher extras
   born?: string;
   died?: string;
-  tradition?: string;
   // Writing extras
   author?: string;
   written?: string;
@@ -89,7 +90,26 @@ function parseFrontmatter(raw: string): {
   const yamlStr = match[1];
   const body = match[2];
 
-  const data = parseSimpleYaml(yamlStr) as TileFrontmatter;
+  const raw_data = parseSimpleYaml(yamlStr);
+
+  // Validate required fields
+  if (typeof raw_data.id !== "string" || !raw_data.id) {
+    throw new Error("Missing required field: id");
+  }
+  if (typeof raw_data.name !== "string" || !raw_data.name) {
+    throw new Error("Missing required field: name");
+  }
+  if (
+    raw_data.type !== "concept" &&
+    raw_data.type !== "philosopher" &&
+    raw_data.type !== "writing"
+  ) {
+    throw new Error(
+      `Invalid or missing type: "${raw_data.type}" (must be concept, philosopher, or writing)`
+    );
+  }
+
+  const data = raw_data as TileFrontmatter;
   return { data, body };
 }
 
@@ -246,22 +266,22 @@ function build() {
     };
     if (fm.quote) tile.quote = fm.quote;
     if (fm.quoteAuthor) tile.quoteAuthor = fm.quoteAuthor;
+    if (fm.tradition) tile.tradition = fm.tradition;
     if (fm.type === "philosopher") {
       if (fm.born) tile.born = fm.born;
       if (fm.died) tile.died = fm.died;
-      if (fm.tradition) tile.tradition = fm.tradition;
     }
     if (fm.type === "writing") {
       if (fm.author) tile.author = fm.author;
       if (fm.written) tile.written = fm.written;
-      if (fm.tradition) tile.tradition = fm.tradition;
     }
-    tiles.push(tile);
 
     if (seenTileIds.has(fm.id)) {
       errors.push(`Duplicate tile ID "${fm.id}" found in ${file}`);
+      continue; // skip duplicate — don't add to output
     }
     seenTileIds.add(fm.id);
+    tiles.push(tile);
 
     // --- Combinations ---
     if (fm.combinations) {
