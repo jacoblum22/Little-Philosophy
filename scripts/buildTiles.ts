@@ -297,6 +297,14 @@ function build() {
     // --- Combinations ---
     if (fm.combinations) {
       for (const combo of fm.combinations) {
+        if (typeof combo.with !== "string" || !combo.with) {
+          errors.push(`${file}: combination missing "with" field`);
+          continue;
+        }
+        if (typeof combo.produces !== "string" || !combo.produces) {
+          errors.push(`${file}: combination missing "produces" field`);
+          continue;
+        }
         // Deduplicate: A+B = B+A
         const key = [fm.id, combo.with].sort().join("+");
         if (!seenCombos.has(key)) {

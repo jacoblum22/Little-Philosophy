@@ -6,11 +6,12 @@
  */
 
 import type { GameState, CombinationAttempt } from "../types/gameState";
+import type { Tile } from "../types/tile";
 
 const STORAGE_KEY = "little-philosophy-save";
 
-/** The starting tile IDs that every new game begins with. */
-const STARTING_TILES = ["self", "world", "other"];
+/** Starting tile IDs, derived from loaded tile data at init time. */
+let startingTileIds: string[] = [];
 
 type Listener = () => void;
 
@@ -19,9 +20,22 @@ const listeners = new Set<Listener>();
 
 function createFreshState(): GameState {
   return {
-    unlockedTileIds: [...STARTING_TILES],
+    unlockedTileIds: [...startingTileIds],
     combinationHistory: [],
   };
+}
+
+/**
+ * Initialize the game state with tile data.
+ * Derives starting tiles from tiles tagged "starting".
+ * Call once at startup, before loadSavedState().
+ */
+export function initGameState(tiles: Tile[]): void {
+  startingTileIds = tiles
+    .filter((t) => t.tags.includes("starting"))
+    .map((t) => t.id);
+  state = createFreshState();
+  notify();
 }
 
 // ---------------------------------------------------------------------------
