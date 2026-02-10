@@ -14,7 +14,7 @@ Thumbs.db
 .DS_Store
 
 # Generated build output (from npm run build:data)
-src/data/build/
+public/data/build/
 
 # Planning notes (design docs, not part of the app)
 Planning notes/

@@ -19,7 +19,7 @@ import path from "node:path";
 // ---------------------------------------------------------------------------
 
 const TILES_DIR = path.resolve("src/data/tiles");
-const BUILD_DIR = path.resolve("src/data/build");
+const BUILD_DIR = path.resolve("public/data/build");
 
 // ---------------------------------------------------------------------------
 // Types (mirrors src/types/ but for the build script's own use)
