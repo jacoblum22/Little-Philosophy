@@ -8,18 +8,17 @@ export interface Tile {
   quoteAuthor?: string;
   description: string;
   tags: string[];
+  tradition?: string;
 }
 
 export interface PhilosopherTile extends Tile {
   type: "philosopher";
   born?: string;
   died?: string;
-  tradition?: string;
 }
 
 export interface WritingTile extends Tile {
   type: "writing";
   author?: string;
   written?: string;
-  tradition?: string;
 }
