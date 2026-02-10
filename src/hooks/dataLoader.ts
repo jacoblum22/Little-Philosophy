@@ -33,6 +33,9 @@ export async function loadGameData(): Promise<GameData> {
 export function buildTileMap(tiles: Tile[]): TileMap {
   const map = new Map<string, Tile>();
   for (const tile of tiles) {
+    if (map.has(tile.id)) {
+      console.warn(`Duplicate tile ID in data: "${tile.id}"`);
+    }
     map.set(tile.id, tile);
   }
   return map;
@@ -43,5 +46,9 @@ async function fetchJson<T>(url: string): Promise<T> {
   if (!response.ok) {
     throw new Error(`Failed to load ${url}: ${response.status} ${response.statusText}`);
   }
-  return response.json() as Promise<T>;
+  try {
+    return await response.json() as T;
+  } catch (e) {
+    throw new Error(`Failed to parse JSON from ${url}: ${e}`);
+  }
 }

@@ -16,6 +16,7 @@ let startingTileIds: string[] = [];
 type Listener = () => void;
 
 let state: GameState = createFreshState();
+let unlockedSet: Set<string> = new Set(state.unlockedTileIds);
 const listeners = new Set<Listener>();
 
 function createFreshState(): GameState {
@@ -35,6 +36,7 @@ export function initGameState(tiles: Tile[]): void {
     .filter((t) => t.tags.includes("starting"))
     .map((t) => t.id);
   state = createFreshState();
+  unlockedSet = new Set(state.unlockedTileIds);
   notify();
 }
 
@@ -58,8 +60,9 @@ function notify(): void {
 // Getters (read-only access to state)
 // ---------------------------------------------------------------------------
 
-export function getState(): GameState {
-  return state;
+/** Returns a frozen copy of the current state to prevent accidental mutation. */
+export function getState(): Readonly<GameState> {
+  return Object.freeze({ ...state });
 }
 
 export function getUnlockedIds(): Set<string> {
@@ -67,7 +70,7 @@ export function getUnlockedIds(): Set<string> {
 }
 
 export function isUnlocked(tileId: string): boolean {
-  return state.unlockedTileIds.includes(tileId);
+  return unlockedSet.has(tileId);
 }
 
 // ---------------------------------------------------------------------------
@@ -76,15 +79,18 @@ export function isUnlocked(tileId: string): boolean {
 
 /** Unlock a tile. Returns true if it was newly unlocked, false if already known. */
 export function unlockTile(tileId: string): boolean {
-  if (state.unlockedTileIds.includes(tileId)) return false;
+  if (unlockedSet.has(tileId)) return false;
   state = {
     ...state,
     unlockedTileIds: [...state.unlockedTileIds, tileId],
   };
+  unlockedSet = new Set(state.unlockedTileIds);
   save();
   notify();
   return true;
 }
+
+const MAX_HISTORY = 1000;
 
 /** Record a combination attempt (successful or not). */
 export function recordAttempt(input1: string, input2: string, result: string | null): void {
@@ -94,9 +100,12 @@ export function recordAttempt(input1: string, input2: string, result: string | n
     result,
     timestamp: Date.now(),
   };
+  const history = [...state.combinationHistory, attempt];
   state = {
     ...state,
-    combinationHistory: [...state.combinationHistory, attempt],
+    combinationHistory: history.length > MAX_HISTORY
+      ? history.slice(-MAX_HISTORY)
+      : history,
   };
   save();
   notify();
@@ -105,6 +114,7 @@ export function recordAttempt(input1: string, input2: string, result: string | n
 /** Reset the game to a fresh state. */
 export function resetGame(): void {
   state = createFreshState();
+  unlockedSet = new Set(state.unlockedTileIds);
   save();
   notify();
 }
@@ -121,7 +131,7 @@ function save(): void {
   }
 }
 
-/** Load saved state from localStorage. Call once at startup. */
+/** Load saved state from localStorage. Call once at startup, after initGameState(). */
 export function loadSavedState(): void {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -129,7 +139,16 @@ export function loadSavedState(): void {
       const parsed = JSON.parse(raw) as GameState;
       // Basic validation
       if (Array.isArray(parsed.unlockedTileIds) && Array.isArray(parsed.combinationHistory)) {
-        state = parsed;
+        // Merge in any new starting tiles that weren't in the old save
+        const merged = new Set(parsed.unlockedTileIds);
+        for (const id of startingTileIds) {
+          merged.add(id);
+        }
+        state = {
+          unlockedTileIds: [...merged],
+          combinationHistory: parsed.combinationHistory,
+        };
+        unlockedSet = new Set(state.unlockedTileIds);
         notify();
       }
     }

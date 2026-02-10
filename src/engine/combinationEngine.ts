@@ -12,7 +12,7 @@ let comboMap: Map<string, string> | null = null;
 
 /** Create a canonical key for a pair of tile IDs (order-independent). */
 function comboKey(a: string, b: string): string {
-  return a < b ? `${a}+${b}` : `${b}+${a}`;
+  return a < b ? `${a}\0${b}` : `${b}\0${a}`;
 }
 
 /** Initialize the engine with combination data (call once at startup). */

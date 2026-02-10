@@ -254,7 +254,13 @@ function build() {
   const errors: string[] = [];
 
   for (const file of files) {
-    const raw = fs.readFileSync(path.join(TILES_DIR, file), "utf-8");
+    let raw: string;
+    try {
+      raw = fs.readFileSync(path.join(TILES_DIR, file), "utf-8");
+    } catch (e) {
+      errors.push(`${file}: failed to read file \u2014 ${e}`);
+      continue;
+    }
 
     let fm: TileFrontmatter;
     let body: string;
@@ -306,7 +312,7 @@ function build() {
           continue;
         }
         // Deduplicate: A+B = B+A
-        const key = [fm.id, combo.with].sort().join("+");
+        const key = [fm.id, combo.with].sort().join("\0");
         if (!seenCombos.has(key)) {
           seenCombos.set(key, combo.produces);
           combinations.push({
@@ -318,7 +324,7 @@ function build() {
           const existingOutput = seenCombos.get(key);
           if (existingOutput !== combo.produces) {
             errors.push(
-              `Conflicting combination: ${key} → "${existingOutput}" vs "${combo.produces}" (in ${file})`
+              `Conflicting combination: ${fm.id} + ${combo.with} → "${existingOutput}" vs "${combo.produces}" (in ${file})`
             );
           }
         }

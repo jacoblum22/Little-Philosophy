@@ -11,7 +11,7 @@ let recipes: Recipe[] = [];
 
 /** Initialize the engine with recipe data (call once at startup). */
 export function initRecipes(recipeData: Recipe[]): void {
-  recipes = recipeData;
+  recipes = [...recipeData];
 }
 
 /**
