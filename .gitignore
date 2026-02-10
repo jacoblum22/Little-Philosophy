@@ -1,4 +1,4 @@
-node_modules
+﻿node_modules
 dist
 *.local
 
@@ -13,6 +13,11 @@ dist
 Thumbs.db
 .DS_Store
 
+# Generated build output (from npm run build:data)
+src/data/build/
+
 # Planning notes (design docs, not part of the app)
 Planning notes/
-scripts/
+
+# Legacy script (restored from OneDrive, not needed)
+scripts/update_tiles.py
