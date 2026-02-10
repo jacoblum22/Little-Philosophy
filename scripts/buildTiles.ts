@@ -164,8 +164,8 @@ function parseSimpleYaml(yaml: string): Record<string, unknown> {
       i++;
       while (i < lines.length) {
         const nextLine = lines[i];
-        // List item?
-        const itemMatch = nextLine.match(/^- (.+)/);
+        // List item? (allow optional leading whitespace)
+        const itemMatch = nextLine.match(/^\s*- (.+)/);
         if (!itemMatch) break;
 
         const itemValue = itemMatch[1].trim();
@@ -249,7 +249,7 @@ function build() {
   const tiles: TileJSON[] = [];
   const combinations: CombinationJSON[] = [];
   const recipes: RecipeJSON[] = [];
-  const seenCombos = new Set<string>();
+  const seenCombos = new Map<string, string>();
   const seenTileIds = new Set<string>();
   const errors: string[] = [];
 
@@ -300,12 +300,19 @@ function build() {
         // Deduplicate: A+B = B+A
         const key = [fm.id, combo.with].sort().join("+");
         if (!seenCombos.has(key)) {
-          seenCombos.add(key);
+          seenCombos.set(key, combo.produces);
           combinations.push({
             input1: fm.id,
             input2: combo.with,
             output: combo.produces,
           });
+        } else {
+          const existingOutput = seenCombos.get(key);
+          if (existingOutput !== combo.produces) {
+            errors.push(
+              `Conflicting combination: ${key} → "${existingOutput}" vs "${combo.produces}" (in ${file})`
+            );
+          }
         }
       }
     }
