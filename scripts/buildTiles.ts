@@ -2,7 +2,7 @@
  * Build script: parse tile Markdown files → JSON for the game engine.
  *
  * Reads every .md file in src/data/tiles/, extracts YAML frontmatter and
- * Markdown body, then writes three JSON files into src/data/build/:
+ * Markdown body, then writes three JSON files into public/data/build/:
  *
  *   tiles.json        – all tile data (id, name, type, description, tags, …)
  *   combinations.json – flattened list of { input1, input2, output }
