@@ -12,9 +12,10 @@
 }
 
 :root {
-  --color-bg: #1a1a2e;
-  --color-surface: #16213e;
-  --color-surface-light: #0f3460;
+  --color-bg: #0e0e1a;
+  --color-surface: rgba(22, 33, 62, 0.8);
+  --color-surface-solid: #16213e;
+  --color-surface-light: rgba(15, 52, 96, 0.6);
   --color-accent: #e94560;
   --color-accent-soft: #533483;
   --color-text: #eee;
@@ -25,6 +26,8 @@
   --sidebar-width: 240px;
   --radius: 8px;
   --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+  --glass-blur: 12px;
+  --glass-border: rgba(255, 255, 255, 0.08);
 }
 
 html,
@@ -35,8 +38,16 @@ body,
 
 body {
   font-family: var(--font);
-  background: var(--color-bg);
+  background: linear-gradient(-45deg, #0e0e1a, #0a1628, #120a20, #0a1040);
+  background-size: 400% 400%;
+  animation: bg-shift 20s ease infinite;
   color: var(--color-text);
+}
+
+@keyframes bg-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* --- App Layout --- */
@@ -62,7 +73,8 @@ body {
   gap: 1rem;
   padding: 0.75rem 1.5rem;
   background: var(--color-surface);
-  border-bottom: 1px solid var(--color-surface-light);
+  backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid var(--glass-border);
 }
 
 .app__title {
@@ -130,7 +142,8 @@ body {
   width: var(--sidebar-width);
   min-width: var(--sidebar-width);
   background: var(--color-surface);
-  border-right: 1px solid var(--color-surface-light);
+  backdrop-filter: blur(var(--glass-blur));
+  border-right: 1px solid var(--glass-border);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -268,6 +281,7 @@ body {
   border: 1px solid var(--color-concept);
   border-radius: var(--radius);
   background: var(--color-surface);
+  backdrop-filter: blur(8px);
   color: var(--color-concept);
   font-size: 0.85rem;
   cursor: grab;
@@ -339,7 +353,8 @@ body {
   width: 320px;
   min-width: 320px;
   background: var(--color-surface);
-  border-left: 1px solid var(--color-surface-light);
+  backdrop-filter: blur(var(--glass-blur));
+  border-left: 1px solid var(--glass-border);
   padding: 1.5rem;
   overflow-y: auto;
   position: relative;
@@ -536,3 +551,21 @@ body {
   border-color: var(--color-writing);
 }
 
+/* --- Reduced Motion --- */
+@media (prefers-reduced-motion: reduce) {
+  body {
+    animation: none;
+  }
+
+  canvas {
+    display: none;
+  }
+
+  .discovery-notification__item {
+    animation: none;
+  }
+
+  .discovery-notification {
+    animation: none;
+  }
+}

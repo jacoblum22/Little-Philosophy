@@ -21,6 +21,8 @@ import type { TileMap } from "./hooks/dataLoader";
 import DiscoveryNotification from "./ui/DiscoveryNotification";
 import CivilopediaPanel from "./ui/CivilopediaPanel";
 import ProgressBar from "./ui/ProgressBar";
+import ParticleCanvas from "./particles/ParticleCanvas";
+import type { ParticleWorkerHandle } from "./particles/ParticleCanvas";
 
 import "./App.css";
 
@@ -60,6 +62,9 @@ function App() {
 
   // Workspace element ref (avoids document.querySelector)
   const workspaceRef = useRef<HTMLElement>(null);
+
+  // Particle system handle (for burst on discovery)
+  const particleHandle = useRef<ParticleWorkerHandle | null>(null);
 
   // Discovery notification
   const [discoveries, setDiscoveries] = useState<string[]>([]);
@@ -127,6 +132,7 @@ function App() {
           ]);
           if (result.newlyUnlocked.length > 0) {
             setDiscoveries(result.newlyUnlocked);
+            particleHandle.current?.burst();
           }
         } else {
           // Failed combo — just place the palette tile near the target
@@ -172,6 +178,7 @@ function App() {
           ]);
           if (result.newlyUnlocked.length > 0) {
             setDiscoveries(result.newlyUnlocked);
+            particleHandle.current?.burst();
           }
         } else {
           // Failed combo — just move the dragged tile
@@ -246,6 +253,8 @@ function App() {
   const selectedTile = selectedTileId ? (tileMap.get(selectedTileId) ?? null) : null;
 
   return (
+    <>
+    <ParticleCanvas onWorkerReady={(h) => { particleHandle.current = h; }} />
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="app">
         <header className="app__header">
@@ -292,6 +301,7 @@ function App() {
         ) : null}
       </DragOverlay>
     </DndContext>
+    </>
   );
 }
 
