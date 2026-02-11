@@ -67,8 +67,8 @@ export default function CivilopediaPanel({
 
       {tile.tags.length > 0 && (
         <div className="civilopedia__tags">
-          {tile.tags.map((tag) => (
-            <span key={tag} className="civilopedia__tag">
+          {tile.tags.map((tag, i) => (
+            <span key={`${tag}-${i}`} className="civilopedia__tag">
               #{tag}
             </span>
           ))}

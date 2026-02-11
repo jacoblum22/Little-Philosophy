@@ -64,6 +64,7 @@ function DraggableTile({ tile, onClick }: DraggableTileProps) {
   return (
     <button
       ref={setNodeRef}
+      type="button"
       className={`tile-chip tile-chip--${tile.type}`}
       style={style}
       onClick={handleClick}
