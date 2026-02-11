@@ -51,6 +51,7 @@ export function subscribe(listener: Listener): () => void {
 }
 
 function notify(): void {
+  snapshot = structuredClone(state);
   for (const listener of listeners) {
     try {
       listener();
@@ -67,6 +68,15 @@ function notify(): void {
 /** Returns a deep copy of the current state to prevent accidental mutation. */
 export function getState(): GameState {
   return structuredClone(state);
+}
+
+/**
+ * Returns a stable snapshot reference for useSyncExternalStore.
+ * Only creates a new reference when state actually changes (in notify).
+ */
+let snapshot: GameState = structuredClone(state);
+export function getSnapshot(): GameState {
+  return snapshot;
 }
 
 export function getUnlockedIds(): Set<string> {

@@ -1,0 +1,538 @@
+/* =========================================================================
+   Little Philosophy — App Styles
+   ========================================================================= */
+
+/* --- Reset & Base --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --color-bg: #1a1a2e;
+  --color-surface: #16213e;
+  --color-surface-light: #0f3460;
+  --color-accent: #e94560;
+  --color-accent-soft: #533483;
+  --color-text: #eee;
+  --color-text-muted: #aaa;
+  --color-concept: #4fc3f7;
+  --color-philosopher: #ffb74d;
+  --color-writing: #81c784;
+  --sidebar-width: 240px;
+  --radius: 8px;
+  --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* --- App Layout --- */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.app--loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 1rem;
+}
+
+.app__header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-surface-light);
+}
+
+.app__title {
+  font-size: 1.25rem;
+  white-space: nowrap;
+}
+
+.app__reset {
+  margin-left: auto;
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--color-accent);
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.2s;
+}
+
+.app__reset:hover {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.app__reset:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.app__main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* --- Progress Bar --- */
+.progress-bar {
+  flex: 1;
+  max-width: 400px;
+}
+
+.progress-bar__track {
+  height: 8px;
+  background: var(--color-surface-light);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-accent-soft), var(--color-accent));
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.progress-bar__label {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  margin-top: 0.2rem;
+}
+
+/* --- Tile Palette (sidebar) --- */
+.tile-palette {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-surface-light);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tile-palette__title {
+  padding: 1rem;
+  font-size: 1rem;
+  border-bottom: 1px solid var(--color-surface-light);
+}
+
+.tile-palette__list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+/* Custom scrollbar */
+.tile-palette__list::-webkit-scrollbar,
+.civilopedia::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tile-palette__list::-webkit-scrollbar-track,
+.civilopedia::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tile-palette__list::-webkit-scrollbar-thumb,
+.civilopedia::-webkit-scrollbar-thumb {
+  background: var(--color-surface-light);
+  border-radius: 3px;
+}
+
+.tile-palette__list::-webkit-scrollbar-thumb:hover,
+.civilopedia::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* Firefox scrollbar */
+.tile-palette__list,
+.civilopedia {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-surface-light) transparent;
+}
+
+/* --- Tile Chip --- */
+.tile-chip {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-concept);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--color-concept);
+  text-align: left;
+  font-size: 0.85rem;
+  cursor: grab;
+  transition: background 0.15s, transform 0.1s;
+  user-select: none;
+}
+
+.tile-chip:hover {
+  background: rgba(79, 195, 247, 0.1);
+}
+
+.tile-chip:active {
+  cursor: grabbing;
+}
+
+.tile-chip:focus-visible {
+  outline: 2px solid var(--color-concept);
+  outline-offset: 2px;
+}
+
+.tile-chip--philosopher:focus-visible {
+  outline-color: var(--color-philosopher);
+}
+
+.tile-chip--writing:focus-visible {
+  outline-color: var(--color-writing);
+}
+
+.tile-chip--philosopher {
+  border-color: var(--color-philosopher);
+  color: var(--color-philosopher);
+}
+
+.tile-chip--philosopher:hover {
+  background: rgba(255, 183, 77, 0.1);
+}
+
+.tile-chip--writing {
+  border-color: var(--color-writing);
+  color: var(--color-writing);
+}
+
+.tile-chip--writing:hover {
+  background: rgba(129, 199, 132, 0.1);
+}
+
+/* --- Workspace (freeform canvas) --- */
+.workspace {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.03) 1px, transparent 0);
+  background-size: 40px 40px;
+}
+
+.workspace--over {
+  background-color: rgba(79, 195, 247, 0.03);
+}
+
+.workspace__hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  opacity: 0.5;
+  pointer-events: none;
+  text-align: center;
+}
+
+/* Canvas tiles — positioned absolutely within workspace */
+.canvas-tile {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-concept);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-concept);
+  font-size: 0.85rem;
+  cursor: grab;
+  user-select: none;
+  white-space: nowrap;
+  z-index: 1;
+  transition: box-shadow 0.15s;
+}
+
+.canvas-tile:hover {
+  box-shadow: 0 2px 12px rgba(79, 195, 247, 0.2);
+}
+
+.canvas-tile--philosopher {
+  border-color: var(--color-philosopher);
+  color: var(--color-philosopher);
+}
+
+.canvas-tile--philosopher:hover {
+  box-shadow: 0 2px 12px rgba(255, 183, 77, 0.2);
+}
+
+.canvas-tile--writing {
+  border-color: var(--color-writing);
+  color: var(--color-writing);
+}
+
+.canvas-tile--writing:hover {
+  box-shadow: 0 2px 12px rgba(129, 199, 132, 0.2);
+}
+
+.canvas-tile--dragging {
+  opacity: 0.3;
+  cursor: grabbing;
+}
+
+.canvas-tile--highlight {
+  box-shadow: 0 0 16px rgba(233, 69, 96, 0.5);
+  border-color: var(--color-accent);
+}
+
+.workspace__clear {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  padding: 0.4rem 1.2rem;
+  border: 1px solid var(--color-text-muted);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 0.8rem;
+  z-index: 10;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.workspace__clear:hover {
+  color: var(--color-text);
+  border-color: var(--color-text);
+}
+
+.workspace__clear:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+/* --- Civilopedia Panel --- */
+.civilopedia {
+  width: 320px;
+  min-width: 320px;
+  background: var(--color-surface);
+  border-left: 1px solid var(--color-surface-light);
+  padding: 1.5rem;
+  overflow-y: auto;
+  position: relative;
+}
+
+.civilopedia__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.civilopedia__close:hover {
+  color: var(--color-text);
+}
+
+.civilopedia__close:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+.civilopedia__name {
+  font-size: 1.3rem;
+  margin-bottom: 0.25rem;
+}
+
+.civilopedia__type {
+  display: inline-block;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  margin-bottom: 1rem;
+}
+
+.civilopedia__type--concept {
+  background: rgba(79, 195, 247, 0.2);
+  color: var(--color-concept);
+}
+
+.civilopedia__type--philosopher {
+  background: rgba(255, 183, 77, 0.2);
+  color: var(--color-philosopher);
+}
+
+.civilopedia__type--writing {
+  background: rgba(129, 199, 132, 0.2);
+  color: var(--color-writing);
+}
+
+.civilopedia__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1rem;
+}
+
+.civilopedia__quote {
+  font-style: italic;
+  color: var(--color-text-muted);
+  border-left: 3px solid var(--color-accent-soft);
+  padding-left: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.civilopedia__cite {
+  display: block;
+  font-style: normal;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  color: var(--color-accent-soft);
+}
+
+.civilopedia__description {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  white-space: pre-line;
+  margin-bottom: 1rem;
+}
+
+.civilopedia__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.civilopedia__tag {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  background: var(--color-surface-light);
+  color: var(--color-text-muted);
+}
+
+/* --- Discovery Notification --- */
+.discovery-notification {
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-width);
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  animation: discovery-fade-in 0.3s ease;
+}
+
+.discovery-notification__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2.5rem 4rem;
+  background: linear-gradient(
+    135deg,
+    var(--color-surface) 0%,
+    var(--color-surface-light) 100%
+  );
+  border: 1px solid rgba(233, 69, 96, 0.4);
+  border-radius: 16px;
+  box-shadow:
+    0 0 60px rgba(233, 69, 96, 0.2),
+    0 0 120px rgba(83, 52, 131, 0.15),
+    0 8px 32px rgba(0, 0, 0, 0.4);
+  animation: discovery-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.discovery-notification__label {
+  font-size: 0.75rem;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-weight: 600;
+}
+
+.discovery-notification__name {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text); /* fallback for browsers without gradient text */
+  background: linear-gradient(135deg, var(--color-text) 0%, var(--color-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes discovery-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes discovery-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* --- Drag Overlay --- */
+.tile-chip--dragging {
+  display: inline-block;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-concept);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  font-size: 0.85rem;
+  cursor: grabbing;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+
+.tile-chip--dragging.tile-chip--philosopher {
+  border-color: var(--color-philosopher);
+}
+
+.tile-chip--dragging.tile-chip--writing {
+  border-color: var(--color-writing);
+}
+
