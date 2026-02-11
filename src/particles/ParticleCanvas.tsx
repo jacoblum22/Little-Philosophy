@@ -260,11 +260,29 @@ function ParticleCanvasInner({
   const loopRef = useRef<LoopState | null>(null);
 
   useEffect(() => {
-    // ----- reduced-motion guard -----
+    // ----- reduced-motion handling -----
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    // Listen for runtime changes BEFORE the early return so that toggling
+    // reduced-motion OFF triggers a remount even if we started with it ON.
+    const onMotionChange = (e: MediaQueryListEvent) => {
+      if (e.matches) {
+        // User just turned on reduced-motion — stop the loop
+        cancelAnimationFrame(animRef.current);
+        loopRef.current = null;
+      } else {
+        // User turned it back off — remount with a fresh canvas
+        setMountKey((k) => k + 1);
+      }
+    };
+    motionQuery.addEventListener("change", onMotionChange);
+
     if (motionQuery.matches) {
       // Don't start the animation loop at all — CSS hides the canvas anyway.
-      return;
+      // The change listener above is still registered so a toggle-off will remount.
+      return () => {
+        motionQuery.removeEventListener("change", onMotionChange);
+      };
     }
 
     const canvas = canvasRef.current;
@@ -367,21 +385,6 @@ function ParticleCanvasInner({
     };
 
     animRef.current = requestAnimationFrame(tick);
-
-    // ----- listen for reduced-motion changes at runtime -----
-    const onMotionChange = (e: MediaQueryListEvent) => {
-      if (e.matches) {
-        // User just turned on reduced-motion — stop the loop
-        cancelAnimationFrame(animRef.current);
-        loopRef.current = null;
-      }
-      // If they turn it back off, a remount (via key change) would be needed.
-      // We trigger one by bumping the key.
-      if (!e.matches) {
-        setMountKey((k) => k + 1);
-      }
-    };
-    motionQuery.addEventListener("change", onMotionChange);
 
     return () => {
       cancelAnimationFrame(animRef.current);
