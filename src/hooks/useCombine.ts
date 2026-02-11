@@ -33,12 +33,17 @@ export function attemptCombine(tileA: string, tileB: string): CombineResult {
       newlyUnlocked.push(comboTileId);
     }
 
-    // Check if any recipes are now fulfilled
-    const recipeUnlocks = checkRecipes(getUnlockedIds());
-    for (const id of recipeUnlocks) {
-      const wasNewRecipe = unlockTile(id);
-      if (wasNewRecipe) {
-        newlyUnlocked.push(id);
+    // Check recipes repeatedly until no new unlocks (cascade)
+    let foundNew = true;
+    while (foundNew) {
+      foundNew = false;
+      const recipeUnlocks = checkRecipes(getUnlockedIds());
+      for (const id of recipeUnlocks) {
+        const wasNewRecipe = unlockTile(id);
+        if (wasNewRecipe) {
+          newlyUnlocked.push(id);
+          foundNew = true;
+        }
       }
     }
   }

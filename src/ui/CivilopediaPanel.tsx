@@ -23,7 +23,7 @@ export default function CivilopediaPanel({
 
   return (
     <aside className="civilopedia">
-      <button className="civilopedia__close" onClick={onClose} aria-label="Close panel">
+      <button type="button" className="civilopedia__close" onClick={onClose} aria-label="Close panel">
         ✕
       </button>
 

@@ -2,7 +2,7 @@
  * DiscoveryNotification — animated popup when a new tile is discovered.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import type { TileMap } from "../hooks/dataLoader";
 
 interface DiscoveryNotificationProps {
@@ -17,16 +17,18 @@ export default function DiscoveryNotification({
   onDismiss,
 }: DiscoveryNotificationProps) {
   const [visible, setVisible] = useState(true);
+  const onDismissRef = useRef(onDismiss);
+  onDismissRef.current = onDismiss;
 
   useEffect(() => {
     if (tileIds.length === 0) return;
     setVisible(true);
     const timer = setTimeout(() => {
       setVisible(false);
-      onDismiss();
+      onDismissRef.current();
     }, 3000);
     return () => clearTimeout(timer);
-  }, [tileIds, onDismiss]);
+  }, [tileIds]);
 
   if (!visible || tileIds.length === 0) return null;
 

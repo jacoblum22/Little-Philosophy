@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -17,6 +17,7 @@ import { resetGame } from "./engine/gameState";
 import TilePalette from "./ui/TilePalette";
 import Workspace from "./ui/Workspace";
 import type { CanvasTile } from "./ui/Workspace";
+import type { TileMap } from "./hooks/dataLoader";
 import DiscoveryNotification from "./ui/DiscoveryNotification";
 import CivilopediaPanel from "./ui/CivilopediaPanel";
 import ProgressBar from "./ui/ProgressBar";
@@ -25,12 +26,27 @@ import "./App.css";
 
 let nextInstanceId = 1;
 
+/** Overlay chip that follows the cursor during drag. */
+function DragOverlayChip({ tileId, tileMap }: { tileId: string; tileMap: TileMap }) {
+  const tile = tileMap.get(tileId);
+  const typeCls = tile ? `tile-chip--${tile.type}` : "";
+  return (
+    <div className={`tile-chip tile-chip--dragging ${typeCls}`}>
+      {tile?.type === "philosopher" && "🧠 "}
+      {tile?.type === "writing" && "📜 "}
+      {tile?.name ?? tileId}
+    </div>
+  );
+}
+
 function App() {
   const { init: gameInit, error } = useGameInit();
   const gameState = useGameState();
 
   // Freeform canvas tiles
   const [canvasTiles, setCanvasTiles] = useState<CanvasTile[]>([]);
+  const canvasTilesRef = useRef(canvasTiles);
+  canvasTilesRef.current = canvasTiles;
 
   // Discovery notification
   const [discoveries, setDiscoveries] = useState<string[]>([]);
@@ -85,7 +101,7 @@ function App() {
         const result = attemptCombine(tileId, targetTileId);
         if (result.comboTileId) {
           // Remove the target tile, place the result at its position
-          const target = canvasTiles.find((ct) => ct.instanceId === targetInstanceId);
+          const target = canvasTilesRef.current.find((ct) => ct.instanceId === targetInstanceId);
           const resultId = `canvas-${nextInstanceId++}`;
           setCanvasTiles((prev) => [
             ...prev.filter((ct) => ct.instanceId !== targetInstanceId),
@@ -101,7 +117,7 @@ function App() {
           }
         } else {
           // Failed combo — just place the palette tile near the target
-          const target = canvasTiles.find((ct) => ct.instanceId === targetInstanceId);
+          const target = canvasTilesRef.current.find((ct) => ct.instanceId === targetInstanceId);
           if (target) {
             const id = `canvas-${nextInstanceId++}`;
             setCanvasTiles((prev) => [
@@ -123,10 +139,10 @@ function App() {
         const result = attemptCombine(tileId, targetTileId);
         if (result.comboTileId) {
           // Remove both tiles, place result at midpoint
-          const dragTile = canvasTiles.find((ct) => ct.instanceId === dragInstanceId);
-          const targetTile = canvasTiles.find((ct) => ct.instanceId === targetInstanceId);
-          const midX = ((dragTile?.x ?? 0) + (targetTile?.x ?? 0)) / 2;
-          const midY = ((dragTile?.y ?? 0) + (targetTile?.y ?? 0)) / 2;
+          const dragTile = canvasTilesRef.current.find((ct) => ct.instanceId === dragInstanceId);
+          const targetTile = canvasTilesRef.current.find((ct) => ct.instanceId === targetInstanceId);
+          const midX = ((dragTile?.x ?? 200) + (targetTile?.x ?? 200)) / 2;
+          const midY = ((dragTile?.y ?? 200) + (targetTile?.y ?? 200)) / 2;
           const resultId = `canvas-${nextInstanceId++}`;
           setCanvasTiles((prev) => [
             ...prev.filter(
@@ -171,7 +187,7 @@ function App() {
       }
 
       // --- Case 4: Palette tile dropped on canvas background → place it
-      if (over?.id === "canvas" || !over) {
+      if (over?.id === "canvas") {
         // Calculate position relative to workspace
         const workspaceEl = document.querySelector(".workspace");
         const rect = workspaceEl?.getBoundingClientRect();
@@ -191,7 +207,7 @@ function App() {
         ]);
       }
     },
-    [canvasTiles]
+    []
   );
 
   // Error state
@@ -258,17 +274,9 @@ function App() {
       </div>
 
       <DragOverlay>
-        {activeDragId ? (() => {
-          const dragTile = tileMap.get(activeDragId);
-          const typeCls = dragTile ? `tile-chip--${dragTile.type}` : "";
-          return (
-            <div className={`tile-chip tile-chip--dragging ${typeCls}`}>
-              {dragTile?.type === "philosopher" && "🧠 "}
-              {dragTile?.type === "writing" && "📜 "}
-              {dragTile?.name ?? activeDragId}
-            </div>
-          );
-        })() : null}
+        {activeDragId && gameInit ? (
+          <DragOverlayChip tileId={activeDragId} tileMap={tileMap} />
+        ) : null}
       </DragOverlay>
     </DndContext>
   );

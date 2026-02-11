@@ -34,6 +34,12 @@ function DraggableTile({ tile, onClick }: DraggableTileProps) {
   useEffect(() => {
     if (isDragging) {
       wasDragging.current = true;
+    } else {
+      // Reset after a short delay to allow the click handler to see the flag
+      const timer = setTimeout(() => {
+        wasDragging.current = false;
+      }, 50);
+      return () => clearTimeout(timer);
     }
   }, [isDragging]);
 

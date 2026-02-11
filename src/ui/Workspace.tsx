@@ -98,6 +98,7 @@ export default function Workspace({
         <button
           type="button"
           className="workspace__clear"
+          aria-label="Clear all tiles from workspace"
           onClick={onClearAll}
         >
           Clear All
