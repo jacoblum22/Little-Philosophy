@@ -21,3 +21,7 @@ Planning notes/
 
 # Reference material (not part of the app)
 TEMPORARY ART INSPIRATION/
+
+# Playwright MCP artifacts
+.playwright-mcp/
+*.png
