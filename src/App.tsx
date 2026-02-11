@@ -24,7 +24,15 @@ import ProgressBar from "./ui/ProgressBar";
 
 import "./App.css";
 
-let nextInstanceId = 1;
+/** Icon prefix for a tile type. */
+const TILE_ICONS: Record<string, string> = {
+  philosopher: "🧠 ",
+  writing: "📜 ",
+};
+
+function tileIcon(type: string): string {
+  return TILE_ICONS[type] ?? "";
+}
 
 /** Overlay chip that follows the cursor during drag. */
 function DragOverlayChip({ tileId, tileMap }: { tileId: string; tileMap: TileMap }) {
@@ -32,8 +40,7 @@ function DragOverlayChip({ tileId, tileMap }: { tileId: string; tileMap: TileMap
   const typeCls = tile ? `tile-chip--${tile.type}` : "";
   return (
     <div className={`tile-chip tile-chip--dragging ${typeCls}`}>
-      {tile?.type === "philosopher" && "🧠 "}
-      {tile?.type === "writing" && "📜 "}
+      {tile ? tileIcon(tile.type) : ""}
       {tile?.name ?? tileId}
     </div>
   );
@@ -47,6 +54,12 @@ function App() {
   const [canvasTiles, setCanvasTiles] = useState<CanvasTile[]>([]);
   const canvasTilesRef = useRef(canvasTiles);
   canvasTilesRef.current = canvasTiles;
+
+  // Instance ID counter scoped to component lifecycle
+  const nextInstanceId = useRef(1);
+
+  // Workspace element ref (avoids document.querySelector)
+  const workspaceRef = useRef<HTMLElement>(null);
 
   // Discovery notification
   const [discoveries, setDiscoveries] = useState<string[]>([]);
@@ -102,7 +115,7 @@ function App() {
         if (result.comboTileId) {
           // Remove the target tile, place the result at its position
           const target = canvasTilesRef.current.find((ct) => ct.instanceId === targetInstanceId);
-          const resultId = `canvas-${nextInstanceId++}`;
+          const resultId = `canvas-${nextInstanceId.current++}`;
           setCanvasTiles((prev) => [
             ...prev.filter((ct) => ct.instanceId !== targetInstanceId),
             {
@@ -119,7 +132,7 @@ function App() {
           // Failed combo — just place the palette tile near the target
           const target = canvasTilesRef.current.find((ct) => ct.instanceId === targetInstanceId);
           if (target) {
-            const id = `canvas-${nextInstanceId++}`;
+            const id = `canvas-${nextInstanceId.current++}`;
             setCanvasTiles((prev) => [
               ...prev,
               { instanceId: id, tileId, x: target.x + 50, y: target.y + 40 },
@@ -143,7 +156,7 @@ function App() {
           const targetTile = canvasTilesRef.current.find((ct) => ct.instanceId === targetInstanceId);
           const midX = ((dragTile?.x ?? 200) + (targetTile?.x ?? 200)) / 2;
           const midY = ((dragTile?.y ?? 200) + (targetTile?.y ?? 200)) / 2;
-          const resultId = `canvas-${nextInstanceId++}`;
+          const resultId = `canvas-${nextInstanceId.current++}`;
           setCanvasTiles((prev) => [
             ...prev.filter(
               (ct) =>
@@ -189,8 +202,7 @@ function App() {
       // --- Case 4: Palette tile dropped on canvas background → place it
       if (over?.id === "canvas") {
         // Calculate position relative to workspace
-        const workspaceEl = document.querySelector(".workspace");
-        const rect = workspaceEl?.getBoundingClientRect();
+        const rect = workspaceRef.current?.getBoundingClientRect();
         if (!rect) return;
 
         // active.rect gives us the initial rect — use delta to compute final pos
@@ -200,7 +212,7 @@ function App() {
         const finalX = initialRect.left + delta.x - rect.left;
         const finalY = initialRect.top + delta.y - rect.top;
 
-        const id = `canvas-${nextInstanceId++}`;
+        const id = `canvas-${nextInstanceId.current++}`;
         setCanvasTiles((prev) => [
           ...prev,
           { instanceId: id, tileId, x: Math.max(0, finalX), y: Math.max(0, finalY) },
@@ -258,6 +270,7 @@ function App() {
             canvasTiles={canvasTiles}
             tileMap={tileMap}
             onClearAll={handleClearAll}
+            workspaceRef={workspaceRef}
           />
 
           <CivilopediaPanel
@@ -274,7 +287,7 @@ function App() {
       </div>
 
       <DragOverlay>
-        {activeDragId && gameInit ? (
+        {activeDragId ? (
           <DragOverlayChip tileId={activeDragId} tileMap={tileMap} />
         ) : null}
       </DragOverlay>

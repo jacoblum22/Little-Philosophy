@@ -6,9 +6,20 @@
  * Style inspired by Little Alchemy.
  */
 
+import type { RefObject } from "react";
 import { useDroppable, useDraggable } from "@dnd-kit/core";
 import type { TileMap } from "../hooks/dataLoader";
 import type { Tile } from "../types/tile";
+
+/** Icon prefix for a tile type. */
+const TILE_ICONS: Record<string, string> = {
+  philosopher: "🧠 ",
+  writing: "📜 ",
+};
+
+function tileIcon(type: string): string {
+  return TILE_ICONS[type] ?? "";
+}
 
 /** A tile instance placed on the canvas. */
 export interface CanvasTile {
@@ -22,6 +33,7 @@ interface WorkspaceProps {
   canvasTiles: CanvasTile[];
   tileMap: TileMap;
   onClearAll: () => void;
+  workspaceRef: RefObject<HTMLElement | null>;
 }
 
 interface CanvasTileChipProps {
@@ -42,6 +54,12 @@ function CanvasTileChip({ instance, tile }: CanvasTileChipProps) {
 
   const typeCls = tile ? `canvas-tile--${tile.type}` : "";
   const highlight = isOver && !isDragging;
+  const cls = [
+    "canvas-tile",
+    typeCls,
+    isDragging && "canvas-tile--dragging",
+    highlight && "canvas-tile--highlight",
+  ].filter(Boolean).join(" ");
 
   return (
     <div
@@ -49,7 +67,7 @@ function CanvasTileChip({ instance, tile }: CanvasTileChipProps) {
         setDragRef(node);
         setDropRef(node);
       }}
-      className={`canvas-tile ${typeCls} ${isDragging ? "canvas-tile--dragging" : ""} ${highlight ? "canvas-tile--highlight" : ""}`}
+      className={cls}
       style={{
         position: "absolute",
         left: instance.x,
@@ -58,8 +76,7 @@ function CanvasTileChip({ instance, tile }: CanvasTileChipProps) {
       {...listeners}
       {...attributes}
     >
-      {tile?.type === "philosopher" && "🧠 "}
-      {tile?.type === "writing" && "📜 "}
+      {tile ? tileIcon(tile.type) : ""}
       {tile?.name ?? instance.tileId}
     </div>
   );
@@ -69,6 +86,7 @@ export default function Workspace({
   canvasTiles,
   tileMap,
   onClearAll,
+  workspaceRef,
 }: WorkspaceProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: "canvas",
@@ -77,8 +95,11 @@ export default function Workspace({
 
   return (
     <section
-      ref={setNodeRef}
-      className={`workspace ${isOver ? "workspace--over" : ""}`}
+      ref={(node) => {
+        setNodeRef(node);
+        (workspaceRef as React.MutableRefObject<HTMLElement | null>).current = node;
+      }}
+      className={`workspace${isOver ? " workspace--over" : ""}`}
     >
       {canvasTiles.length === 0 && (
         <div className="workspace__hint">

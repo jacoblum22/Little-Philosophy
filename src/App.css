@@ -22,6 +22,7 @@
   --color-concept: #4fc3f7;
   --color-philosopher: #ffb74d;
   --color-writing: #81c784;
+  --sidebar-width: 240px;
   --radius: 8px;
   --font: "Segoe UI", system-ui, -apple-system, sans-serif;
 }
@@ -126,8 +127,8 @@ body {
 
 /* --- Tile Palette (sidebar) --- */
 .tile-palette {
-  width: 240px;
-  min-width: 240px;
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
   background: var(--color-surface);
   border-right: 1px solid var(--color-surface-light);
   display: flex;
@@ -152,21 +153,32 @@ body {
 }
 
 /* Custom scrollbar */
-.tile-palette__list::-webkit-scrollbar {
+.tile-palette__list::-webkit-scrollbar,
+.civilopedia::-webkit-scrollbar {
   width: 6px;
 }
 
-.tile-palette__list::-webkit-scrollbar-track {
+.tile-palette__list::-webkit-scrollbar-track,
+.civilopedia::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.tile-palette__list::-webkit-scrollbar-thumb {
+.tile-palette__list::-webkit-scrollbar-thumb,
+.civilopedia::-webkit-scrollbar-thumb {
   background: var(--color-surface-light);
   border-radius: 3px;
 }
 
-.tile-palette__list::-webkit-scrollbar-thumb:hover {
+.tile-palette__list::-webkit-scrollbar-thumb:hover,
+.civilopedia::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-muted);
+}
+
+/* Firefox scrollbar */
+.tile-palette__list,
+.civilopedia {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-surface-light) transparent;
 }
 
 /* --- Tile Chip --- */
@@ -436,7 +448,7 @@ body {
 .discovery-notification {
   position: fixed;
   top: 0;
-  left: 240px; /* offset for sidebar width */
+  left: var(--sidebar-width);
   right: 0;
   bottom: 0;
   display: flex;
@@ -480,6 +492,7 @@ body {
 .discovery-notification__name {
   font-size: 2rem;
   font-weight: 700;
+  color: var(--color-text); /* fallback for browsers without gradient text */
   background: linear-gradient(135deg, var(--color-text) 0%, var(--color-accent) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -506,6 +519,7 @@ body {
 .tile-chip--dragging {
   display: inline-block;
   padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-concept);
   border-radius: var(--radius);
   background: var(--color-surface);
   font-size: 0.85rem;
@@ -514,20 +528,11 @@ body {
   pointer-events: none;
 }
 
-/* --- Civilopedia scrollbar --- */
-.civilopedia::-webkit-scrollbar {
-  width: 6px;
+.tile-chip--dragging.tile-chip--philosopher {
+  border-color: var(--color-philosopher);
 }
 
-.civilopedia::-webkit-scrollbar-track {
-  background: transparent;
+.tile-chip--dragging.tile-chip--writing {
+  border-color: var(--color-writing);
 }
 
-.civilopedia::-webkit-scrollbar-thumb {
-  background: var(--color-surface-light);
-  border-radius: 3px;
-}
-
-.civilopedia::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-muted);
-}

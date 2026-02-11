@@ -20,6 +20,9 @@ export default function DiscoveryNotification({
   const onDismissRef = useRef(onDismiss);
   onDismissRef.current = onDismiss;
 
+  // Using a ref for onDismiss to avoid resetting the timer on every render
+  // when the parent doesn't memoize the callback.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (tileIds.length === 0) return;
     setVisible(true);

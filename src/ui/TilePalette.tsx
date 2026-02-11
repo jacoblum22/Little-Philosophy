@@ -9,6 +9,16 @@ import { useDraggable } from "@dnd-kit/core";
 import type { Tile } from "../types/tile";
 import type { TileMap } from "../hooks/dataLoader";
 
+/** Icon prefix for a tile type. */
+const TILE_ICONS: Record<string, string> = {
+  philosopher: "🧠 ",
+  writing: "📜 ",
+};
+
+function tileIcon(type: string): string {
+  return TILE_ICONS[type] ?? "";
+}
+
 interface TilePaletteProps {
   unlockedTileIds: string[];
   tileMap: TileMap;
@@ -60,8 +70,7 @@ function DraggableTile({ tile, onClick }: DraggableTileProps) {
       {...listeners}
       {...attributes}
     >
-      {tile.type === "philosopher" && "🧠 "}
-      {tile.type === "writing" && "📜 "}
+      {tileIcon(tile.type)}
       {tile.name}
     </button>
   );

@@ -34,9 +34,13 @@ export function attemptCombine(tileA: string, tileB: string): CombineResult {
     }
 
     // Check recipes repeatedly until no new unlocks (cascade)
+    // Max iterations as a safeguard against infinite loops
+    const MAX_CASCADE = 50;
+    let iterations = 0;
     let foundNew = true;
-    while (foundNew) {
+    while (foundNew && iterations < MAX_CASCADE) {
       foundNew = false;
+      iterations++;
       const recipeUnlocks = checkRecipes(getUnlockedIds());
       for (const id of recipeUnlocks) {
         const wasNewRecipe = unlockTile(id);
