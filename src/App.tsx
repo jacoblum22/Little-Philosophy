@@ -22,7 +22,7 @@ import DiscoveryNotification from "./ui/DiscoveryNotification";
 import CivilopediaPanel from "./ui/CivilopediaPanel";
 import ProgressBar from "./ui/ProgressBar";
 import ParticleCanvas from "./particles/ParticleCanvas";
-import type { ParticleWorkerHandle } from "./particles/ParticleCanvas";
+import type { ParticleHandle } from "./particles/ParticleCanvas";
 
 import "./App.css";
 
@@ -64,7 +64,7 @@ function App() {
   const workspaceRef = useRef<HTMLElement>(null);
 
   // Particle system handle (for burst on discovery)
-  const particleHandle = useRef<ParticleWorkerHandle | null>(null);
+  const particleHandle = useRef<ParticleHandle | null>(null);
 
   // Discovery notification
   const [discoveries, setDiscoveries] = useState<string[]>([]);
@@ -254,7 +254,7 @@ function App() {
 
   return (
     <>
-    <ParticleCanvas onWorkerReady={(h) => { particleHandle.current = h; }} />
+    <ParticleCanvas onReady={(h) => { particleHandle.current = h; }} />
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="app">
         <header className="app__header">

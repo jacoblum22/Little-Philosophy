@@ -11,13 +11,13 @@
 import { useEffect, useRef, useState } from "react";
 
 /** Handle exposed by ParticleCanvas so the parent can trigger visual effects. */
-export interface ParticleWorkerHandle {
+export interface ParticleHandle {
   /** Trigger a radial burst that pushes all particles outward from the center. */
   burst(): void;
 }
 
 interface ParticleCanvasProps {
-  onWorkerReady?: (handle: ParticleWorkerHandle) => void;
+  onReady?: (handle: ParticleHandle) => void;
 }
 
 // ===== Tunables ==============================================================
@@ -236,13 +236,13 @@ function createLoopState(w: number, h: number): LoopState {
   };
 }
 
-export default function ParticleCanvas({ onWorkerReady }: ParticleCanvasProps) {
+export default function ParticleCanvas({ onReady }: ParticleCanvasProps) {
   // A key that increments on every mount forces React to create a fresh
   // <canvas> DOM element, sidestepping Strict Mode's setup→cleanup→setup
   // cycle which would otherwise leave a stale canvas reference.
   const [mountKey, setMountKey] = useState(0);
 
-  return <ParticleCanvasInner key={mountKey} onWorkerReady={onWorkerReady} setMountKey={setMountKey} />;
+  return <ParticleCanvasInner key={mountKey} onReady={onReady} setMountKey={setMountKey} />;
 }
 
 /**
@@ -251,7 +251,7 @@ export default function ParticleCanvas({ onWorkerReady }: ParticleCanvasProps) {
  * getContext("2d") always succeeds, even after Strict Mode cleanup.
  */
 function ParticleCanvasInner({
-  onWorkerReady,
+  onReady,
   setMountKey,
 }: ParticleCanvasProps & { setMountKey: React.Dispatch<React.SetStateAction<number>> }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -286,9 +286,13 @@ function ParticleCanvasInner({
     }
 
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {
+      return () => { motionQuery.removeEventListener("change", onMotionChange); };
+    }
     const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    if (!ctx) {
+      return () => { motionQuery.removeEventListener("change", onMotionChange); };
+    }
 
     // ----- size the backing buffer to match CSS layout -----
     const applySize = () => {
@@ -318,7 +322,7 @@ function ParticleCanvasInner({
         p.vy += (dy / dist) * force;
       }
     };
-    onWorkerReady?.({ burst() { burstRef.current?.(); } });
+    onReady?.({ burst() { burstRef.current?.(); } });
 
     // ----- scroll impulse -----
     const onWheel = (e: WheelEvent) => {
@@ -399,6 +403,7 @@ function ParticleCanvasInner({
   return (
     <canvas
       ref={canvasRef}
+      className="particle-canvas"
       style={{
         width: "100%",
         height: "100%",
