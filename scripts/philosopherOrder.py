@@ -29,7 +29,7 @@ class Philosopher:
 
 # ── Parser ───────────────────────────────────────────────────────────
 
-def parse_brainstorm(path: Path) -> tuple[dict[str, Philosopher], list[tuple[str, str]]]:
+def parse_brainstorm(path: Path) -> tuple[dict[str, Philosopher], list[tuple[str, str]], list[tuple[str, str]]]:
     """Parse the Concept Brainstorm markdown for philosopher data and ordering constraints."""
     text = path.read_text(encoding="utf-8")
     philosophers: dict[str, Philosopher] = {}
@@ -113,20 +113,33 @@ def parse_brainstorm(path: Path) -> tuple[dict[str, Philosopher], list[tuple[str
 
     # Parse ordering constraints
     in_ordering = False
+    ordering: list[tuple[str, str]] = []
+    concept_depth_ordering: list[tuple[str, str]] = []
     for line in lines:
         if line.strip().startswith("## Philosopher Ordering"):
             in_ordering = True
             continue
         if in_ordering and line.strip().startswith("## "):
             break
-        if in_ordering and "<" in line and line.strip().startswith("- "):
-            # Parse chains like "Socrates < Plato < Aristotle"
-            names = [n.strip() for n in line.split("<")]
-            names = [n.lstrip("- ").strip() for n in names if n.strip()]
-            for i in range(len(names) - 1):
-                ordering.append((names[i], names[i + 1]))
+        if in_ordering and line.strip().startswith("- "):
+            # Parse chains like "Socrates < Plato ~ Aristotle"
+            # Split on both < and ~, tracking which separator was used
+            raw = line.lstrip("- ").strip()
+            # Tokenize: split by < and ~, remembering separators
+            tokens = re.split(r'\s*([<~])\s*', raw)
+            # tokens = [name, sep, name, sep, name, ...]
+            names = tokens[0::2]  # every other element starting at 0
+            seps = tokens[1::2]   # every other element starting at 1
+            names = [n.strip() for n in names if n.strip()]
+            for i, sep in enumerate(seps):
+                if i < len(names) - 1:
+                    pair = (names[i], names[i + 1])
+                    if sep == '<':
+                        ordering.append(pair)
+                    else:  # ~
+                        concept_depth_ordering.append(pair)
 
-    return philosophers, ordering
+    return philosophers, ordering, concept_depth_ordering
 
 
 # ── Analysis ─────────────────────────────────────────────────────────
@@ -305,9 +318,12 @@ def find_missing_order_pairs(
 def print_report(
     philosophers: dict[str, Philosopher],
     ordering: list[tuple[str, str]],
+    concept_depth_ordering: list[tuple[str, str]] = None,
     verbose: bool = False,
     prereqs: bool = False,
 ):
+    if concept_depth_ordering is None:
+        concept_depth_ordering = []
     w = 70
     print()
     print("=" * w)
@@ -409,15 +425,58 @@ def print_report(
     print()
 
     # Check ordering constraints
-    if ordering:
+    all_constraints = len(ordering) + len(concept_depth_ordering)
+    if ordering or concept_depth_ordering:
         print("  ORDERING CONSTRAINT CHECK")
         print("  " + "-" * (w - 2))
-        warnings = check_implicit_ordering(philosophers, ordering, graph)
-        if not warnings:
-            print("  [OK] All ordering constraints are satisfied by recipe dependencies")
+
+        # Check explicit constraints (must be guaranteed by output deps)
+        explicit_warnings = check_implicit_ordering(philosophers, ordering, graph)
+        if not explicit_warnings:
+            print(f"  [OK] All {len(ordering)} explicit constraints (<) satisfied by recipe dependencies")
         else:
-            for w_msg in warnings:
+            for w_msg in explicit_warnings:
                 print(w_msg)
+
+        # Report concept-depth constraints (will be verified when tree is built)
+        if concept_depth_ordering:
+            verified = 0
+            pending = []
+            for before, after in concept_depth_ordering:
+                if before not in philosophers or after not in philosophers:
+                    pending.append(f"  {before} ~ {after}: unknown philosopher")
+                    continue
+                # Check if output deps happen to satisfy this anyway
+                output_graph: dict[str, set[str]] = defaultdict(set)
+                for phil in philosophers.values():
+                    output_graph[phil.name]
+                    for dep in phil.depends_on_output_of:
+                        output_graph[dep].add(phil.name)
+                visited = set()
+                queue = deque([before])
+                reachable = False
+                while queue:
+                    current = queue.popleft()
+                    if current == after:
+                        reachable = True
+                        break
+                    if current in visited:
+                        continue
+                    visited.add(current)
+                    queue.extend(output_graph.get(current, set()))
+                if reachable:
+                    verified += 1
+                else:
+                    pending.append(f"    {before} ~ {after}")
+            if pending:
+                print(f"  [..] {len(concept_depth_ordering)} concept-depth constraints (~): "
+                      f"{verified} already satisfied, {len(pending)} pending tree completion:")
+                for p in pending:
+                    print(p)
+            else:
+                print(f"  [OK] All {len(concept_depth_ordering)} concept-depth constraints (~) "
+                      f"happen to be satisfied by output deps")
+
         print()
 
     # Concept-to-producer mapping
@@ -516,7 +575,7 @@ def print_report(
     print(f"  Total philosophers: {total}")
     print(f"  With output dependencies: {with_deps}/{total} ({100*with_deps//total}%)")
     print(f"  Whose outputs are used: {produces_used}/{total} ({100*produces_used//total}%)")
-    print(f"  Ordering constraints: {len(ordering)}")
+    print(f"  Ordering constraints: {len(ordering)} explicit (<) + {len(concept_depth_ordering)} concept-depth (~)")
     print(f"  Total concepts produced: {sum(len(p.produces) for p in philosophers.values())}")
     print()
 
@@ -559,14 +618,14 @@ def main():
 
     print(f"  (reading from: {path})")
 
-    philosophers, ordering = parse_brainstorm(path)
+    philosophers, ordering, concept_depth_ordering = parse_brainstorm(path)
 
     if not philosophers:
         print("Error: No philosophers found in the brainstorm file.")
         print("Expected markdown tables with | Philosopher | Recipe | Produces | columns")
         sys.exit(1)
 
-    print_report(philosophers, ordering, verbose=args.verbose, prereqs=args.prereqs)
+    print_report(philosophers, ordering, concept_depth_ordering=concept_depth_ordering, verbose=args.verbose, prereqs=args.prereqs)
 
 
 if __name__ == "__main__":
