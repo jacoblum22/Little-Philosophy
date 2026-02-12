@@ -21,4 +21,4 @@ Epistemology, the branch of philosophy devoted to knowledge, asks three fundamen
 
 #epistemology #ancient
 Parents: [[observation]] [[reflection]]
-Children: [[socratic-method]] [[understanding]] [[wisdom]]
+Children: [[socratic-method]] [[wisdom]]

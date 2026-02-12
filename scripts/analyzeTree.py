@@ -39,7 +39,7 @@ LA2 = {
     "total_combos": 3452,
     "combos_per_element": 4.8,
     "leaf_ratio": 0.26,
-    "hub_ratio": 0.078,  # elements with degree ≥ 30
+    "hub_ratio": 0.078,  # elements with degree >= 30
     "median_depth": 9,
     "max_depth": 16,  # excluding base-gated outliers
     "median_recipes": 4,
@@ -148,7 +148,7 @@ def parse_frontmatter(text: str) -> tuple[dict[str, Any], str]:
                 current_obj_list = None
             continue
 
-        # List item — combo object (- with: / produces:)
+        # List item -- combo object (- with: / produces:)
         list_match = re.match(r"^\s*-\s+with:\s*(.*)", line)
         if list_match and current_key:
             # Start of a combo object
@@ -241,13 +241,13 @@ def load_tiles() -> GameGraph:
         if isinstance(recipe, str):
             recipe = [recipe]
 
-        # Check starting tag
-        is_starting = "#starting" in content
-        if is_starting:
-            starting_tiles.add(tile_id)
-
         # Parse tags from body
         tags = re.findall(r"#([\w-]+)", body) if body else []
+
+        # Check starting tag from parsed tags
+        is_starting = "starting" in tags
+        if is_starting:
+            starting_tiles.add(tile_id)
 
         tile = Tile(
             id=tile_id,
@@ -408,10 +408,10 @@ def count_recipes(graph: GameGraph) -> dict[str, int]:
 # Report Rendering
 # ---------------------------------------------------------------------------
 
-STATUS_OK = "✅"
-STATUS_WARN = "⚠️ "
-STATUS_BAD = "❌"
-STATUS_INFO = "ℹ️ "
+STATUS_OK = "[OK]"
+STATUS_WARN = "[!!]"
+STATUS_BAD = "[XX]"
+STATUS_INFO = "[ii]"
 
 
 @dataclass
@@ -448,7 +448,7 @@ def analyze(graph: GameGraph, thresholds: Thresholds) -> tuple[list[Finding], di
                 STATUS_BAD,
                 "Combos/element",
                 f"{cpe:.2f}",
-                f"target ≥ {thresholds.combos_per_element_min} (LA2: {LA2['combos_per_element']})",
+                f"target >= {thresholds.combos_per_element_min} (LA2: {LA2['combos_per_element']})",
                 "Add more combinations to existing tiles. Most tiles should combine with 2-4 others.",
             )
         )
@@ -458,7 +458,7 @@ def analyze(graph: GameGraph, thresholds: Thresholds) -> tuple[list[Finding], di
                 STATUS_WARN,
                 "Combos/element",
                 f"{cpe:.2f}",
-                f"ideal ≥ {thresholds.combos_per_element_ideal} (LA2: {LA2['combos_per_element']})",
+                f"ideal >= {thresholds.combos_per_element_ideal} (LA2: {LA2['combos_per_element']})",
                 "Getting closer! Add combinations to tiles with 0-1 combo partners.",
             )
         )
@@ -473,27 +473,7 @@ def analyze(graph: GameGraph, thresholds: Thresholds) -> tuple[list[Finding], di
         )
 
     # --- Leaf ratio ---
-    leaf_tiles = [
-        tid
-        for tid, t in graph.tiles.items()
-        if not t.combinations
-        and not any(
-            tid in [c["with"] for c in ot.combinations] for ot in graph.tiles.values()
-        )
-    ]
-    # More accurate: tiles that appear in no combo as input
-    combo_inputs = set()
-    for a, b in graph.combos:
-        combo_inputs.add(a)
-        combo_inputs.add(b)
-    true_leaf_tiles = [
-        tid
-        for tid in graph.tiles
-        if tid not in combo_inputs and not graph.tiles[tid].combinations
-    ]
-    leaf_ratio = len(true_leaf_tiles) / n_tiles if n_tiles > 0 else 0
-
-    # Actually, let's define "leaf" as tiles with no outgoing combos (no children)
+    # "Leaf" = tiles with no outgoing combos (no children)
     tiles_with_children = set()
     for tid, t in graph.tiles.items():
         if t.combinations:
@@ -512,7 +492,7 @@ def analyze(graph: GameGraph, thresholds: Thresholds) -> tuple[list[Finding], di
                 STATUS_BAD,
                 "Leaf ratio",
                 f"{leaf_ratio:.0%} ({leaf_count}/{n_tiles})",
-                f"target ≤ {thresholds.leaf_ratio_max:.0%} (LA2: {LA2['leaf_ratio']:.0%})",
+                f"target <= {thresholds.leaf_ratio_max:.0%} (LA2: {LA2['leaf_ratio']:.0%})",
                 f"Too many dead ends. Give combos to: {', '.join(raw['leaf_tiles'][:5])}...",
             )
         )
@@ -522,7 +502,7 @@ def analyze(graph: GameGraph, thresholds: Thresholds) -> tuple[list[Finding], di
                 STATUS_WARN,
                 "Leaf ratio",
                 f"{leaf_ratio:.0%} ({leaf_count}/{n_tiles})",
-                f"ideal ≤ {thresholds.leaf_ratio_ideal:.0%} (LA2: {LA2['leaf_ratio']:.0%})",
+                f"ideal <= {thresholds.leaf_ratio_ideal:.0%} (LA2: {LA2['leaf_ratio']:.0%})",
                 f"Consider adding combos to: {', '.join(raw['leaf_tiles'][:3])}",
             )
         )
@@ -532,7 +512,7 @@ def analyze(graph: GameGraph, thresholds: Thresholds) -> tuple[list[Finding], di
                 STATUS_OK,
                 "Leaf ratio",
                 f"{leaf_ratio:.0%} ({leaf_count}/{n_tiles})",
-                f"target ≤ {thresholds.leaf_ratio_max:.0%}",
+                f"target <= {thresholds.leaf_ratio_max:.0%}",
             )
         )
 
@@ -556,8 +536,8 @@ def analyze(graph: GameGraph, thresholds: Thresholds) -> tuple[list[Finding], di
             Finding(
                 STATUS_WARN,
                 "Hub ratio",
-                f"{hub_ratio:.0%} ({len(hub_tiles)} hubs, deg ≥ {thresholds.hub_degree_threshold})",
-                f"target ≥ {thresholds.hub_ratio_min:.0%} (LA2: {LA2['hub_ratio']:.0%})",
+                f"{hub_ratio:.0%} ({len(hub_tiles)} hubs, deg >= {thresholds.hub_degree_threshold})",
+                f"target >= {thresholds.hub_ratio_min:.0%} (LA2: {LA2['hub_ratio']:.0%})",
                 "Add more combos to key connective concepts (Empathy, Wonder, Experience).",
             )
         )
@@ -567,7 +547,7 @@ def analyze(graph: GameGraph, thresholds: Thresholds) -> tuple[list[Finding], di
                 STATUS_OK,
                 "Hub ratio",
                 f"{hub_ratio:.0%} ({len(hub_tiles)} hubs)",
-                f"target ≥ {thresholds.hub_ratio_min:.0%}",
+                f"target >= {thresholds.hub_ratio_min:.0%}",
             )
         )
 
@@ -624,7 +604,7 @@ def analyze(graph: GameGraph, thresholds: Thresholds) -> tuple[list[Finding], di
                     STATUS_WARN,
                     "Gen 0 hit rate",
                     f"{gen0_hr:.0%}",
-                    f"target ≥ {thresholds.gen0_hit_rate_min:.0%} (LA2: 100%)",
+                    f"target >= {thresholds.gen0_hit_rate_min:.0%} (LA2: 100%)",
                     "Most starting element combos should produce something.",
                 )
             )
@@ -634,7 +614,7 @@ def analyze(graph: GameGraph, thresholds: Thresholds) -> tuple[list[Finding], di
                     STATUS_OK,
                     "Gen 0 hit rate",
                     f"{gen0_hr:.0%}",
-                    f"target ≥ {thresholds.gen0_hit_rate_min:.0%}",
+                    f"target >= {thresholds.gen0_hit_rate_min:.0%}",
                 )
             )
 
@@ -732,7 +712,7 @@ def analyze(graph: GameGraph, thresholds: Thresholds) -> tuple[list[Finding], di
             Finding(
                 STATUS_INFO,
                 "Low-connectivity tiles",
-                f"{len(low_degree)} tiles with ≤ 1 combo partner",
+                f"{len(low_degree)} tiles with <= 1 combo partner",
                 "Most tiles should have 2+ combo partners",
                 f"Candidates for more combos: {', '.join(graph.tiles[tid].name for tid, _ in low_degree[:5])}",
             )
@@ -756,7 +736,7 @@ def analyze(graph: GameGraph, thresholds: Thresholds) -> tuple[list[Finding], di
                     STATUS_INFO,
                     "Recipe redundancy",
                     f"median {median_recipes} (mean {mean_recipes:.1f})",
-                    f"ideal ≥ {thresholds.min_recipes_ideal} (LA2: median {LA2['median_recipes']})",
+                    f"ideal >= {thresholds.min_recipes_ideal} (LA2: median {LA2['median_recipes']})",
                     f"{single_recipe} tiles have only 1 recipe. Add alternate paths to key concepts.",
                 )
             )
@@ -766,7 +746,7 @@ def analyze(graph: GameGraph, thresholds: Thresholds) -> tuple[list[Finding], di
                     STATUS_OK,
                     "Recipe redundancy",
                     f"median {median_recipes}",
-                    f"target ≥ {thresholds.min_recipes_ideal}",
+                    f"target >= {thresholds.min_recipes_ideal}",
                 )
             )
 
@@ -783,11 +763,16 @@ def analyze(graph: GameGraph, thresholds: Thresholds) -> tuple[list[Finding], di
     return findings, raw
 
 
-def print_report(findings: list[Finding], raw: dict, verbose: bool = False):
+def print_report(
+    findings: list[Finding],
+    raw: dict,
+    graph: GameGraph | None = None,
+    verbose: bool = False,
+):
     """Print a formatted CLI report."""
     print()
     print("=" * 68)
-    print("  LITTLE PHILOSOPHY — Combination Tree Health Check")
+    print("  LITTLE PHILOSOPHY -- Combination Tree Health Check")
     print("=" * 68)
     print()
 
@@ -849,23 +834,23 @@ def print_report(findings: list[Finding], raw: dict, verbose: bool = False):
     print()
 
     # Degree ranking
-    if verbose and graph_ref:
+    if verbose and graph:
         print("  DEGREE RANKING (combo partners per tile)")
         print("  " + "-" * 50)
         print(f"  {'Tile':<30} {'Degree':<8} {'Type'}")
         for tid in sorted(
-            graph_ref.combo_partners,
-            key=lambda t: len(graph_ref.combo_partners[t]),
+            graph.combo_partners,
+            key=lambda t: len(graph.combo_partners[t]),
             reverse=True,
         ):
-            deg = len(graph_ref.combo_partners[tid])
-            tile = graph_ref.tiles[tid]
-            marker = " ★" if deg >= 7 else ""
+            deg = len(graph.combo_partners[tid])
+            tile = graph.tiles[tid]
+            marker = " *" if deg >= 7 else ""
             print(f"  {tile.name:<30} {deg:<8} {tile.tile_type}{marker}")
         # Also show tiles with 0 combo partners
-        for tid in sorted(graph_ref.tiles):
-            if tid not in graph_ref.combo_partners:
-                tile = graph_ref.tiles[tid]
+        for tid in sorted(graph.tiles):
+            if tid not in graph.combo_partners:
+                tile = graph.tiles[tid]
                 print(f"  {tile.name:<30} {'0':<8} {tile.tile_type}")
         print()
 
@@ -874,7 +859,7 @@ def print_report(findings: list[Finding], raw: dict, verbose: bool = False):
         print("  LEAF TILES (no outgoing combos)")
         print("  " + "-" * 50)
         for name in raw["leaf_tiles"]:
-            print(f"  • {name}")
+            print(f"  * {name}")
         print()
 
     # Unreachable
@@ -882,7 +867,7 @@ def print_report(findings: list[Finding], raw: dict, verbose: bool = False):
         print("  ⚠ UNREACHABLE TILES")
         print("  " + "-" * 50)
         for name in raw["unreachable_tiles"]:
-            print(f"  • {name}")
+            print(f"  * {name}")
         print()
 
     # LA2 comparison table
@@ -901,9 +886,9 @@ def print_report(findings: list[Finding], raw: dict, verbose: bool = False):
     print(
         f"  {'Median depth':<30} {raw.get('median_depth', '?'):<12} {LA2['median_depth']:<12} {'4-12'}"
     )
-    print(f"  {'Max degree':<30} {raw['degree_max']:<12} {LA2['max_degree']:<12} {'—'}")
+    print(f"  {'Max degree':<30} {raw['degree_max']:<12} {LA2['max_degree']:<12} {'--'}")
     print(
-        f"  {'Median degree':<30} {raw['degree_median']:<12} {LA2['median_degree']:<12} {'—'}"
+        f"  {'Median degree':<30} {raw['degree_median']:<12} {LA2['median_degree']:<12} {'--'}"
     )
     print()
 
@@ -921,9 +906,6 @@ def print_report(findings: list[Finding], raw: dict, verbose: bool = False):
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
-
-graph_ref: GameGraph | None = None
-
 
 def main():
     parser = argparse.ArgumentParser(description="Little Philosophy Tree Health Check")
@@ -955,10 +937,7 @@ def main():
         ]
         print(json.dumps(raw, indent=2, default=str))
     else:
-        # Need graph in scope for verbose printing
-        global graph_ref
-        graph_ref = graph
-        print_report(findings, raw, verbose=args.verbose)
+        print_report(findings, raw, graph=graph, verbose=args.verbose)
 
 
 if __name__ == "__main__":

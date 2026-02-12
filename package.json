@@ -8,8 +8,8 @@
     "build": "npm run build:data && tsc -b && vite build",
     "build:data": "tsx scripts/buildTiles.ts",
     "preview": "vite preview",
-    "analyze": "python scripts/analyzeTree.py",
-    "analyze:verbose": "python scripts/analyzeTree.py --verbose",
+    "analyze": "python3 scripts/analyzeTree.py",
+    "analyze:verbose": "python3 scripts/analyzeTree.py --verbose",
     "analyze:json": "python scripts/analyzeTree.py --json"
   },
   "dependencies": {
