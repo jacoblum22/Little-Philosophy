@@ -8,17 +8,7 @@ import { useRef, useEffect } from "react";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import type { Tile } from "../types/tile";
 import type { TileMap } from "../hooks/dataLoader";
-
-/** Icon prefix for a tile type. */
-const TILE_ICONS: Record<string, string> = {
-  philosopher: "🧠 ",
-  writing: "📜 ",
-};
-
-/** Return the emoji icon prefix for the given tile type, or empty string if none. */
-function tileIcon(type: string): string {
-  return TILE_ICONS[type] ?? "";
-}
+import { tileIcon } from "../utils/tileIcon";
 
 interface TilePaletteProps {
   unlockedTileIds: string[];
@@ -26,8 +16,8 @@ interface TilePaletteProps {
   onTileClick: (tileId: string) => void;
   /** Whether the mobile drawer is open. */
   isOpen?: boolean;
-  /** Source type of the currently active drag ("canvas" | "palette" | null). */
-  activeDragSource?: string | null;
+  /** Source type of the currently active drag. */
+  activeDragSource?: "canvas" | "palette" | null;
 }
 
 interface DraggableTileProps {

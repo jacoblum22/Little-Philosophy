@@ -27,17 +27,28 @@ import ParticleCanvas from "./particles/ParticleCanvas";
 import type { ParticleHandle } from "./particles/ParticleCanvas";
 import TrashZone from "./ui/TrashZone";
 
+import { tileIcon } from "./utils/tileIcon";
 import "./App.css";
 
-/** Icon prefix for a tile type. */
-const TILE_ICONS: Record<string, string> = {
-  philosopher: "🧠 ",
-  writing: "📜 ",
-};
+/** Tile width/height offsets used for bounds clamping across all drag cases. */
+const TILE_WIDTH = 40;
+const TILE_HEIGHT = 30;
 
-/** Return the emoji icon prefix for the given tile type, or empty string if none. */
-function tileIcon(type: string): string {
-  return TILE_ICONS[type] ?? "";
+/** Compute max X/Y coordinates for clamping tiles within the workspace bounds. */
+function getWorkspaceBounds(wsRef: React.RefObject<HTMLElement | null>): { maxX: number; maxY: number } {
+  const rect = wsRef.current?.getBoundingClientRect();
+  return {
+    maxX: rect ? rect.width - TILE_WIDTH : Infinity,
+    maxY: rect ? rect.height - TILE_HEIGHT : Infinity,
+  };
+}
+
+/** Clamp a position within workspace bounds. */
+function clampPosition(x: number, y: number, bounds: { maxX: number; maxY: number }) {
+  return {
+    x: Math.max(0, Math.min(x, bounds.maxX)),
+    y: Math.max(0, Math.min(y, bounds.maxY)),
+  };
 }
 
 /** Overlay chip that follows the cursor during drag. */
@@ -136,7 +147,7 @@ function App() {
 
   // Active drag tile ID and source (for DragOverlay + trash zone visibility)
   const [activeDragId, setActiveDragId] = useState<string | null>(null);
-  const [activeDragSource, setActiveDragSource] = useState<string | null>(null);
+  const [activeDragSource, setActiveDragSource] = useState<"canvas" | "palette" | null>(null);
 
   // DnD sensors — add a small distance threshold so clicks still work
   const sensors = useSensors(
@@ -148,7 +159,7 @@ function App() {
   /** Track the tile ID and source type when a drag begins. */
   const handleDragStart = useCallback((event: DragStartEvent) => {
     const tileId = event.active.data.current?.tileId as string | undefined;
-    const source = event.active.data.current?.source as string | undefined;
+    const source = event.active.data.current?.source as "canvas" | "palette" | undefined;
     setActiveDragId(tileId ?? null);
     setActiveDragSource(source ?? null);
   }, []);
@@ -203,7 +214,7 @@ function App() {
     }
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [selectedTileId, sidebarOpen, discoveries.length]);
+  }, [selectedTileId, sidebarOpen, discoveries]);
 
   /**
    * Handle the end of a drag operation.
@@ -256,10 +267,12 @@ function App() {
           addAnimation(targetInstanceId, "shake");
           const target = canvasTilesRef.current.find((ct) => ct.instanceId === targetInstanceId);
           if (target) {
+            const bounds = getWorkspaceBounds(workspaceRef);
+            const pos = clampPosition(target.x + 50, target.y + 40, bounds);
             const id = `canvas-${nextInstanceId.current++}`;
             setCanvasTiles((prev) => [
               ...prev,
-              { instanceId: id, tileId, x: target.x + 50, y: target.y + 40 },
+              { instanceId: id, tileId, ...pos },
             ]);
             addAnimation(id, "appear");
           }
@@ -301,13 +314,14 @@ function App() {
             particleHandle.current?.burst();
           }
         } else {
-          // Failed combo — move the dragged tile and shake it
+          // Failed combo — move the dragged tile (clamped) and shake it
+          const bounds = getWorkspaceBounds(workspaceRef);
           setCanvasTiles((prev) =>
-            prev.map((ct) =>
-              ct.instanceId === dragInstanceId
-                ? { ...ct, x: ct.x + delta.x, y: ct.y + delta.y }
-                : ct
-            )
+            prev.map((ct) => {
+              if (ct.instanceId !== dragInstanceId) return ct;
+              const pos = clampPosition(ct.x + delta.x, ct.y + delta.y, bounds);
+              return { ...ct, ...pos };
+            })
           );
           addAnimation(dragInstanceId, "shake");
         }
@@ -319,17 +333,12 @@ function App() {
       // dropped outside (e.g. onto the sidebar) — leave tile in place.
       if (source === "canvas" && over?.id === "canvas") {
         const dragInstanceId = active.data.current.instanceId as string;
-        const wsRect = workspaceRef.current?.getBoundingClientRect();
-        const maxX = wsRect ? wsRect.width - 40 : Infinity;
-        const maxY = wsRect ? wsRect.height - 30 : Infinity;
+        const bounds = getWorkspaceBounds(workspaceRef);
         setCanvasTiles((prev) =>
           prev.map((ct) => {
             if (ct.instanceId !== dragInstanceId) return ct;
-            return {
-              ...ct,
-              x: Math.max(0, Math.min(ct.x + delta.x, maxX)),
-              y: Math.max(0, Math.min(ct.y + delta.y, maxY)),
-            };
+            const pos = clampPosition(ct.x + delta.x, ct.y + delta.y, bounds);
+            return { ...ct, ...pos };
           })
         );
         return;
@@ -347,18 +356,13 @@ function App() {
 
         const rawX = initialRect.left + delta.x - rect.left;
         const rawY = initialRect.top + delta.y - rect.top;
-        const maxX = rect.width - 40;
-        const maxY = rect.height - 30;
+        const bounds = getWorkspaceBounds(workspaceRef);
+        const pos = clampPosition(rawX, rawY, bounds);
 
         const id = `canvas-${nextInstanceId.current++}`;
         setCanvasTiles((prev) => [
           ...prev,
-          {
-            instanceId: id,
-            tileId,
-            x: Math.max(0, Math.min(rawX, maxX)),
-            y: Math.max(0, Math.min(rawY, maxY)),
-          },
+          { instanceId: id, tileId, ...pos },
         ]);
         addAnimation(id, "appear");
       }

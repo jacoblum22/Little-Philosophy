@@ -15,7 +15,10 @@ export default function TrashZone({ visible }: TrashZoneProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: "trash",
     data: { source: "trash" },
+    disabled: !visible,
   });
+
+  const label = isOver ? "Release to delete" : "Drop here to remove";
 
   const cls = [
     "trash-zone",
@@ -26,12 +29,12 @@ export default function TrashZone({ visible }: TrashZoneProps) {
     .join(" ");
 
   return (
-    <div ref={setNodeRef} className={cls} aria-label="Drop here to delete tile">
+    <div ref={setNodeRef} className={cls} aria-label={label}>
       <span className="trash-zone__icon" aria-hidden="true">
         🗑️
       </span>
-      <span className="trash-zone__label">
-        {isOver ? "Release to delete" : "Drop here to remove"}
+      <span className="trash-zone__label" aria-live="polite">
+        {label}
       </span>
     </div>
   );

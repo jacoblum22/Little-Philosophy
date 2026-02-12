@@ -6,21 +6,11 @@
  * Style inspired by Little Alchemy.
  */
 
-import { useCallback, type RefObject } from "react";
+import { type RefObject } from "react";
 import { useDroppable, useDraggable } from "@dnd-kit/core";
 import type { TileMap } from "../hooks/dataLoader";
 import type { Tile } from "../types/tile";
-
-/** Icon prefix for a tile type. */
-const TILE_ICONS: Record<string, string> = {
-  philosopher: "🧠 ",
-  writing: "📜 ",
-};
-
-/** Return the emoji icon prefix for the given tile type, or empty string if none. */
-function tileIcon(type: string): string {
-  return TILE_ICONS[type] ?? "";
-}
+import { tileIcon } from "../utils/tileIcon";
 
 /** A tile instance placed on the canvas. */
 export interface CanvasTile {
@@ -66,9 +56,10 @@ function CanvasTileChip({ instance, tile, onClick, animation, onAnimationEnd }: 
   });
 
   /** Forward CSS animationend event to the parent so it can clear the animation state. */
-  const handleAnimEnd = useCallback(() => {
-    onAnimationEnd?.();
-  }, [onAnimationEnd]);
+  const handleAnimEnd = (e: React.AnimationEvent) => {
+    // Only respond to animations on this element (not bubbled from children)
+    if (e.currentTarget === e.target) onAnimationEnd?.();
+  };
 
   const typeCls = tile ? `canvas-tile--${tile.type}` : "";
   const highlight = isOver && !isDragging;
@@ -121,7 +112,7 @@ export default function Workspace({
     <section
       ref={(node) => {
         setNodeRef(node);
-        (workspaceRef as React.MutableRefObject<HTMLElement | null>).current = node;
+        workspaceRef.current = node;
       }}
       className={`workspace${isOver ? " workspace--over" : ""}`}
     >
