@@ -79,10 +79,12 @@ export function getSnapshot(): GameState {
   return snapshot;
 }
 
+/** Returns a copy of all currently unlocked tile IDs as a Set. */
 export function getUnlockedIds(): Set<string> {
   return new Set(state.unlockedTileIds);
 }
 
+/** Check whether a tile has been unlocked. O(1) lookup. */
 export function isUnlocked(tileId: string): boolean {
   return unlockedSet.has(tileId);
 }

@@ -18,3 +18,10 @@ public/data/build/
 
 # Planning notes (design docs, not part of the app)
 Planning notes/
+
+# Reference material (not part of the app)
+TEMPORARY ART INSPIRATION/
+
+# Playwright MCP artifacts
+.playwright-mcp/
+*.png

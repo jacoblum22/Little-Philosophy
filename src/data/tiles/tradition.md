@@ -7,6 +7,9 @@ quoteAuthor: Gustav Mahler
 createdFrom:
 - experience
 - society
+combinations:
+- with: questioning
+  produces: political-philosophy
 ---
 
 
@@ -16,3 +19,4 @@ Tradition plays a complex role in philosophy. Edmund Burke saw tradition as a re
 
 #social #epistemology
 Parents: [[experience]] [[society]]
+Children: [[political-philosophy]]

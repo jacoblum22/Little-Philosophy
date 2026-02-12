@@ -7,6 +7,9 @@ quoteAuthor: Robert Quillen
 createdFrom:
 - communication
 - questioning
+combinations:
+- with: questioning
+  produces: socratic-method
 ---
 
 
@@ -16,3 +19,4 @@ In philosophy, dialogue holds a special place. Plato wrote almost all of his wor
 
 #epistemology #ancient #greek
 Parents: [[communication]] [[questioning]]
+Children: [[socratic-method]]

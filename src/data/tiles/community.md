@@ -7,6 +7,11 @@ quoteAuthor: Martin Luther King Jr.
 createdFrom:
 - other
 - society
+combinations:
+- with: trust
+  produces: cooperation
+- with: tradition
+  produces: culture
 ---
 
 
@@ -16,3 +21,4 @@ Philosophers have often distinguished between society (the formal structure) and
 
 #social #ethics
 Parents: [[other]] [[society]]
+Children: [[cooperation]] [[culture]]

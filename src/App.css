@@ -12,9 +12,10 @@
 }
 
 :root {
-  --color-bg: #1a1a2e;
-  --color-surface: #16213e;
-  --color-surface-light: #0f3460;
+  --color-bg: #0e0e1a;
+  --color-surface: rgb(22 33 62 / 80%);
+  --color-surface-solid: #16213e;
+  --color-surface-light: rgb(15 52 96 / 60%);
   --color-accent: #e94560;
   --color-accent-soft: #533483;
   --color-text: #eee;
@@ -25,18 +26,38 @@
   --sidebar-width: 240px;
   --radius: 8px;
   --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+  --glass-blur: 12px;
+  --glass-border: rgb(255 255 255 / 8%);
 }
 
 html,
-body,
-#root {
+body {
   height: 100%;
 }
 
 body {
   font-family: var(--font);
-  background: var(--color-bg);
+  background: linear-gradient(-45deg, #0e0e1a, #0a1628, #120a20, #0a1040);
+  background-size: 400% 400%;
+  animation: bg-shift 20s ease infinite;
   color: var(--color-text);
+}
+
+@keyframes bg-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Grid overlap: canvas (first child) behind .app (second child) */
+#root {
+  display: grid;
+  grid-template: 1fr / 1fr;
+  height: 100%;
+}
+
+#root > * {
+  grid-area: 1 / 1;
 }
 
 /* --- App Layout --- */
@@ -62,7 +83,8 @@ body {
   gap: 1rem;
   padding: 0.75rem 1.5rem;
   background: var(--color-surface);
-  border-bottom: 1px solid var(--color-surface-light);
+  backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid var(--glass-border);
 }
 
 .app__title {
@@ -130,7 +152,8 @@ body {
   width: var(--sidebar-width);
   min-width: var(--sidebar-width);
   background: var(--color-surface);
-  border-right: 1px solid var(--color-surface-light);
+  backdrop-filter: blur(var(--glass-blur));
+  border-right: 1px solid var(--glass-border);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -198,7 +221,7 @@ body {
 }
 
 .tile-chip:hover {
-  background: rgba(79, 195, 247, 0.1);
+  background: rgb(79 195 247 / 10%);
 }
 
 .tile-chip:active {
@@ -224,7 +247,7 @@ body {
 }
 
 .tile-chip--philosopher:hover {
-  background: rgba(255, 183, 77, 0.1);
+  background: rgb(255 183 77 / 10%);
 }
 
 .tile-chip--writing {
@@ -233,7 +256,7 @@ body {
 }
 
 .tile-chip--writing:hover {
-  background: rgba(129, 199, 132, 0.1);
+  background: rgb(129 199 132 / 10%);
 }
 
 /* --- Workspace (freeform canvas) --- */
@@ -242,12 +265,12 @@ body {
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.03) 1px, transparent 0);
+    radial-gradient(circle at 1px 1px, rgb(255 255 255 / 3%) 1px, transparent 0);
   background-size: 40px 40px;
 }
 
 .workspace--over {
-  background-color: rgba(79, 195, 247, 0.03);
+  background-color: rgb(79 195 247 / 3%);
 }
 
 .workspace__hint {
@@ -268,6 +291,7 @@ body {
   border: 1px solid var(--color-concept);
   border-radius: var(--radius);
   background: var(--color-surface);
+  backdrop-filter: blur(8px);
   color: var(--color-concept);
   font-size: 0.85rem;
   cursor: grab;
@@ -278,7 +302,7 @@ body {
 }
 
 .canvas-tile:hover {
-  box-shadow: 0 2px 12px rgba(79, 195, 247, 0.2);
+  box-shadow: 0 2px 12px rgb(79 195 247 / 20%);
 }
 
 .canvas-tile--philosopher {
@@ -287,7 +311,7 @@ body {
 }
 
 .canvas-tile--philosopher:hover {
-  box-shadow: 0 2px 12px rgba(255, 183, 77, 0.2);
+  box-shadow: 0 2px 12px rgb(255 183 77 / 20%);
 }
 
 .canvas-tile--writing {
@@ -296,7 +320,7 @@ body {
 }
 
 .canvas-tile--writing:hover {
-  box-shadow: 0 2px 12px rgba(129, 199, 132, 0.2);
+  box-shadow: 0 2px 12px rgb(129 199 132 / 20%);
 }
 
 .canvas-tile--dragging {
@@ -305,7 +329,7 @@ body {
 }
 
 .canvas-tile--highlight {
-  box-shadow: 0 0 16px rgba(233, 69, 96, 0.5);
+  box-shadow: 0 0 16px rgb(233 69 96 / 50%);
   border-color: var(--color-accent);
 }
 
@@ -339,7 +363,8 @@ body {
   width: 320px;
   min-width: 320px;
   background: var(--color-surface);
-  border-left: 1px solid var(--color-surface-light);
+  backdrop-filter: blur(var(--glass-blur));
+  border-left: 1px solid var(--glass-border);
   padding: 1.5rem;
   overflow-y: auto;
   position: relative;
@@ -381,17 +406,17 @@ body {
 }
 
 .civilopedia__type--concept {
-  background: rgba(79, 195, 247, 0.2);
+  background: rgb(79 195 247 / 20%);
   color: var(--color-concept);
 }
 
 .civilopedia__type--philosopher {
-  background: rgba(255, 183, 77, 0.2);
+  background: rgb(255 183 77 / 20%);
   color: var(--color-philosopher);
 }
 
 .civilopedia__type--writing {
-  background: rgba(129, 199, 132, 0.2);
+  background: rgb(129 199 132 / 20%);
   color: var(--color-writing);
 }
 
@@ -456,7 +481,7 @@ body {
   justify-content: center;
   z-index: 100;
   cursor: pointer;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgb(0 0 0 / 50%);
   backdrop-filter: blur(4px);
   animation: discovery-fade-in 0.3s ease;
 }
@@ -472,12 +497,12 @@ body {
     var(--color-surface) 0%,
     var(--color-surface-light) 100%
   );
-  border: 1px solid rgba(233, 69, 96, 0.4);
+  border: 1px solid rgb(233 69 96 / 40%);
   border-radius: 16px;
   box-shadow:
-    0 0 60px rgba(233, 69, 96, 0.2),
-    0 0 120px rgba(83, 52, 131, 0.15),
-    0 8px 32px rgba(0, 0, 0, 0.4);
+    0 0 60px rgb(233 69 96 / 20%),
+    0 0 120px rgb(83 52 131 / 15%),
+    0 8px 32px rgb(0 0 0 / 40%);
   animation: discovery-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -524,7 +549,7 @@ body {
   background: var(--color-surface);
   font-size: 0.85rem;
   cursor: grabbing;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 20px rgb(0 0 0 / 40%);
   pointer-events: none;
 }
 
@@ -536,3 +561,21 @@ body {
   border-color: var(--color-writing);
 }
 
+/* --- Reduced Motion --- */
+@media (prefers-reduced-motion: reduce) {
+  body {
+    animation: none;
+  }
+
+  .particle-canvas {
+    display: none;
+  }
+
+  .discovery-notification__item {
+    animation: none;
+  }
+
+  .discovery-notification {
+    animation: none;
+  }
+}
