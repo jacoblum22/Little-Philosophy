@@ -10,6 +10,7 @@ interface TrashZoneProps {
   visible: boolean;
 }
 
+/** Mobile-only drop target that appears when dragging a canvas tile, allowing deletion. */
 export default function TrashZone({ visible }: TrashZoneProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: "trash",

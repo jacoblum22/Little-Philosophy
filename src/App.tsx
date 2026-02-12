@@ -35,6 +35,7 @@ const TILE_ICONS: Record<string, string> = {
   writing: "📜 ",
 };
 
+/** Return the emoji icon prefix for the given tile type, or empty string if none. */
 function tileIcon(type: string): string {
   return TILE_ICONS[type] ?? "";
 }
@@ -88,6 +89,7 @@ const collisionDetection: CollisionDetection = (args) => {
   return pointerWithin(args);
 };
 
+/** Root application component — manages DnD context, game state, and panel layout. */
 function App() {
   const { init: gameInit, error } = useGameInit();
   const gameState = useGameState();
@@ -112,10 +114,12 @@ function App() {
   // Canvas tile animations (appear, combo-success, shake)
   const [animatingTiles, setAnimatingTiles] = useState<Map<string, TileAnimation>>(new Map());
 
+  /** Queue a CSS animation class on a canvas tile instance. */
   const addAnimation = useCallback((instanceId: string, anim: TileAnimation) => {
     setAnimatingTiles((prev) => new Map(prev).set(instanceId, anim));
   }, []);
 
+  /** Remove a completed animation from the tracking map. */
   const clearAnimation = useCallback((instanceId: string) => {
     setAnimatingTiles((prev) => {
       const next = new Map(prev);
@@ -141,6 +145,7 @@ function App() {
     })
   );
 
+  /** Track the tile ID and source type when a drag begins. */
   const handleDragStart = useCallback((event: DragStartEvent) => {
     const tileId = event.active.data.current?.tileId as string | undefined;
     const source = event.active.data.current?.source as string | undefined;
@@ -153,6 +158,7 @@ function App() {
     setCanvasTiles((prev) => prev.filter((ct) => ct.instanceId !== instanceId));
   }, []);
 
+  /** Reset entire game: clear save data, canvas tiles, and UI state. */
   const handleReset = useCallback(() => {
     resetGame();
     setCanvasTiles([]);
@@ -160,6 +166,7 @@ function App() {
     setSelectedTileId(null);
   }, []);
 
+  /** Remove all tiles from the workspace canvas without affecting save data. */
   const handleClearAll = useCallback(() => {
     setCanvasTiles([]);
   }, []);
@@ -176,6 +183,7 @@ function App() {
     setSelectedTileId(null);
   }, []);
 
+  /** Clear the discovery notification popup. */
   const handleDismissDiscovery = useCallback(() => {
     setDiscoveries([]);
   }, []);
@@ -197,6 +205,11 @@ function App() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [selectedTileId, sidebarOpen, discoveries.length]);
 
+  /**
+   * Handle the end of a drag operation.
+   * Routes to one of five cases: trash/sidebar delete, palette→canvas combine,
+   * canvas→canvas combine, canvas reposition, or palette→canvas placement.
+   */
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       setActiveDragId(null);
@@ -414,6 +427,7 @@ function App() {
             tileMap={tileMap}
             onTileClick={handleTileSelect}
             isOpen={sidebarOpen}
+            activeDragSource={activeDragSource}
           />
 
           <Workspace

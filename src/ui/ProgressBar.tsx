@@ -7,6 +7,7 @@ interface ProgressBarProps {
   total: number;
 }
 
+/** Neon-glow progress bar showing discovery count as a percentage. */
 export default function ProgressBar({ discovered, total }: ProgressBarProps) {
   const pct = total > 0 ? Math.round((discovered / total) * 100) : 0;
 

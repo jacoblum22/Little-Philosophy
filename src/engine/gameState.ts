@@ -19,6 +19,7 @@ let state: GameState = createFreshState();
 let unlockedSet: Set<string> = new Set(state.unlockedTileIds);
 const listeners = new Set<Listener>();
 
+/** Create a blank game state with only starting tiles unlocked. */
 function createFreshState(): GameState {
   return {
     unlockedTileIds: [...startingTileIds],
@@ -50,6 +51,7 @@ export function subscribe(listener: Listener): () => void {
   return () => listeners.delete(listener);
 }
 
+/** Clone the current state into snapshot and call all registered listeners. */
 function notify(): void {
   snapshot = structuredClone(state);
   for (const listener of listeners) {
@@ -139,6 +141,7 @@ export function resetGame(): void {
 // Persistence (localStorage)
 // ---------------------------------------------------------------------------
 
+/** Persist the current game state to localStorage (silently fails if unavailable). */
 function save(): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));

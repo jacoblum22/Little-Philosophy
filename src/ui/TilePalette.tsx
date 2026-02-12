@@ -15,6 +15,7 @@ const TILE_ICONS: Record<string, string> = {
   writing: "📜 ",
 };
 
+/** Return the emoji icon prefix for the given tile type, or empty string if none. */
 function tileIcon(type: string): string {
   return TILE_ICONS[type] ?? "";
 }
@@ -25,6 +26,8 @@ interface TilePaletteProps {
   onTileClick: (tileId: string) => void;
   /** Whether the mobile drawer is open. */
   isOpen?: boolean;
+  /** Source type of the currently active drag ("canvas" | "palette" | null). */
+  activeDragSource?: string | null;
 }
 
 interface DraggableTileProps {
@@ -32,6 +35,10 @@ interface DraggableTileProps {
   onClick: () => void;
 }
 
+/**
+ * A single draggable tile chip inside the palette sidebar.
+ * Tracks drag state to suppress click events after a completed drag.
+ */
 function DraggableTile({ tile, onClick }: DraggableTileProps) {
   const { attributes, listeners, setNodeRef, isDragging } =
     useDraggable({ id: `palette-${tile.id}`, data: { tileId: tile.id } });
@@ -55,6 +62,7 @@ function DraggableTile({ tile, onClick }: DraggableTileProps) {
     }
   }, [isDragging]);
 
+  /** Suppress click if the pointer just finished a drag gesture. */
   const handleClick = () => {
     if (wasDragging.current) {
       wasDragging.current = false;
@@ -79,11 +87,13 @@ function DraggableTile({ tile, onClick }: DraggableTileProps) {
   );
 }
 
+/** Scrollable sidebar listing all unlocked tiles with drag-to-workspace and click-to-inspect. */
 export default function TilePalette({
   unlockedTileIds,
   tileMap,
   onTileClick,
   isOpen,
+  activeDragSource,
 }: TilePaletteProps) {
   const tiles = unlockedTileIds
     .map((id) => tileMap.get(id))
@@ -95,10 +105,13 @@ export default function TilePalette({
     data: { source: "palette" },
   });
 
+  // Only show the red drop-target highlight when a canvas tile is being dragged over
+  const showDropHighlight = isPaletteOver && activeDragSource === "canvas";
+
   const cls = [
     "tile-palette",
     isOpen && "tile-palette--open",
-    isPaletteOver && "tile-palette--drop-target",
+    showDropHighlight && "tile-palette--drop-target",
   ].filter(Boolean).join(" ");
 
   return (

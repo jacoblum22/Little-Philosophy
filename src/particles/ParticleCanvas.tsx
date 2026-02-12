@@ -46,10 +46,12 @@ for (let i = 0; i < LN; i++) {
   sinL[i] = Math.sin(a);
   cosL[i] = Math.cos(a);
 }
+/** Fast approximate sine using the pre-computed lookup table. */
 function fsin(a: number) {
   const n = ((a % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
   return sinL[Math.floor((n / (Math.PI * 2)) * LN) % LN];
 }
+/** Fast approximate cosine using the pre-computed lookup table. */
 function fcos(a: number) {
   const n = ((a % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
   return cosL[Math.floor((n / (Math.PI * 2)) * LN) % LN];

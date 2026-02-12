@@ -11,6 +11,7 @@ interface DiscoveryNotificationProps {
   onDismiss: () => void;
 }
 
+/** Animated popup that shows newly discovered tile names, auto-dismisses after 3 seconds. */
 export default function DiscoveryNotification({
   tileIds,
   tileMap,

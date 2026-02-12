@@ -179,11 +179,11 @@ body {
 @keyframes sparkle-travel {
   0%,
   100% {
-    opacity: 0.3;
+    opacity: 30%;
     transform: translateX(-4px) scale(0.8);
   }
   50% {
-    opacity: 1;
+    opacity: 100%;
     transform: translateX(4px) scale(1.2);
   }
 }
@@ -348,7 +348,7 @@ body {
   transform: translate(-50%, -50%);
   color: var(--color-text-muted);
   font-size: 1rem;
-  opacity: 0.5;
+  opacity: 50%;
   pointer-events: none;
   text-align: center;
 }
@@ -403,7 +403,7 @@ body {
 }
 
 .canvas-tile--dragging {
-  opacity: 0.3;
+  opacity: 30%;
   cursor: grabbing;
 }
 
@@ -414,11 +414,11 @@ body {
 
 @keyframes tile-scale-in {
   from {
-    opacity: 0;
+    opacity: 0%;
     transform: scale(0.7);
   }
   to {
-    opacity: 1;
+    opacity: 100%;
     transform: scale(1);
   }
 }
@@ -509,14 +509,14 @@ body {
   font-size: 0.85rem;
   font-weight: 600;
   pointer-events: none;
-  opacity: 0;
+  opacity: 0%;
   transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease,
     border-color 0.2s ease;
   z-index: 100;
 }
 
 .trash-zone--visible {
-  opacity: 1;
+  opacity: 100%;
   transform: translateX(-50%) scale(1);
   pointer-events: auto;
 }
@@ -720,17 +720,17 @@ body {
 }
 
 @keyframes discovery-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0%; }
+  to { opacity: 100%; }
 }
 
 @keyframes discovery-pop {
   0% {
-    opacity: 0;
+    opacity: 0%;
     transform: scale(0.8);
   }
   100% {
-    opacity: 1;
+    opacity: 100%;
     transform: scale(1);
   }
 }
@@ -944,7 +944,6 @@ body {
 
   .trash-zone {
     transition: none;
-    display: none;
   }
 
   .discovery-notification__item {
