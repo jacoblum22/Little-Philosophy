@@ -279,6 +279,7 @@ function App() {
             canvasTiles={canvasTiles}
             tileMap={tileMap}
             onClearAll={handleClearAll}
+            onTileClick={setSelectedTileId}
             workspaceRef={workspaceRef}
           />
 

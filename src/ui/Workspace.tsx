@@ -33,15 +33,17 @@ interface WorkspaceProps {
   canvasTiles: CanvasTile[];
   tileMap: TileMap;
   onClearAll: () => void;
+  onTileClick?: (tileId: string) => void;
   workspaceRef: RefObject<HTMLElement | null>;
 }
 
 interface CanvasTileChipProps {
   instance: CanvasTile;
   tile: Tile | undefined;
+  onClick?: () => void;
 }
 
-function CanvasTileChip({ instance, tile }: CanvasTileChipProps) {
+function CanvasTileChip({ instance, tile, onClick }: CanvasTileChipProps) {
   const { attributes, listeners, setNodeRef: setDragRef, isDragging } = useDraggable({
     id: instance.instanceId,
     data: { tileId: instance.tileId, instanceId: instance.instanceId, source: "canvas" },
@@ -75,6 +77,7 @@ function CanvasTileChip({ instance, tile }: CanvasTileChipProps) {
       }}
       {...listeners}
       {...attributes}
+      onClick={onClick}
     >
       {tile ? tileIcon(tile.type) : ""}
       {tile?.name ?? instance.tileId}
@@ -86,6 +89,7 @@ export default function Workspace({
   canvasTiles,
   tileMap,
   onClearAll,
+  onTileClick,
   workspaceRef,
 }: WorkspaceProps) {
   const { setNodeRef, isOver } = useDroppable({
@@ -112,6 +116,7 @@ export default function Workspace({
           key={ct.instanceId}
           instance={ct}
           tile={tileMap.get(ct.tileId)}
+          onClick={() => onTileClick?.(ct.tileId)}
         />
       ))}
 

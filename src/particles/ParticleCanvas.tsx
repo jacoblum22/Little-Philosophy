@@ -5,7 +5,7 @@
  * 100 particles at ~60fps is well within budget (<1ms per frame).
  *
  * Props:
- *  - onWorkerReady: callback that receives a handle to trigger burst effects.
+ *  - onReady: callback that receives a handle to trigger burst effects.
  */
 
 import { useEffect, useRef, useState } from "react";
