@@ -306,6 +306,7 @@ def print_report(
     philosophers: dict[str, Philosopher],
     ordering: list[tuple[str, str]],
     verbose: bool = False,
+    prereqs: bool = False,
 ):
     w = 70
     print()
@@ -439,6 +440,64 @@ def print_report(
             print(f"  {concept} (from {producer}){consumer_str}")
         print()
 
+    # Prerequisite trace
+    if prereqs:
+        print("  PREREQUISITE TRACE")
+        print("  " + "-" * (w - 2))
+        print("  Shows ALL concepts/philosophers that must exist before each")
+        print("  philosopher can unlock, tracing through dependency chains.")
+        print()
+
+        # Build concept -> producer lookup
+        concept_to_producer = {}
+        for phil in philosophers.values():
+            for concept in phil.produces:
+                concept_to_producer[concept] = phil.name
+
+        # For each philosopher in topological order, show prerequisites
+        if topo:
+            for name in topo:
+                phil = philosophers[name]
+                # Gather all prerequisite concepts recursively
+                all_concepts: list[str] = []   # own recipe
+                all_philosophers: list[str] = []  # philosophers that must unlock first
+                visited_phils: set[str] = set()
+
+                def trace_prereqs(p_name: str):
+                    if p_name in visited_phils:
+                        return
+                    visited_phils.add(p_name)
+                    p = philosophers[p_name]
+                    for concept in p.recipe:
+                        if concept not in all_concepts:
+                            all_concepts.append(concept)
+                        # If this concept is produced by another philosopher, trace that philosopher too
+                        if concept in concept_to_producer:
+                            producer = concept_to_producer[concept]
+                            if producer != p_name and producer not in all_philosophers:
+                                all_philosophers.append(producer)
+                                trace_prereqs(producer)
+
+                trace_prereqs(name)
+
+                # Separate own recipe from inherited requirements
+                own_recipe = phil.recipe
+                inherited_concepts = [c for c in all_concepts if c not in own_recipe]
+                prior_phils = [p for p in all_philosophers]
+
+                era_tag = f"[{phil.era[:3].upper()}]"
+                print(f"  {era_tag} {name}")
+                print(f"    Recipe: {', '.join(own_recipe)}")
+
+                if prior_phils:
+                    print(f"    Requires philosophers: {', '.join(prior_phils)}")
+                    print(f"    Inherited concepts: {', '.join(inherited_concepts)}")
+                    total = len(set(all_concepts))
+                    print(f"    Total unique concepts needed: {total}")
+                else:
+                    print(f"    No philosopher prerequisites (foundational)")
+                print()
+
     # Stats
     total = len(philosophers)
     with_deps = sum(1 for p in philosophers.values() if p.depends_on_output_of)
@@ -473,6 +532,10 @@ def main():
         help="Path to the Concept Brainstorm markdown file",
     )
     parser.add_argument("--verbose", "-v", action="store_true")
+    parser.add_argument(
+        "--prereqs", "-p", action="store_true",
+        help="Show full prerequisite trace for each philosopher",
+    )
     args = parser.parse_args()
 
     # Find brainstorm file
@@ -503,7 +566,7 @@ def main():
         print("Expected markdown tables with | Philosopher | Recipe | Produces | columns")
         sys.exit(1)
 
-    print_report(philosophers, ordering, verbose=args.verbose)
+    print_report(philosophers, ordering, verbose=args.verbose, prereqs=args.prereqs)
 
 
 if __name__ == "__main__":
