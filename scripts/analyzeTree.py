@@ -29,6 +29,7 @@ from typing import Any
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
 TILES_DIR = PROJECT_ROOT / "src" / "data" / "tiles"
+CONTENT_MAP = PROJECT_ROOT / "Planning notes" / "Temporary" / "Prototype Content Map.md"
 
 # ---------------------------------------------------------------------------
 # Little Alchemy 2 Benchmarks  (from our Jupyter analysis)
@@ -267,6 +268,181 @@ def load_tiles() -> GameGraph:
             combos[key] = combo["produces"]
             combo_partners[tile_id].add(combo["with"])
             combo_partners[combo["with"]].add(tile_id)
+
+    return GameGraph(
+        tiles=tiles,
+        combos=combos,
+        combo_partners=dict(combo_partners),
+        starting_tiles=starting_tiles,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Content Map Parser
+# ---------------------------------------------------------------------------
+
+def name_to_id(name: str) -> str:
+    """Convert a tile name to a kebab-case ID. e.g. 'Allegory of the Cave' → 'allegory-of-the-cave'."""
+    return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+
+
+def load_content_map(path: Path | None = None) -> GameGraph:
+    """Parse a Prototype Content Map markdown file into a GameGraph.
+
+    Expected format
+    ===============
+
+    ## Starting Elements
+    - Self
+    - Other
+    - World
+
+    ## Combinations
+    Self + World = Experience
+    Self + Other = Empathy
+    ...
+
+    ## Philosopher: Socrates
+    Recipe: Dialogue, Ethics, Questioning, Virtue
+    Socrates + Knowledge = Socratic Method
+    Socrates + Virtue = Eudaimonia
+
+    ## Writing: The Republic
+    Recipe: Plato, Philosopher King, Justice, Society
+    The Republic + Ethics = Political Philosophy
+
+    Lines that don't match any pattern are silently ignored, so you can
+    freely add notes, blank lines, or markdown prose between the data.
+    Section headings (## ...) are used to switch parsing context.
+    """
+    if path is None:
+        path = CONTENT_MAP
+
+    text = path.read_text(encoding="utf-8")
+    lines = text.split("\n")
+
+    tiles: dict[str, Tile] = {}
+    combos: dict[tuple[str, str], str] = {}
+    combo_partners: defaultdict[str, set[str]] = defaultdict(set)
+    starting_tiles: set[str] = set()
+
+    # Track which section we're in
+    section: str | None = None          # "starting", "combinations", "philosopher", "writing"
+    current_entity_id: str | None = None  # id of current philosopher/writing
+
+    # Regex patterns
+    combo_re = re.compile(r"^(.+?)\s*\+\s*(.+?)\s*=\s*(.+)$")
+    recipe_re = re.compile(r"^Recipe:\s*(.+)$", re.IGNORECASE)
+    starting_re = re.compile(r"^\s*[-*]\s+(.+)$")
+    heading_re = re.compile(r"^##\s+(.+)$")
+
+    def ensure_tile(name: str, tile_type: str = "concept",
+                    is_starting: bool = False) -> str:
+        """Create tile if it doesn't exist. Return its ID."""
+        tid = name_to_id(name)
+        if tid not in tiles:
+            tiles[tid] = Tile(
+                id=tid,
+                name=name.strip(),
+                tile_type=tile_type,
+                combinations=[],
+                created_from=[],
+                recipe=[],
+                is_starting=is_starting,
+                tags=["starting"] if is_starting else [],
+            )
+        if is_starting:
+            tiles[tid].is_starting = True
+            if "starting" not in tiles[tid].tags:
+                tiles[tid].tags.append("starting")
+            starting_tiles.add(tid)
+        return tid
+
+    def register_combo(name_a: str, name_b: str, name_out: str,
+                       source_type: str = "concept"):
+        """Register a combination and ensure all tiles exist."""
+        id_a = ensure_tile(name_a)
+        id_b = ensure_tile(name_b)
+        id_out = ensure_tile(name_out)
+
+        key = tuple(sorted([id_a, id_b]))
+        combos[key] = id_out
+
+        # Add to source tile's combinations list
+        tiles[id_a].combinations.append({"with": id_b, "produces": id_out})
+        combo_partners[id_a].add(id_b)
+        combo_partners[id_b].add(id_a)
+
+        # Set createdFrom on the output tile
+        if not tiles[id_out].created_from:
+            tiles[id_out].created_from = list(key)
+
+    for line in lines:
+        stripped = line.strip()
+
+        # Detect section headings
+        heading_match = heading_re.match(stripped)
+        if heading_match:
+            heading_text = heading_match.group(1).strip()
+            ht_lower = heading_text.lower()
+
+            if "starting" in ht_lower:
+                section = "starting"
+                current_entity_id = None
+            elif ht_lower == "combinations" or ht_lower.startswith("combination"):
+                section = "combinations"
+                current_entity_id = None
+            elif ht_lower.startswith("philosopher:"):
+                name = heading_text.split(":", 1)[1].strip()
+                section = "philosopher"
+                current_entity_id = ensure_tile(name, tile_type="philosopher")
+            elif ht_lower.startswith("writing:"):
+                name = heading_text.split(":", 1)[1].strip()
+                section = "writing"
+                current_entity_id = ensure_tile(name, tile_type="writing")
+            else:
+                # Sub-section heading (e.g. "### Epistemology Branch")
+                # Stay in whatever section we're in — allows sub-grouping
+                pass
+            continue
+
+        # Skip empty lines
+        if not stripped:
+            continue
+
+        # --- Parse content based on current section ---
+
+        # Starting elements: bullet items
+        if section == "starting":
+            m = starting_re.match(stripped)
+            if m:
+                ensure_tile(m.group(1).strip(), is_starting=True)
+            continue
+
+        # Combinations: "A + B = C" lines
+        if section == "combinations":
+            m = combo_re.match(stripped)
+            if m:
+                register_combo(m.group(1).strip(), m.group(2).strip(), m.group(3).strip())
+            continue
+
+        # Philosopher / Writing sections: Recipe line or combo lines
+        if section in ("philosopher", "writing") and current_entity_id:
+            # Recipe line
+            m = recipe_re.match(stripped)
+            if m:
+                ingredients = [i.strip() for i in m.group(1).split(",") if i.strip()]
+                tiles[current_entity_id].recipe = [name_to_id(i) for i in ingredients]
+                # Ensure all recipe ingredients exist as tiles
+                for ingredient in ingredients:
+                    ensure_tile(ingredient)
+                continue
+
+            # Combo line
+            m = combo_re.match(stripped)
+            if m:
+                register_combo(m.group(1).strip(), m.group(2).strip(), m.group(3).strip())
+                continue
 
     return GameGraph(
         tiles=tiles,
@@ -913,13 +1089,29 @@ def main():
         "--verbose", "-v", action="store_true", help="Show detailed output"
     )
     parser.add_argument("--json", action="store_true", help="Output raw JSON data")
+    parser.add_argument(
+        "--from-map",
+        nargs="?",
+        const=str(CONTENT_MAP),
+        metavar="PATH",
+        help="Parse a Content Map markdown file instead of tile files. "
+             "Defaults to 'Planning notes/Temporary/Prototype Content Map.md'.",
+    )
     args = parser.parse_args()
 
-    if not TILES_DIR.exists():
-        print(f"Error: Tiles directory not found: {TILES_DIR}", file=sys.stderr)
-        sys.exit(1)
+    if args.from_map:
+        map_path = Path(args.from_map)
+        if not map_path.exists():
+            print(f"Error: Content Map not found: {map_path}", file=sys.stderr)
+            sys.exit(1)
+        print(f"  (reading from Content Map: {map_path.name})")
+        graph = load_content_map(map_path)
+    else:
+        if not TILES_DIR.exists():
+            print(f"Error: Tiles directory not found: {TILES_DIR}", file=sys.stderr)
+            sys.exit(1)
+        graph = load_tiles()
 
-    graph = load_tiles()
     thresholds = Thresholds()
     findings, raw = analyze(graph, thresholds)
 
