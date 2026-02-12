@@ -6,20 +6,11 @@
  * Style inspired by Little Alchemy.
  */
 
-import type { RefObject } from "react";
+import { type RefObject } from "react";
 import { useDroppable, useDraggable } from "@dnd-kit/core";
 import type { TileMap } from "../hooks/dataLoader";
 import type { Tile } from "../types/tile";
-
-/** Icon prefix for a tile type. */
-const TILE_ICONS: Record<string, string> = {
-  philosopher: "🧠 ",
-  writing: "📜 ",
-};
-
-function tileIcon(type: string): string {
-  return TILE_ICONS[type] ?? "";
-}
+import { tileIcon } from "../utils/tileIcon";
 
 /** A tile instance placed on the canvas. */
 export interface CanvasTile {
@@ -29,21 +20,31 @@ export interface CanvasTile {
   y: number;
 }
 
+/** Animation state for canvas tile feedback. */
+export type TileAnimation = "appear" | "combo-success" | "shake";
+
 interface WorkspaceProps {
   canvasTiles: CanvasTile[];
   tileMap: TileMap;
   onClearAll: () => void;
   onTileClick?: (tileId: string) => void;
   workspaceRef: RefObject<HTMLElement | null>;
+  /** Map of instanceId → animation class to apply. */
+  animatingTiles?: Map<string, TileAnimation>;
+  /** Callback when an animation ends on a tile. */
+  onAnimationEnd?: (instanceId: string) => void;
 }
 
 interface CanvasTileChipProps {
   instance: CanvasTile;
   tile: Tile | undefined;
   onClick?: () => void;
+  animation?: TileAnimation;
+  onAnimationEnd?: () => void;
 }
 
-function CanvasTileChip({ instance, tile, onClick }: CanvasTileChipProps) {
+/** A single tile chip on the workspace canvas — draggable, droppable, and animatable. */
+function CanvasTileChip({ instance, tile, onClick, animation, onAnimationEnd }: CanvasTileChipProps) {
   const { attributes, listeners, setNodeRef: setDragRef, isDragging } = useDraggable({
     id: instance.instanceId,
     data: { tileId: instance.tileId, instanceId: instance.instanceId, source: "canvas" },
@@ -54,6 +55,12 @@ function CanvasTileChip({ instance, tile, onClick }: CanvasTileChipProps) {
     data: { tileId: instance.tileId, instanceId: instance.instanceId },
   });
 
+  /** Forward CSS animationend event to the parent so it can clear the animation state. */
+  const handleAnimEnd = (e: React.AnimationEvent) => {
+    // Only respond to animations on this element (not bubbled from children)
+    if (e.currentTarget === e.target) onAnimationEnd?.();
+  };
+
   const typeCls = tile ? `canvas-tile--${tile.type}` : "";
   const highlight = isOver && !isDragging;
   const cls = [
@@ -61,6 +68,7 @@ function CanvasTileChip({ instance, tile, onClick }: CanvasTileChipProps) {
     typeCls,
     isDragging && "canvas-tile--dragging",
     highlight && "canvas-tile--highlight",
+    animation && `canvas-tile--${animation}`,
   ].filter(Boolean).join(" ");
 
   return (
@@ -78,6 +86,7 @@ function CanvasTileChip({ instance, tile, onClick }: CanvasTileChipProps) {
       {...listeners}
       {...attributes}
       onClick={onClick}
+      onAnimationEnd={handleAnimEnd}
     >
       {tile ? tileIcon(tile.type) : ""}
       {tile?.name ?? instance.tileId}
@@ -91,6 +100,8 @@ export default function Workspace({
   onClearAll,
   onTileClick,
   workspaceRef,
+  animatingTiles,
+  onAnimationEnd,
 }: WorkspaceProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: "canvas",
@@ -101,7 +112,7 @@ export default function Workspace({
     <section
       ref={(node) => {
         setNodeRef(node);
-        (workspaceRef as React.MutableRefObject<HTMLElement | null>).current = node;
+        workspaceRef.current = node;
       }}
       className={`workspace${isOver ? " workspace--over" : ""}`}
     >
@@ -117,6 +128,8 @@ export default function Workspace({
           instance={ct}
           tile={tileMap.get(ct.tileId)}
           onClick={() => onTileClick?.(ct.tileId)}
+          animation={animatingTiles?.get(ct.instanceId)}
+          onAnimationEnd={() => onAnimationEnd?.(ct.instanceId)}
         />
       ))}
 

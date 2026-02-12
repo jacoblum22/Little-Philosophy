@@ -46,13 +46,18 @@ for (let i = 0; i < LN; i++) {
   sinL[i] = Math.sin(a);
   cosL[i] = Math.cos(a);
 }
-function fsin(a: number) {
+/** Normalize an angle to the [0, 2π) range and return its lookup table index. */
+function angleIndex(a: number): number {
   const n = ((a % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
-  return sinL[Math.floor((n / (Math.PI * 2)) * LN) % LN];
+  return Math.floor((n / (Math.PI * 2)) * LN) % LN;
 }
+/** Fast approximate sine using the pre-computed lookup table. */
+function fsin(a: number) {
+  return sinL[angleIndex(a)];
+}
+/** Fast approximate cosine using the pre-computed lookup table. */
 function fcos(a: number) {
-  const n = ((a % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
-  return cosL[Math.floor((n / (Math.PI * 2)) * LN) % LN];
+  return cosL[angleIndex(a)];
 }
 
 // ===== Particle ==============================================================

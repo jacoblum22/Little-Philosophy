@@ -2,7 +2,7 @@
  * DiscoveryNotification — animated popup when a new tile is discovered.
  */
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import type { TileMap } from "../hooks/dataLoader";
 
 interface DiscoveryNotificationProps {
@@ -11,6 +11,7 @@ interface DiscoveryNotificationProps {
   onDismiss: () => void;
 }
 
+/** Animated popup that shows newly discovered tile names, auto-dismisses after 3 seconds. */
 export default function DiscoveryNotification({
   tileIds,
   tileMap,
@@ -20,9 +21,12 @@ export default function DiscoveryNotification({
   const onDismissRef = useRef(onDismiss);
   onDismissRef.current = onDismiss;
 
+  // Derive a stable key from tileIds content so the timer only resets
+  // when the actual IDs change, not when the parent creates a new array reference.
+  const tileKey = useMemo(() => JSON.stringify(tileIds), [tileIds]);
+
   // Using a ref for onDismiss to avoid resetting the timer on every render
   // when the parent doesn't memoize the callback.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (tileIds.length === 0) return;
     setVisible(true);
@@ -31,7 +35,7 @@ export default function DiscoveryNotification({
       onDismissRef.current();
     }, 3000);
     return () => clearTimeout(timer);
-  }, [tileIds]);
+  }, [tileKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!visible || tileIds.length === 0) return null;
 

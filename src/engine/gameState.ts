@@ -19,6 +19,7 @@ let state: GameState = createFreshState();
 let unlockedSet: Set<string> = new Set(state.unlockedTileIds);
 const listeners = new Set<Listener>();
 
+/** Create a blank game state with only starting tiles unlocked. */
 function createFreshState(): GameState {
   return {
     unlockedTileIds: [...startingTileIds],
@@ -50,6 +51,7 @@ export function subscribe(listener: Listener): () => void {
   return () => listeners.delete(listener);
 }
 
+/** Clone the current state into snapshot and call all registered listeners. */
 function notify(): void {
   snapshot = structuredClone(state);
   for (const listener of listeners) {
@@ -139,6 +141,7 @@ export function resetGame(): void {
 // Persistence (localStorage)
 // ---------------------------------------------------------------------------
 
+/** Persist the current game state to localStorage (silently fails if unavailable). */
 function save(): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -153,16 +156,31 @@ export function loadSavedState(): void {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as GameState;
-      // Basic validation
+      // Basic validation — verify both arrays exist and filter out malformed entries
       if (Array.isArray(parsed.unlockedTileIds) && Array.isArray(parsed.combinationHistory)) {
+        // Filter out any non-string tile IDs
+        const validIds = parsed.unlockedTileIds.filter(
+          (id: unknown): id is string => typeof id === "string"
+        );
+        // Filter out malformed CombinationAttempt entries
+        const validHistory = parsed.combinationHistory.filter(
+          (a: unknown): a is CombinationAttempt =>
+            typeof a === "object" &&
+            a !== null &&
+            typeof (a as CombinationAttempt).input1 === "string" &&
+            typeof (a as CombinationAttempt).input2 === "string" &&
+            ((a as CombinationAttempt).result === null ||
+              typeof (a as CombinationAttempt).result === "string") &&
+            typeof (a as CombinationAttempt).timestamp === "number"
+        );
         // Merge in any new starting tiles that weren't in the old save
-        const merged = new Set(parsed.unlockedTileIds);
+        const merged = new Set(validIds);
         for (const id of startingTileIds) {
           merged.add(id);
         }
         state = {
           unlockedTileIds: [...merged],
-          combinationHistory: parsed.combinationHistory,
+          combinationHistory: validHistory,
         };
         unlockedSet = new Set(state.unlockedTileIds);
         notify();

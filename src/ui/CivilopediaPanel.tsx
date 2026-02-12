@@ -10,19 +10,25 @@ import type { PhilosopherTile, WritingTile } from "../types/tile";
 interface CivilopediaPanelProps {
   tile: Tile | null;
   onClose: () => void;
+  /** Whether the mobile panel is open. */
+  isOpen?: boolean;
 }
 
+/** Right-side detail panel showing a tile's name, type, quote, description, and tags. */
 export default function CivilopediaPanel({
   tile,
   onClose,
+  isOpen,
 }: CivilopediaPanelProps) {
   if (!tile) return null;
 
   const isPhilosopher = tile.type === "philosopher";
   const isWriting = tile.type === "writing";
 
+  const cls = `civilopedia${isOpen ? " civilopedia--open" : ""}`;
+
   return (
-    <aside className="civilopedia">
+    <aside className={cls}>
       <button type="button" className="civilopedia__close" onClick={onClose} aria-label="Close panel">
         ✕
       </button>

@@ -10,7 +10,7 @@ import type { Combination } from "../types/combination";
 /** Pre-built lookup map for O(1) combination checks. */
 let comboMap: Map<string, string> | null = null;
 
-/** Create a canonical key for a pair of tile IDs (order-independent). */
+/** Create a canonical NUL-separated key for a pair of tile IDs (order-independent). */
 function comboKey(a: string, b: string): string {
   return a < b ? `${a}\0${b}` : `${b}\0${a}`;
 }

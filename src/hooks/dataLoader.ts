@@ -41,6 +41,7 @@ export function buildTileMap(tiles: Tile[]): TileMap {
   return map;
 }
 
+/** Fetch a URL and parse the response body as JSON, throwing on HTTP or parse errors. */
 async function fetchJson<T>(url: string): Promise<T> {
   const response = await fetch(url);
   if (!response.ok) {

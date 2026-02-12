@@ -5,24 +5,19 @@
  */
 
 import { useRef, useEffect } from "react";
-import { useDraggable } from "@dnd-kit/core";
+import { useDraggable, useDroppable } from "@dnd-kit/core";
 import type { Tile } from "../types/tile";
 import type { TileMap } from "../hooks/dataLoader";
-
-/** Icon prefix for a tile type. */
-const TILE_ICONS: Record<string, string> = {
-  philosopher: "🧠 ",
-  writing: "📜 ",
-};
-
-function tileIcon(type: string): string {
-  return TILE_ICONS[type] ?? "";
-}
+import { tileIcon } from "../utils/tileIcon";
 
 interface TilePaletteProps {
   unlockedTileIds: string[];
   tileMap: TileMap;
   onTileClick: (tileId: string) => void;
+  /** Whether the mobile drawer is open. */
+  isOpen?: boolean;
+  /** Source type of the currently active drag. */
+  activeDragSource?: "canvas" | "palette" | null;
 }
 
 interface DraggableTileProps {
@@ -30,6 +25,10 @@ interface DraggableTileProps {
   onClick: () => void;
 }
 
+/**
+ * A single draggable tile chip inside the palette sidebar.
+ * Tracks drag state to suppress click events after a completed drag.
+ */
 function DraggableTile({ tile, onClick }: DraggableTileProps) {
   const { attributes, listeners, setNodeRef, isDragging } =
     useDraggable({ id: `palette-${tile.id}`, data: { tileId: tile.id } });
@@ -53,6 +52,7 @@ function DraggableTile({ tile, onClick }: DraggableTileProps) {
     }
   }, [isDragging]);
 
+  /** Suppress click if the pointer just finished a drag gesture. */
   const handleClick = () => {
     if (wasDragging.current) {
       wasDragging.current = false;
@@ -77,18 +77,35 @@ function DraggableTile({ tile, onClick }: DraggableTileProps) {
   );
 }
 
+/** Scrollable sidebar listing all unlocked tiles with drag-to-workspace and click-to-inspect. */
 export default function TilePalette({
   unlockedTileIds,
   tileMap,
   onTileClick,
+  isOpen,
+  activeDragSource,
 }: TilePaletteProps) {
   const tiles = unlockedTileIds
     .map((id) => tileMap.get(id))
     .filter((t): t is Tile => t !== undefined)
     .sort((a, b) => a.name.localeCompare(b.name));
 
+  const { setNodeRef: setPaletteDropRef, isOver: isPaletteOver } = useDroppable({
+    id: "palette",
+    data: { source: "palette" },
+  });
+
+  // Only show the red drop-target highlight when a canvas tile is being dragged over
+  const showDropHighlight = isPaletteOver && activeDragSource === "canvas";
+
+  const cls = [
+    "tile-palette",
+    isOpen && "tile-palette--open",
+    showDropHighlight && "tile-palette--drop-target",
+  ].filter(Boolean).join(" ");
+
   return (
-    <aside className="tile-palette">
+    <aside ref={setPaletteDropRef} className={cls}>
       <h2 className="tile-palette__title">Ideas</h2>
       <div className="tile-palette__list">
         {tiles.map((tile) => (
