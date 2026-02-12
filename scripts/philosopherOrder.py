@@ -13,6 +13,7 @@ Usage:
 import re
 import sys
 import argparse
+import statistics
 from pathlib import Path
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
@@ -313,6 +314,146 @@ def find_missing_order_pairs(
     return suggestions
 
 
+# ── Recipe Balance ───────────────────────────────────────────────────
+
+def name_to_id(name: str) -> str:
+    """Convert a tile name to a slug ID (matches analyzeTree)."""
+    return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+
+
+def get_concept_depths(content_map_path: Path | None = None) -> dict[str, int]:
+    """Get depth of every concept from the Content Map using BFS.
+    
+    Returns a dict mapping concept name (lowered) -> BFS depth.
+    Also returns depths by tile ID for cross-referencing.
+    """
+    # Import here to avoid circular dependency
+    sys.path.insert(0, str(Path(__file__).parent))
+    from analyzeTree import load_content_map, calc_depths
+    
+    graph = load_content_map(content_map_path)
+    depths = calc_depths(graph)
+    
+    # Build name-to-depth mapping
+    name_depths: dict[str, int] = {}
+    for tid, depth in depths.items():
+        if tid in graph.tiles:
+            name_depths[graph.tiles[tid].name.lower()] = depth
+            name_depths[tid] = depth  # also index by ID
+    
+    return name_depths
+
+
+def check_recipe_balance(
+    philosophers: dict[str, Philosopher],
+    concept_depths: dict[str, int],
+    max_spread: int = 4,
+    max_trivial_ratio: float = 0.75,
+) -> list[dict]:
+    """Check if philosopher recipes have well-balanced ingredient depths.
+    
+    Flags:
+    - Recipes where the depth spread (max - min) is too wide
+    - Recipes where most ingredients are trivially shallow
+    - Recipes where one ingredient is doing all the gating work
+    
+    Args:
+        philosophers: Philosopher data from brainstorm
+        concept_depths: Concept name -> BFS depth mapping from Content Map
+        max_spread: Max acceptable difference between deepest and shallowest
+        max_trivial_ratio: Flag if this fraction of ingredients has depth <= 2
+    """
+    results = []
+    
+    for phil in sorted(philosophers.values(), key=lambda p: p.name):
+        # Look up depth for each recipe ingredient
+        ingredients = []
+        for item in phil.recipe:
+            clean = item.rstrip("*").strip()
+            clean_lower = clean.lower()
+            clean_id = name_to_id(clean)
+            
+            depth = None
+            # Try exact name match
+            if clean_lower in concept_depths:
+                depth = concept_depths[clean_lower]
+            # Try ID match 
+            elif clean_id in concept_depths:
+                depth = concept_depths[clean_id]
+            # If it's a philosopher output (*), estimate from producer's depth
+            elif item.strip().endswith("*"):
+                # Find the producer philosopher
+                for other_phil in philosophers.values():
+                    if clean in other_phil.produces:
+                        # Producer's depth + 1 (need to unlock producer, then combine)
+                        # But we don't know producer's exact depth yet...
+                        # Use "producer" as source type
+                        pass
+            
+            ingredients.append({
+                "name": clean,
+                "depth": depth,
+                "is_output": item.strip().endswith("*"),
+                "source": "content-map" if depth is not None else (
+                    "philosopher-output" if item.strip().endswith("*") else "unknown"
+                ),
+            })
+        
+        known_depths = [i["depth"] for i in ingredients if i["depth"] is not None]
+        unknown = [i for i in ingredients if i["depth"] is None]
+        
+        issues = []
+        
+        if len(known_depths) >= 2:
+            min_d = min(known_depths)
+            max_d = max(known_depths)
+            spread = max_d - min_d
+            median_d = statistics.median(known_depths)
+            
+            if spread > max_spread:
+                # Find the bottleneck ingredient(s) — ones at max depth
+                bottlenecks = [i["name"] for i in ingredients 
+                              if i["depth"] is not None and i["depth"] == max_d]
+                trivial = [i["name"] for i in ingredients 
+                          if i["depth"] is not None and i["depth"] <= min_d + 1]
+                issues.append(
+                    f"Wide spread: depths span {min_d}–{max_d} (range {spread}). "
+                    f"Bottleneck: {', '.join(bottlenecks)}. "
+                    f"Trivially early: {', '.join(trivial)}"
+                )
+            
+            # Check trivial ratio
+            trivial_count = sum(1 for d in known_depths if d <= 2)
+            if len(known_depths) >= 3 and trivial_count / len(known_depths) >= max_trivial_ratio:
+                issues.append(
+                    f"High trivial ratio: {trivial_count}/{len(known_depths)} ingredients "
+                    f"at depth <= 2"
+                )
+            
+            # Check if single ingredient is doing all the gating
+            if len(known_depths) >= 3 and max_d > 2:
+                at_max = sum(1 for d in known_depths if d == max_d)
+                at_low = sum(1 for d in known_depths if d < max_d - 1)
+                if at_max == 1 and at_low >= 2:
+                    gating_concept = [i["name"] for i in ingredients 
+                                    if i["depth"] is not None and i["depth"] == max_d][0]
+                    issues.append(
+                        f"Single gatekeeper: '{gating_concept}' (depth {max_d}) "
+                        f"while {at_low} others are <= depth {max_d - 2}"
+                    )
+        
+        results.append({
+            "name": phil.name,
+            "era": phil.era,
+            "ingredients": ingredients,
+            "known_depths": known_depths,
+            "unknown_count": len(unknown),
+            "issues": issues,
+        })
+    
+    return results
+
+
 # ── Output ───────────────────────────────────────────────────────────
 
 def print_report(
@@ -321,6 +462,8 @@ def print_report(
     concept_depth_ordering: list[tuple[str, str]] = None,
     verbose: bool = False,
     prereqs: bool = False,
+    balance: bool = False,
+    content_map_path: Path | None = None,
 ):
     if concept_depth_ordering is None:
         concept_depth_ordering = []
@@ -570,6 +713,63 @@ def print_report(
         )
     )
 
+    # ── Recipe Balance ───────────────────────────────────────────
+    if balance:
+        print()
+        print("  RECIPE BALANCE ANALYSIS")
+        print("  " + "-" * (w - 2))
+        
+        try:
+            concept_depths = get_concept_depths(content_map_path)
+            balance_results = check_recipe_balance(philosophers, concept_depths)
+            
+            flagged = [r for r in balance_results if r["issues"]]
+            balanced = [r for r in balance_results if not r["issues"] and r["known_depths"]]
+            unknown = [r for r in balance_results if not r["known_depths"]]
+            
+            if flagged:
+                print(f"  [!!] {len(flagged)} philosopher(s) with imbalanced recipes:")
+                print()
+                for r in flagged:
+                    depths_str = ", ".join(
+                        f"{i['name']}={i['depth']}" if i['depth'] is not None 
+                        else f"{i['name']}=?" 
+                        for i in r["ingredients"]
+                    )
+                    print(f"    {r['name']} ({r['era']}):")
+                    print(f"      Ingredients: {depths_str}")
+                    for issue in r["issues"]:
+                        print(f"      [!] {issue}")
+                    print()
+            
+            if balanced:
+                if verbose:
+                    print(f"  [OK] {len(balanced)} philosopher(s) with balanced recipes:")
+                    for r in balanced:
+                        depths_str = ", ".join(
+                            f"{i['name']}={i['depth']}" if i['depth'] is not None 
+                            else f"{i['name']}=?" 
+                            for i in r["ingredients"]
+                        )
+                        spread = max(r["known_depths"]) - min(r["known_depths"]) if r["known_depths"] else 0
+                        print(f"    {r['name']}: {depths_str} (spread: {spread})")
+                else:
+                    print(f"  [OK] {len(balanced)} philosopher(s) with balanced recipes")
+            
+            if unknown:
+                print(f"  [..] {len(unknown)} philosopher(s) with no known ingredient depths "
+                      f"(all recipe concepts missing from Content Map)")
+                if verbose:
+                    for r in unknown:
+                        names = [i["name"] for i in r["ingredients"]]
+                        print(f"    {r['name']}: {', '.join(names)}")
+            print()
+            
+        except Exception as e:
+            print(f"  [!!] Could not run balance check: {e}")
+            print(f"       Make sure the Content Map exists and is valid.")
+            print()
+
     print("  SUMMARY")
     print("  " + "-" * (w - 2))
     print(f"  Total philosophers: {total}")
@@ -595,6 +795,16 @@ def main():
         "--prereqs", "-p", action="store_true",
         help="Show full prerequisite trace for each philosopher",
     )
+    parser.add_argument(
+        "--balance", "-b", action="store_true",
+        help="Check recipe ingredient depth balance (requires Content Map)",
+    )
+    parser.add_argument(
+        "--content-map",
+        type=str,
+        default=None,
+        help="Path to the Prototype Content Map (for --balance). Auto-detected if not specified.",
+    )
     args = parser.parse_args()
 
     # Find brainstorm file
@@ -618,6 +828,21 @@ def main():
 
     print(f"  (reading from: {path})")
 
+    # Resolve content map path for balance check
+    content_map_path = None
+    if args.content_map:
+        content_map_path = Path(args.content_map)
+    elif args.balance:
+        # Auto-detect
+        candidates = [
+            Path("Planning notes/Temporary/Prototype Content Map.md"),
+            Path("Planning notes/Prototype Content Map.md"),
+        ]
+        for c in candidates:
+            if c.exists():
+                content_map_path = c
+                break
+
     philosophers, ordering, concept_depth_ordering = parse_brainstorm(path)
 
     if not philosophers:
@@ -625,7 +850,14 @@ def main():
         print("Expected markdown tables with | Philosopher | Recipe | Produces | columns")
         sys.exit(1)
 
-    print_report(philosophers, ordering, concept_depth_ordering=concept_depth_ordering, verbose=args.verbose, prereqs=args.prereqs)
+    print_report(
+        philosophers, ordering,
+        concept_depth_ordering=concept_depth_ordering,
+        verbose=args.verbose,
+        prereqs=args.prereqs,
+        balance=args.balance,
+        content_map_path=content_map_path,
+    )
 
 
 if __name__ == "__main__":
