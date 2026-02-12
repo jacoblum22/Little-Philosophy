@@ -5,7 +5,7 @@
  */
 
 import { useRef, useEffect } from "react";
-import { useDraggable } from "@dnd-kit/core";
+import { useDraggable, useDroppable } from "@dnd-kit/core";
 import type { Tile } from "../types/tile";
 import type { TileMap } from "../hooks/dataLoader";
 
@@ -23,6 +23,8 @@ interface TilePaletteProps {
   unlockedTileIds: string[];
   tileMap: TileMap;
   onTileClick: (tileId: string) => void;
+  /** Whether the mobile drawer is open. */
+  isOpen?: boolean;
 }
 
 interface DraggableTileProps {
@@ -81,14 +83,26 @@ export default function TilePalette({
   unlockedTileIds,
   tileMap,
   onTileClick,
+  isOpen,
 }: TilePaletteProps) {
   const tiles = unlockedTileIds
     .map((id) => tileMap.get(id))
     .filter((t): t is Tile => t !== undefined)
     .sort((a, b) => a.name.localeCompare(b.name));
 
+  const { setNodeRef: setPaletteDropRef, isOver: isPaletteOver } = useDroppable({
+    id: "palette",
+    data: { source: "palette" },
+  });
+
+  const cls = [
+    "tile-palette",
+    isOpen && "tile-palette--open",
+    isPaletteOver && "tile-palette--drop-target",
+  ].filter(Boolean).join(" ");
+
   return (
-    <aside className="tile-palette">
+    <aside ref={setPaletteDropRef} className={cls}>
       <h2 className="tile-palette__title">Ideas</h2>
       <div className="tile-palette__list">
         {tiles.map((tile) => (
