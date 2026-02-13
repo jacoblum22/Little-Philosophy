@@ -581,6 +581,238 @@ def check_recipe_balance(
     return results
 
 
+# ── Concept Coverage ─────────────────────────────────────────────────
+
+
+def parse_branch_concepts(brainstorm_path: Path) -> dict[str, list[str]]:
+    """Parse branch concept lists from the brainstorm.
+
+    Returns a dict mapping branch name -> list of concept names.
+    Also includes trunk concepts and cross-branch entries.
+    """
+    text = brainstorm_path.read_text(encoding="utf-8")
+    lines = text.split("\n")
+
+    branches: dict[str, list[str]] = {}
+    current_branch = None
+
+    # Known branch headings
+    branch_headings = {
+        "trunk": "Trunk",
+        "epistemology": "Epistemology",
+        "ethics": "Ethics",
+        "metaphysics": "Metaphysics",
+        "political philosophy": "Political Philosophy",
+        "aesthetics": "Aesthetics",
+        "philosophy of mind": "Philosophy of Mind",
+        "philosophy of religion": "Philosophy of Religion",
+    }
+
+    for line in lines:
+        stripped = line.strip()
+
+        # Detect branch section headings
+        if stripped.startswith("## "):
+            heading = stripped[3:].strip()
+            heading_lower = heading.lower()
+
+            # Check if it matches a known branch
+            matched = False
+            for key, name in branch_headings.items():
+                if heading_lower.startswith(key) or key in heading_lower:
+                    current_branch = name
+                    branches.setdefault(current_branch, [])
+                    matched = True
+                    break
+
+            if not matched:
+                # Non-branch heading (Philosophers, Writings, Ordering, etc.)
+                current_branch = None
+            continue
+
+        # Parse trunk concepts (comma-separated on a line)
+        if current_branch == "Trunk" and stripped and not stripped.startswith("#"):
+            items = [c.strip() for c in stripped.split(",") if c.strip()]
+            branches["Trunk"].extend(items)
+            continue
+
+        # Parse branch concepts (bullet list items)
+        if current_branch and current_branch != "Trunk":
+            m = re.match(r"^[-*]\s+(.+)$", stripped)
+            if m:
+                concept_text = m.group(1).strip()
+                # Remove secondary branch annotations like "[also Ethics]"
+                concept_text = re.sub(r"\s*\[.*?\]", "", concept_text).strip()
+                if concept_text:
+                    branches[current_branch].append(concept_text)
+
+    return branches
+
+
+def check_concept_coverage(
+    philosophers: dict[str, Philosopher],
+    writings: dict[str, Writing],
+    brainstorm_path: Path,
+    content_map_path: Path | None = None,
+) -> dict:
+    """Check that every recipe ingredient is defined somewhere.
+
+    Builds a universe of known concepts from:
+    1. Content Map trunk concepts (if available)
+    2. Branch concept lists in the brainstorm
+    3. Philosopher outputs (produces)
+    4. Writing outputs (produces)
+    5. Philosopher names (they are tiles too)
+    6. Writing titles (they are tiles too)
+
+    Then checks every recipe ingredient against this universe.
+    Reports: undefined concepts, name mismatches, and orphan concepts.
+    """
+    # 1. Gather all defined concepts
+    defined: dict[str, str] = {}  # concept -> source
+
+    # Content Map trunk concepts
+    if content_map_path and content_map_path.exists():
+        sys.path.insert(0, str(Path(__file__).parent))
+        from analyzeTree import load_content_map
+
+        graph = load_content_map(content_map_path)
+        for tid, tile in graph.tiles.items():
+            defined[tile.name] = "trunk"
+    else:
+        # Fall back to brainstorm trunk list
+        pass
+
+    # Branch concepts from brainstorm
+    branches = parse_branch_concepts(brainstorm_path)
+    for branch, concepts in branches.items():
+        for concept in concepts:
+            if concept not in defined:
+                defined[concept] = f"branch:{branch}"
+
+    # Philosopher names
+    for name in philosophers:
+        defined[name] = "philosopher"
+
+    # Philosopher outputs
+    for phil in philosophers.values():
+        for concept in phil.produces:
+            defined[concept] = f"output:{phil.name}"
+
+    # Writing titles
+    for title in writings:
+        defined[title] = "writing"
+
+    # Writing outputs
+    for w in writings.values():
+        for concept in w.produces:
+            defined[concept] = f"output:{w.title}"
+
+    # 2. Check every recipe ingredient
+    undefined: list[dict] = []
+    name_mismatches: list[dict] = []
+
+    # Build a lowercase lookup for fuzzy matching
+    lower_lookup: dict[str, str] = {}
+    for name in defined:
+        lower_lookup[name.lower()] = name
+
+    def find_ingredient(ingredient: str) -> str | None:
+        """Return the defined concept name if found, else None."""
+        clean = ingredient.rstrip("*").strip()
+        # Exact match
+        if clean in defined:
+            return clean
+        # Case-insensitive match
+        if clean.lower() in lower_lookup:
+            return lower_lookup[clean.lower()]
+        return None
+
+    def find_near_match(ingredient: str) -> list[str]:
+        """Find concepts that partially match the ingredient name."""
+        clean = ingredient.rstrip("*").strip().lower()
+        matches = []
+        for name in defined:
+            name_lower = name.lower()
+            # Check if one is a substring of the other
+            if clean in name_lower or name_lower in clean:
+                matches.append(name)
+            # Check if they share significant words
+            clean_words = set(clean.split())
+            name_words = set(name_lower.split())
+            shared = clean_words & name_words
+            if shared and len(shared) >= max(1, min(len(clean_words), len(name_words)) - 1):
+                if name not in matches:
+                    matches.append(name)
+        return matches[:5]  # limit suggestions
+
+    # Check philosopher recipes
+    for phil in philosophers.values():
+        for ingredient in phil.recipe:
+            clean = ingredient.rstrip("*").strip()
+            match = find_ingredient(ingredient)
+            if match is None:
+                near = find_near_match(ingredient)
+                undefined.append({
+                    "ingredient": clean,
+                    "used_by": phil.name,
+                    "used_in": "philosopher recipe",
+                    "near_matches": near,
+                })
+            elif match != clean:
+                name_mismatches.append({
+                    "recipe_name": clean,
+                    "defined_name": match,
+                    "used_by": phil.name,
+                })
+
+    # Check writing recipes (skip author name — that's a philosopher)
+    for w in writings.values():
+        for ingredient in w.recipe:
+            clean = ingredient.rstrip("*").strip()
+            # Skip the author (it's a philosopher name, already a tile)
+            if clean == w.author:
+                continue
+            match = find_ingredient(ingredient)
+            if match is None:
+                near = find_near_match(ingredient)
+                undefined.append({
+                    "ingredient": clean,
+                    "used_by": w.title,
+                    "used_in": "writing recipe",
+                    "near_matches": near,
+                })
+            elif match != clean:
+                name_mismatches.append({
+                    "recipe_name": clean,
+                    "defined_name": match,
+                    "used_by": w.title,
+                })
+
+    # 3. Find orphan concepts (defined but never used in any recipe)
+    used_concepts: set[str] = set()
+    for phil in philosophers.values():
+        for item in phil.recipe:
+            used_concepts.add(item.rstrip("*").strip())
+    for w in writings.values():
+        for item in w.recipe:
+            used_concepts.add(item.rstrip("*").strip())
+    # Also count outputs that are used somewhere
+    for phil in philosophers.values():
+        for item in phil.produces:
+            used_concepts.add(item)
+    for w in writings.values():
+        for item in w.produces:
+            used_concepts.add(item)
+
+    return {
+        "defined_count": len(defined),
+        "undefined": undefined,
+        "name_mismatches": name_mismatches,
+        "branches": {k: len(v) for k, v in branches.items()},
+    }
+
+
 # ── Output ───────────────────────────────────────────────────────────
 
 
@@ -591,7 +823,9 @@ def print_report(
     verbose: bool = False,
     prereqs: bool = False,
     balance: bool = False,
+    check_concepts: bool = False,
     content_map_path: Path | None = None,
+    brainstorm_path: Path | None = None,
     writings: dict[str, Writing] = None,
 ):
     """Print the full ordering analysis report to stdout.
@@ -987,6 +1221,50 @@ def print_report(
                 print(f"       Produces: {', '.join(w_.produces)}")
         print()
 
+    # ── Concept Coverage ──────────────────────────────────────────
+    if check_concepts and brainstorm_path:
+        print()
+        print("  CONCEPT COVERAGE CHECK")
+        print("  " + "-" * (w - 2))
+
+        try:
+            coverage = check_concept_coverage(
+                philosophers, writings, brainstorm_path, content_map_path
+            )
+
+            print(f"  Known concepts in universe: {coverage['defined_count']}")
+            for branch, count in sorted(coverage['branches'].items()):
+                print(f"    {branch}: {count}")
+            print()
+
+            if coverage['undefined']:
+                print(f"  [XX] {len(coverage['undefined'])} UNDEFINED recipe ingredient(s):")
+                for item in coverage['undefined']:
+                    near_str = ""
+                    if item['near_matches']:
+                        near_str = f"  (similar: {', '.join(item['near_matches'])})"
+                    print(
+                        f"    '{item['ingredient']}' in {item['used_by']} "
+                        f"({item['used_in']}){near_str}"
+                    )
+                print()
+            else:
+                print("  [OK] All recipe ingredients are defined")
+                print()
+
+            if coverage['name_mismatches']:
+                print(f"  [!!] {len(coverage['name_mismatches'])} name mismatch(es) (recipe vs defined):")
+                for item in coverage['name_mismatches']:
+                    print(
+                        f"    '{item['recipe_name']}' in {item['used_by']} "
+                        f" -> defined as '{item['defined_name']}'"
+                    )
+                print()
+
+        except Exception as e:
+            print(f"  [!!] Could not run concept check: {e}")
+            print()
+
     print("  SUMMARY")
     print("  " + "-" * (w - 2))
     print(f"  Total philosophers: {total}")
@@ -1039,6 +1317,12 @@ def main():
         help="Check recipe ingredient depth balance (requires Content Map)",
     )
     parser.add_argument(
+        "--check-concepts",
+        "-c",
+        action="store_true",
+        help="Check that all recipe ingredients are defined somewhere",
+    )
+    parser.add_argument(
         "--content-map",
         type=str,
         default=None,
@@ -1067,11 +1351,11 @@ def main():
 
     print(f"  (reading from: {path})")
 
-    # Resolve content map path for balance check
+    # Resolve content map path for balance/concept check
     content_map_path = None
     if args.content_map:
         content_map_path = Path(args.content_map)
-    elif args.balance:
+    elif args.balance or args.check_concepts:
         # Auto-detect
         candidates = [
             Path("Planning notes/Temporary/Prototype Content Map.md"),
@@ -1098,7 +1382,9 @@ def main():
         verbose=args.verbose,
         prereqs=args.prereqs,
         balance=args.balance,
+        check_concepts=args.check_concepts,
         content_map_path=content_map_path,
+        brainstorm_path=path,
         writings=writings,
     )
 
