@@ -281,6 +281,7 @@ def load_tiles() -> GameGraph:
 # Content Map Parser
 # ---------------------------------------------------------------------------
 
+
 def name_to_id(name: str) -> str:
     """Convert a tile name to a kebab-case ID. e.g. 'Allegory of the Cave' → 'allegory-of-the-cave'."""
     return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
@@ -327,7 +328,7 @@ def load_content_map(path: Path | None = None) -> GameGraph:
     starting_tiles: set[str] = set()
 
     # Track which section we're in
-    section: str | None = None          # "starting", "combinations", "philosopher", "writing"
+    section: str | None = None  # "starting", "combinations", "philosopher", "writing"
     current_entity_id: str | None = None  # id of current philosopher/writing
 
     # Regex patterns
@@ -336,8 +337,9 @@ def load_content_map(path: Path | None = None) -> GameGraph:
     starting_re = re.compile(r"^\s*[-*]\s+(.+)$")
     heading_re = re.compile(r"^##\s+(.+)$")
 
-    def ensure_tile(name: str, tile_type: str = "concept",
-                    is_starting: bool = False) -> str:
+    def ensure_tile(
+        name: str, tile_type: str = "concept", is_starting: bool = False
+    ) -> str:
         """Create tile if it doesn't exist. Return its ID."""
         tid = name_to_id(name)
         if tid not in tiles:
@@ -358,8 +360,9 @@ def load_content_map(path: Path | None = None) -> GameGraph:
             starting_tiles.add(tid)
         return tid
 
-    def register_combo(name_a: str, name_b: str, name_out: str,
-                       source_type: str = "concept"):
+    def register_combo(
+        name_a: str, name_b: str, name_out: str, source_type: str = "concept"
+    ):
         """Register a combination and ensure all tiles exist."""
         id_a = ensure_tile(name_a)
         id_b = ensure_tile(name_b)
@@ -423,7 +426,9 @@ def load_content_map(path: Path | None = None) -> GameGraph:
         if section == "combinations":
             m = combo_re.match(stripped)
             if m:
-                register_combo(m.group(1).strip(), m.group(2).strip(), m.group(3).strip())
+                register_combo(
+                    m.group(1).strip(), m.group(2).strip(), m.group(3).strip()
+                )
             continue
 
         # Philosopher / Writing sections: Recipe line or combo lines
@@ -441,7 +446,9 @@ def load_content_map(path: Path | None = None) -> GameGraph:
             # Combo line
             m = combo_re.match(stripped)
             if m:
-                register_combo(m.group(1).strip(), m.group(2).strip(), m.group(3).strip())
+                register_combo(
+                    m.group(1).strip(), m.group(2).strip(), m.group(3).strip()
+                )
                 continue
 
     return GameGraph(
@@ -1062,7 +1069,9 @@ def print_report(
     print(
         f"  {'Median depth':<30} {raw.get('median_depth', '?'):<12} {LA2['median_depth']:<12} {'4-12'}"
     )
-    print(f"  {'Max degree':<30} {raw['degree_max']:<12} {LA2['max_degree']:<12} {'--'}")
+    print(
+        f"  {'Max degree':<30} {raw['degree_max']:<12} {LA2['max_degree']:<12} {'--'}"
+    )
     print(
         f"  {'Median degree':<30} {raw['degree_median']:<12} {LA2['median_degree']:<12} {'--'}"
     )
@@ -1083,6 +1092,7 @@ def print_report(
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main():
     parser = argparse.ArgumentParser(description="Little Philosophy Tree Health Check")
     parser.add_argument(
@@ -1095,7 +1105,7 @@ def main():
         const=str(CONTENT_MAP),
         metavar="PATH",
         help="Parse a Content Map markdown file instead of tile files. "
-             "Defaults to 'Planning notes/Temporary/Prototype Content Map.md'.",
+        "Defaults to 'Planning notes/Temporary/Prototype Content Map.md'.",
     )
     args = parser.parse_args()
 
@@ -1104,7 +1114,8 @@ def main():
         if not map_path.exists():
             print(f"Error: Content Map not found: {map_path}", file=sys.stderr)
             sys.exit(1)
-        print(f"  (reading from Content Map: {map_path.name})")
+        if not args.json:
+            print(f"  (reading from Content Map: {map_path.name})")
         graph = load_content_map(map_path)
     else:
         if not TILES_DIR.exists():
