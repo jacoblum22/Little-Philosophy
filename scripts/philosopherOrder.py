@@ -28,9 +28,18 @@ class Philosopher:
     produces: list[str] = field(default_factory=list)
     depends_on_output_of: list[str] = field(default_factory=list)  # philosophers whose outputs appear in recipe
 
+@dataclass
+class Writing:
+    title: str
+    author: str
+    era: str                          # Ancient, Medieval, Modern, Contemporary
+    recipe: list[str] = field(default_factory=list)
+    produces: list[str] = field(default_factory=list)
+    depends_on_output_of: list[str] = field(default_factory=list)
+
 # ── Parser ───────────────────────────────────────────────────────────
 
-def parse_brainstorm(path: Path) -> tuple[dict[str, Philosopher], list[tuple[str, str]], list[tuple[str, str]]]:
+def parse_brainstorm(path: Path) -> tuple[dict[str, Philosopher], dict[str, Writing], list[tuple[str, str]], list[tuple[str, str]]]:
     """Parse the Concept Brainstorm markdown for philosopher data and ordering constraints."""
     text = path.read_text(encoding="utf-8")
     philosophers: dict[str, Philosopher] = {}
@@ -109,8 +118,71 @@ def parse_brainstorm(path: Path) -> tuple[dict[str, Philosopher], list[tuple[str
         for ingredient in phil.recipe:
             if ingredient in concept_to_producer:
                 producer = concept_to_producer[ingredient]
-                if producer != phil.name:
+                if producer != phil.name and producer not in phil.depends_on_output_of:
                     phil.depends_on_output_of.append(producer)
+
+    # Third pass: extract writings
+    writings: dict[str, Writing] = {}
+    in_writing_section = False
+    current_era = None
+    for line in lines:
+        if line.strip().startswith("## Writings"):
+            in_writing_section = True
+            current_era = None
+            continue
+        if in_writing_section and line.strip().startswith("## ") and "Writing" not in line:
+            in_writing_section = False
+            continue
+
+        # Detect era subsections within writings
+        era_match = era_pattern.match(line.strip())
+        if in_writing_section and era_match:
+            current_era = era_match.group(1)
+            continue
+
+        # Parse table rows
+        if in_writing_section and current_era and line.strip().startswith("|"):
+            parts = [p.strip() for p in line.split("|")]
+            parts = [p for p in parts if p]
+            if len(parts) < 4:
+                continue
+            if parts[0] in ("Writing", "---", "") or parts[0].startswith("---"):
+                continue
+            if all(c in "-| " for c in line):
+                continue
+
+            title = parts[0].strip()
+            author = parts[1].strip()
+            recipe_str = parts[2].strip()
+            produces_str = parts[3].strip()
+
+            recipe_items = [r.strip().rstrip("*") for r in recipe_str.split(",")]
+            produces_items = [p.strip() for p in produces_str.split(",")]
+
+            # Determine writing's era from its author
+            writing_era = current_era
+            if author in philosophers:
+                writing_era = philosophers[author].era
+
+            writing = Writing(
+                title=title,
+                author=author,
+                era=writing_era,
+                recipe=recipe_items,
+                produces=produces_items,
+            )
+            writings[title] = writing
+
+            # Track writing productions in concept_to_producer
+            for concept in produces_items:
+                concept_to_producer[concept] = f"{title} (writing)"
+
+            # Resolve dependencies: which philosophers' outputs are in the recipe
+            for ingredient in recipe_items:
+                if ingredient in concept_to_producer:
+                    producer = concept_to_producer[ingredient]
+                    if "(writing)" not in producer and producer != author:
+                        writing.depends_on_output_of.append(producer)
 
     # Parse ordering constraints
     in_ordering = False
@@ -140,7 +212,7 @@ def parse_brainstorm(path: Path) -> tuple[dict[str, Philosopher], list[tuple[str
                     else:  # ~
                         concept_depth_ordering.append(pair)
 
-    return philosophers, ordering, concept_depth_ordering
+    return philosophers, writings, ordering, concept_depth_ordering
 
 
 # ── Analysis ─────────────────────────────────────────────────────────
@@ -464,9 +536,12 @@ def print_report(
     prereqs: bool = False,
     balance: bool = False,
     content_map_path: Path | None = None,
+    writings: dict[str, Writing] = None,
 ):
     if concept_depth_ordering is None:
         concept_depth_ordering = []
+    if writings is None:
+        writings = {}
     w = 70
     print()
     print("=" * w)
@@ -770,13 +845,64 @@ def print_report(
             print(f"       Make sure the Content Map exists and is valid.")
             print()
 
+    # Writings analysis
+    if writings:
+        print("  WRITINGS")
+        print("  " + "-" * (w - 2))
+        writing_concepts = sum(len(w_.produces) for w_ in writings.values())
+        eras = defaultdict(int)
+        for w_ in writings.values():
+            eras[w_.era] += 1
+
+        # Check that all authors exist as philosophers
+        missing_authors = []
+        for w_ in writings.values():
+            if w_.author not in philosophers:
+                missing_authors.append(f"{w_.title} by {w_.author}")
+
+        print(f"  Total writings: {len(writings)}")
+        for era in ["Ancient", "Medieval", "Modern", "Contemporary"]:
+            if era in eras:
+                print(f"    {era}: {eras[era]}")
+        print(f"  Concepts produced by writings: {writing_concepts}")
+        if missing_authors:
+            print(f"  [!!] Missing authors: {', '.join(missing_authors)}")
+        else:
+            print(f"  [OK] All writing authors are known philosophers")
+
+        # Check for duplicate concept production (same concept from philosopher AND writing)
+        phil_concepts = {}
+        for p in philosophers.values():
+            for c in p.produces:
+                phil_concepts[c] = p.name
+        duplicates = []
+        for w_ in writings.values():
+            for c in w_.produces:
+                if c in phil_concepts:
+                    duplicates.append(f"  '{c}' produced by both {phil_concepts[c]} and {w_.title}")
+        if duplicates:
+            print(f"  [!!] Duplicate concept production:")
+            for d in duplicates:
+                print(d)
+
+        if verbose:
+            print()
+            for w_ in sorted(writings.values(), key=lambda x: x.title):
+                author_marker = "[OK]" if w_.author in philosophers else "[!!]"
+                print(f"  {author_marker} {w_.title} (by {w_.author})")
+                print(f"       Recipe: {', '.join(w_.recipe)}")
+                print(f"       Produces: {', '.join(w_.produces)}")
+        print()
+
     print("  SUMMARY")
     print("  " + "-" * (w - 2))
     print(f"  Total philosophers: {total}")
     print(f"  With output dependencies: {with_deps}/{total} ({100*with_deps//total}%)")
     print(f"  Whose outputs are used: {produces_used}/{total} ({100*produces_used//total}%)")
+    print(f"  Total writings: {len(writings)}")
     print(f"  Ordering constraints: {len(ordering)} explicit (<) + {len(concept_depth_ordering)} concept-depth (~)")
-    print(f"  Total concepts produced: {sum(len(p.produces) for p in philosophers.values())}")
+    total_concepts = sum(len(p.produces) for p in philosophers.values()) + sum(len(w_.produces) for w_ in writings.values())
+    print(f"  Total concepts produced: {total_concepts} ({sum(len(p.produces) for p in philosophers.values())} from philosophers, {sum(len(w_.produces) for w_ in writings.values())} from writings)")
     print()
 
 
@@ -843,7 +969,7 @@ def main():
                 content_map_path = c
                 break
 
-    philosophers, ordering, concept_depth_ordering = parse_brainstorm(path)
+    philosophers, writings, ordering, concept_depth_ordering = parse_brainstorm(path)
 
     if not philosophers:
         print("Error: No philosophers found in the brainstorm file.")
@@ -857,6 +983,7 @@ def main():
         prereqs=args.prereqs,
         balance=args.balance,
         content_map_path=content_map_path,
+        writings=writings,
     )
 
 
