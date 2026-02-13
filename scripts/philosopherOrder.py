@@ -10,6 +10,8 @@ Usage:
     python scripts/philosopherOrder.py --brainstorm "path/to/Concept Brainstorm.md"
 """
 
+from __future__ import annotations
+
 import re
 import sys
 import argparse
@@ -81,15 +83,9 @@ def parse_brainstorm(
             and line.strip().startswith("## ")
             and "Philosopher" not in line
         ):
-            # Hit a new top-level section, stop
-            if "Ordering" not in line and "Writing" not in line:
-                pass  # keep going for Ordering and Writings sections
-            if line.strip().startswith("## Philosopher Ordering"):
-                in_philosopher_section = False
-                continue
-            if line.strip().startswith("## Writings"):
-                in_philosopher_section = False
-                continue
+            # Any non-philosopher ## heading exits the philosopher section
+            in_philosopher_section = False
+            continue
 
         # Detect era subsections
         era_match = era_pattern.match(line.strip())
@@ -116,13 +112,10 @@ def parse_brainstorm(
             produces_str = parts[2].strip()
 
             # Parse recipe: comma-separated, * marks philosopher-output dependency
-            recipe_items = [r.strip().rstrip("*") for r in recipe_str.split(",")]
-            starred_items = [
-                r.strip().rstrip("*") for r in recipe_str.split(",") if "*" in r
-            ]
+            recipe_items = [r.strip().rstrip("*") for r in recipe_str.split(",") if r.strip()]
 
             # Parse produces: comma-separated
-            produces_items = [p.strip() for p in produces_str.split(",")]
+            produces_items = [p.strip() for p in produces_str.split(",") if p.strip()]
 
             phil = Philosopher(
                 name=name,
@@ -525,7 +518,6 @@ def check_recipe_balance(
             min_d = min(known_depths)
             max_d = max(known_depths)
             spread = max_d - min_d
-            median_d = statistics.median(known_depths)
 
             if spread > max_spread:
                 # Find the bottleneck ingredient(s) — ones at max depth
@@ -598,6 +590,11 @@ def print_report(
     content_map_path: Path | None = None,
     writings: dict[str, Writing] = None,
 ):
+    """Print the full ordering analysis report to stdout.
+
+    Includes dependency chains, era distribution, ordering constraint checks,
+    balance analysis, prerequisite traces, and writing summaries.
+    """
     if concept_depth_ordering is None:
         concept_depth_ordering = []
     if writings is None:
@@ -706,7 +703,6 @@ def print_report(
     print()
 
     # Check ordering constraints
-    all_constraints = len(ordering) + len(concept_depth_ordering)
     if ordering or concept_depth_ordering:
         print("  ORDERING CONSTRAINT CHECK")
         print("  " + "-" * (w - 2))
@@ -991,7 +987,9 @@ def print_report(
     print("  " + "-" * (w - 2))
     print(f"  Total philosophers: {total}")
     if total > 0:
-        print(f"  With output dependencies: {with_deps}/{total} ({100*with_deps//total}%)")
+        print(
+            f"  With output dependencies: {with_deps}/{total} ({100*with_deps//total}%)"
+        )
         print(
             f"  Whose outputs are used: {produces_used}/{total} ({100*produces_used//total}%)"
         )
@@ -1015,6 +1013,7 @@ def print_report(
 
 
 def main():
+    """CLI entry point for the philosopher ordering analyzer."""
     parser = argparse.ArgumentParser(description="Philosopher ordering analyzer")
     parser.add_argument(
         "--brainstorm",

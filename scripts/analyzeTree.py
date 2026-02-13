@@ -340,7 +340,11 @@ def load_content_map(path: Path | None = None) -> GameGraph:
     def ensure_tile(
         name: str, tile_type: str = "concept", is_starting: bool = False
     ) -> str:
-        """Create tile if it doesn't exist. Return its ID."""
+        """Create tile if it doesn't exist. Return its ID.
+
+        If the tile already exists, prefer the casing with more uppercase
+        letters (likely the properly capitalized version).
+        """
         tid = name_to_id(name)
         if tid not in tiles:
             tiles[tid] = Tile(
@@ -353,6 +357,12 @@ def load_content_map(path: Path | None = None) -> GameGraph:
                 is_starting=is_starting,
                 tags=["starting"] if is_starting else [],
             )
+        else:
+            # Prefer casing with more uppercase letters
+            existing_upper = sum(1 for c in tiles[tid].name if c.isupper())
+            new_upper = sum(1 for c in name.strip() if c.isupper())
+            if new_upper > existing_upper:
+                tiles[tid].name = name.strip()
         if is_starting:
             tiles[tid].is_starting = True
             if "starting" not in tiles[tid].tags:
