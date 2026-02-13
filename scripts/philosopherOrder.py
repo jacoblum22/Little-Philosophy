@@ -581,6 +581,166 @@ def check_recipe_balance(
     return results
 
 
+# ── Effective Recipe ──────────────────────────────────────────────────
+
+
+def compute_effective_recipes(
+    philosophers: dict[str, Philosopher],
+    writings: dict[str, Writing] | None = None,
+    min_philosopher_effective: int = 3,
+    min_writing_effective: int = 2,
+) -> list[dict]:
+    """Compute the *effective recipe* for each philosopher and writing.
+
+    The effective recipe is what remains after subtracting concepts that
+    the player must have already acquired in order to unlock prerequisite
+    philosophers.  If Philosopher B depends on Philosopher A's output,
+    then every concept in A's recipe is already necessarily in the
+    player's inventory when they unlock A.  Those concepts are
+    "inherited" and don't represent new exploration work.
+
+    We trace prerequisites transitively: if B depends on A which depends
+    on root concepts, we collect all recipe ingredients from A (and
+    recursively from A's prerequisites).
+
+    For writings, the author name is always counted as inherited (it must
+    be unlocked to produce the writing).
+
+    Thresholds:
+        min_philosopher_effective: flag philosophers with fewer new concepts (default 3)
+        min_writing_effective: flag writings with fewer new concepts (default 2)
+
+    Each result dict contains:
+        name, era, type ("philosopher" | "writing"),
+        recipe, inherited, effective, effective_size,
+        prerequisite_chain, issues
+    """
+    if writings is None:
+        writings = {}
+
+    # Build concept -> producer lookup
+    concept_to_producer: dict[str, str] = {}
+    for phil in philosophers.values():
+        for concept in phil.produces:
+            concept_to_producer[concept] = phil.name
+
+    def gather_inherited_concepts(phil_name: str, visited: set[str] | None = None) -> set[str]:
+        """Recursively collect all recipe concepts from prerequisite philosophers."""
+        if visited is None:
+            visited = set()
+        if phil_name in visited:
+            return set()
+        visited.add(phil_name)
+
+        phil = philosophers.get(phil_name)
+        if not phil:
+            return set()
+
+        inherited = set()
+        for dep_name in phil.depends_on_output_of:
+            dep = philosophers.get(dep_name)
+            if dep:
+                # All of this prerequisite's recipe ingredients are inherited
+                inherited.update(dep.recipe)
+                # Also add concepts produced by this prerequisite (player has them)
+                inherited.update(dep.produces)
+                # And recurse: whatever THAT philosopher inherited, we inherit too
+                inherited.update(gather_inherited_concepts(dep_name, visited))
+
+        return inherited
+
+    results: list[dict] = []
+
+    # Philosophers
+    for phil in sorted(philosophers.values(), key=lambda p: p.name):
+        inherited = gather_inherited_concepts(phil.name)
+
+        # Effective = recipe items NOT in the inherited set
+        effective = []
+        inherited_in_recipe = []
+        for item in phil.recipe:
+            clean = item.rstrip("*").strip()
+            # Check if this concept (or the raw item) is inherited
+            if clean in inherited or item in inherited:
+                inherited_in_recipe.append(clean)
+            else:
+                effective.append(clean)
+
+        issues = []
+        if phil.depends_on_output_of and len(effective) < min_philosopher_effective:
+            issues.append(
+                f"Effective recipe has only {len(effective)} new concept(s) "
+                f"beyond prerequisites (minimum {min_philosopher_effective}) — "
+                f"may feel trivial after unlocking "
+                f"{', '.join(phil.depends_on_output_of)}"
+            )
+
+        results.append({
+            "name": phil.name,
+            "era": phil.era,
+            "type": "philosopher",
+            "recipe": phil.recipe,
+            "inherited": inherited_in_recipe,
+            "effective": effective,
+            "effective_size": len(effective),
+            "prerequisite_chain": phil.depends_on_output_of,
+            "issues": issues,
+        })
+
+    # Writings
+    for w in sorted(writings.values(), key=lambda x: x.title):
+        # Writings depend on their author (a philosopher).  Inheriting the
+        # author's recipe concepts + outputs is the baseline.
+        inherited = set()
+        if w.author in philosophers:
+            author = philosophers[w.author]
+            inherited.update(author.recipe)
+            inherited.update(author.produces)
+            inherited.update(gather_inherited_concepts(w.author))
+
+        # Also trace any other philosopher output dependencies
+        for dep_name in w.depends_on_output_of:
+            dep = philosophers.get(dep_name)
+            if dep:
+                inherited.update(dep.recipe)
+                inherited.update(dep.produces)
+                inherited.update(gather_inherited_concepts(dep_name))
+
+        effective = []
+        inherited_in_recipe = []
+        for item in w.recipe:
+            clean = item.rstrip("*").strip()
+            # The author name itself is always in the recipe and always inherited
+            if clean == w.author:
+                inherited_in_recipe.append(clean)
+            elif clean in inherited or item in inherited:
+                inherited_in_recipe.append(clean)
+            else:
+                effective.append(clean)
+
+        issues = []
+        if len(effective) < min_writing_effective:
+            issues.append(
+                f"Effective recipe has only {len(effective)} new concept(s) "
+                f"beyond what's needed for {w.author} (minimum {min_writing_effective}) — "
+                f"may feel trivial"
+            )
+
+        results.append({
+            "name": w.title,
+            "era": w.era,
+            "type": "writing",
+            "recipe": w.recipe,
+            "inherited": inherited_in_recipe,
+            "effective": effective,
+            "effective_size": len(effective),
+            "prerequisite_chain": [w.author] + w.depends_on_output_of,
+            "issues": issues,
+        })
+
+    return results
+
+
 # ── Concept Coverage ─────────────────────────────────────────────────
 
 
@@ -823,6 +983,7 @@ def print_report(
     verbose: bool = False,
     prereqs: bool = False,
     balance: bool = False,
+    effective: bool = False,
     check_concepts: bool = False,
     content_map_path: Path | None = None,
     brainstorm_path: Path | None = None,
@@ -1170,6 +1331,98 @@ def print_report(
             print(f"       Make sure the Content Map exists and is valid.")
             print()
 
+    # ── Effective Recipes ─────────────────────────────────────────
+    if effective:
+        print()
+        print("  EFFECTIVE RECIPE ANALYSIS")
+        print("  " + "-" * (w - 2))
+        print("  Effective recipe = recipe ingredients that are NOT already")
+        print("  required to unlock prerequisite philosophers.")
+        print()
+
+        eff_results = compute_effective_recipes(philosophers, writings)
+
+        phil_results = [r for r in eff_results if r["type"] == "philosopher"]
+        writing_results = [r for r in eff_results if r["type"] == "writing"]
+
+        flagged = [r for r in phil_results if r["issues"]]
+        ok = [r for r in phil_results if not r["issues"]]
+
+        if flagged:
+            print(f"  [!!] {len(flagged)} philosopher(s) with short effective recipes:")
+            print()
+            for r in flagged:
+                inherited_str = (
+                    f" (inherited: {', '.join(r['inherited'])})"
+                    if r["inherited"]
+                    else ""
+                )
+                print(f"    {r['name']} ({r['era']}):")
+                print(f"      Full recipe:      {', '.join(r['recipe'])}")
+                print(f"      Prerequisites:    {', '.join(r['prerequisite_chain']) or 'none'}")
+                print(f"      Inherited:        {', '.join(r['inherited']) or 'none'}")
+                print(f"      Effective recipe: {', '.join(r['effective']) or '(empty!)'}")
+                print(f"      Effective size:   {r['effective_size']}")
+                for issue in r["issues"]:
+                    print(f"      [!] {issue}")
+                print()
+
+        if ok:
+            if verbose:
+                print(f"  [OK] {len(ok)} philosopher(s) with sufficient effective recipes:")
+                for r in ok:
+                    eff_str = ', '.join(r['effective']) if r['effective'] else '(all inherited)'
+                    print(f"    {r['name']}: effective={eff_str} ({r['effective_size']} new)")
+                print()
+            else:
+                print(f"  [OK] {len(ok)} philosopher(s) with sufficient effective recipes")
+                print()
+
+        # Writing effective recipes
+        flagged_w = [r for r in writing_results if r["issues"]]
+        ok_w = [r for r in writing_results if not r["issues"]]
+
+        if flagged_w:
+            print(f"  [!!] {len(flagged_w)} writing(s) with short effective recipes:")
+            print()
+            for r in flagged_w:
+                print(f"    {r['name']} ({r['era']}):")
+                print(f"      Full recipe:      {', '.join(r['recipe'])}")
+                print(f"      Prerequisites:    {', '.join(r['prerequisite_chain'])}")
+                print(f"      Inherited:        {', '.join(r['inherited']) or 'none'}")
+                print(f"      Effective recipe: {', '.join(r['effective']) or '(empty!)'}")
+                print(f"      Effective size:   {r['effective_size']}")
+                for issue in r["issues"]:
+                    print(f"      [!] {issue}")
+                print()
+
+        if ok_w:
+            if verbose:
+                print(f"  [OK] {len(ok_w)} writing(s) with sufficient effective recipes:")
+                for r in ok_w:
+                    eff_str = ', '.join(r['effective']) if r['effective'] else '(all inherited)'
+                    print(f"    {r['name']}: effective={eff_str} ({r['effective_size']} new)")
+                print()
+            else:
+                print(f"  [OK] {len(ok_w)} writing(s) with sufficient effective recipes")
+                print()
+
+        # Summary stats
+        all_sizes = [r["effective_size"] for r in eff_results]
+        phil_sizes = [r["effective_size"] for r in phil_results]
+        if phil_sizes:
+            print(f"  Philosopher effective-recipe sizes: "
+                  f"min={min(phil_sizes)}, max={max(phil_sizes)}, "
+                  f"mean={statistics.mean(phil_sizes):.1f}, "
+                  f"median={statistics.median(phil_sizes):.0f}")
+        writing_sizes = [r["effective_size"] for r in writing_results]
+        if writing_sizes:
+            print(f"  Writing effective-recipe sizes:     "
+                  f"min={min(writing_sizes)}, max={max(writing_sizes)}, "
+                  f"mean={statistics.mean(writing_sizes):.1f}, "
+                  f"median={statistics.median(writing_sizes):.0f}")
+        print()
+
     # Writings analysis
     if writings:
         print("  WRITINGS")
@@ -1317,6 +1570,12 @@ def main():
         help="Check recipe ingredient depth balance (requires Content Map)",
     )
     parser.add_argument(
+        "--effective",
+        "-e",
+        action="store_true",
+        help="Compute effective recipes (recipe minus inherited prerequisites)",
+    )
+    parser.add_argument(
         "--check-concepts",
         "-c",
         action="store_true",
@@ -1382,6 +1641,7 @@ def main():
         verbose=args.verbose,
         prereqs=args.prereqs,
         balance=args.balance,
+        effective=args.effective,
         check_concepts=args.check_concepts,
         content_map_path=content_map_path,
         brainstorm_path=path,
