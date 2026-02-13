@@ -363,6 +363,9 @@ def load_content_map(path: Path | None = None) -> GameGraph:
             new_upper = sum(1 for c in name.strip() if c.isupper())
             if new_upper > existing_upper:
                 tiles[tid].name = name.strip()
+            # Upgrade tile_type if a more specific type is provided
+            if tile_type != "concept" and tiles[tid].tile_type == "concept":
+                tiles[tid].tile_type = tile_type
         if is_starting:
             tiles[tid].is_starting = True
             if "starting" not in tiles[tid].tags:
@@ -371,7 +374,7 @@ def load_content_map(path: Path | None = None) -> GameGraph:
         return tid
 
     def register_combo(
-        name_a: str, name_b: str, name_out: str, source_type: str = "concept"
+        name_a: str, name_b: str, name_out: str
     ):
         """Register a combination and ensure all tiles exist."""
         id_a = ensure_tile(name_a)
@@ -381,8 +384,9 @@ def load_content_map(path: Path | None = None) -> GameGraph:
         key = tuple(sorted([id_a, id_b]))
         combos[key] = id_out
 
-        # Add to source tile's combinations list
+        # Add to both source tiles' combinations lists
         tiles[id_a].combinations.append({"with": id_b, "produces": id_out})
+        tiles[id_b].combinations.append({"with": id_a, "produces": id_out})
         combo_partners[id_a].add(id_b)
         combo_partners[id_b].add(id_a)
 
