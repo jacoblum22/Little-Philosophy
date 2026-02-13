@@ -13,6 +13,10 @@ dist
 Thumbs.db
 .DS_Store
 
+# Python bytecode cache
+__pycache__/
+*.pyc
+
 # Generated build output (from npm run build:data)
 public/data/build/
 
