@@ -176,8 +176,8 @@ def parse_brainstorm(
             recipe_str = parts[2].strip()
             produces_str = parts[3].strip()
 
-            recipe_items = [r.strip().rstrip("*") for r in recipe_str.split(",")]
-            produces_items = [p.strip() for p in produces_str.split(",")]
+            recipe_items = [r.strip().rstrip("*") for r in recipe_str.split(",") if r.strip()]
+            produces_items = [p.strip() for p in produces_str.split(",") if p.strip()]
 
             # Determine writing's era from its author
             writing_era = current_era

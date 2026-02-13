@@ -414,9 +414,10 @@ def load_content_map(path: Path | None = None) -> GameGraph:
                 section = "writing"
                 current_entity_id = ensure_tile(name, tile_type="writing")
             else:
-                # Sub-section heading (e.g. "### Epistemology Branch")
-                # Stay in whatever section we're in — allows sub-grouping
-                pass
+                # Unrecognised top-level heading — reset state so
+                # stale section context doesn't parse unrelated content.
+                section = None
+                current_entity_id = None
             continue
 
         # Skip empty lines
@@ -1104,6 +1105,7 @@ def print_report(
 
 
 def main():
+    """CLI entry point: parse args, load data, run analysis, and print results."""
     parser = argparse.ArgumentParser(description="Little Philosophy Tree Health Check")
     parser.add_argument(
         "--verbose", "-v", action="store_true", help="Show detailed output"
