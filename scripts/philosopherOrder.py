@@ -112,7 +112,9 @@ def parse_brainstorm(
             produces_str = parts[2].strip()
 
             # Parse recipe: comma-separated, * marks philosopher-output dependency
-            recipe_items = [r.strip().rstrip("*") for r in recipe_str.split(",") if r.strip()]
+            recipe_items = [
+                r.strip().rstrip("*") for r in recipe_str.split(",") if r.strip()
+            ]
 
             # Parse produces: comma-separated
             produces_items = [p.strip() for p in produces_str.split(",") if p.strip()]
@@ -176,7 +178,9 @@ def parse_brainstorm(
             recipe_str = parts[2].strip()
             produces_str = parts[3].strip()
 
-            recipe_items = [r.strip().rstrip("*") for r in recipe_str.split(",") if r.strip()]
+            recipe_items = [
+                r.strip().rstrip("*") for r in recipe_str.split(",") if r.strip()
+            ]
             produces_items = [p.strip() for p in produces_str.split(",") if p.strip()]
 
             # Determine writing's era from its author
