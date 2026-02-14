@@ -18,6 +18,8 @@ import json
 import re
 import sys
 from collections import Counter, defaultdict
+
+from utils import name_to_id
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -294,11 +296,6 @@ def load_tiles() -> GameGraph:
 # ---------------------------------------------------------------------------
 
 
-def name_to_id(name: str) -> str:
-    """Convert a tile name to a kebab-case ID. e.g. 'Allegory of the Cave' → 'allegory-of-the-cave'."""
-    return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
-
-
 def load_content_map(path: Path | None = None) -> GameGraph:
     """Parse a Prototype Content Map markdown file into a GameGraph.
 
@@ -398,7 +395,7 @@ def load_content_map(path: Path | None = None) -> GameGraph:
         id_b = ensure_tile(name_b)
         id_out = ensure_tile(name_out)
 
-        key = tuple(sorted([id_a, id_b]))
+        key: tuple[str, str] = (min(id_a, id_b), max(id_a, id_b))
 
         # Detect collisions (same pair, different output)
         if key in combos and combos[key] != id_out:

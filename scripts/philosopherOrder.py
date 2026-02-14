@@ -21,6 +21,13 @@ from collections import defaultdict, deque
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
+from utils import name_to_id
+
+# Ensure scripts directory is on sys.path for sibling imports
+_SCRIPTS_DIR = str(Path(__file__).parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
+
 # ── Data structures ──────────────────────────────────────────────────
 
 
@@ -43,6 +50,20 @@ class Writing:
     recipe: list[str] = field(default_factory=list)
     produces: list[str] = field(default_factory=list)
     depends_on_output_of: list[str] = field(default_factory=list)
+
+
+@dataclass
+class ReportOptions:
+    """Configuration flags for print_report output sections."""
+
+    verbose: bool = False
+    prereqs: bool = False
+    balance: bool = False
+    effective: bool = False
+    check_concepts: bool = False
+    depth_check: bool = False
+    content_map_path: Path | None = None
+    brainstorm_path: Path | None = None
 
 
 # ── Parser ───────────────────────────────────────────────────────────
@@ -81,7 +102,7 @@ def parse_brainstorm(
         if (
             in_philosopher_section
             and line.strip().startswith("## ")
-            and "Philosopher" not in line
+            and not line.strip().startswith("## Philosophers")
         ):
             # Any non-philosopher ## heading exits the philosopher section
             in_philosopher_section = False
@@ -151,7 +172,7 @@ def parse_brainstorm(
         if (
             in_writing_section
             and line.strip().startswith("## ")
-            and "Writing" not in line
+            and not line.strip().startswith("## Writings")
         ):
             in_writing_section = False
             continue
@@ -381,21 +402,12 @@ def check_implicit_ordering(
 # ── Recipe Balance ───────────────────────────────────────────────────
 
 
-def name_to_id(name: str) -> str:
-    """Convert a tile name to a slug ID (matches analyzeTree)."""
-    return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
-
-
 def get_concept_depths(content_map_path: Path | None = None) -> dict[str, int]:
     """Get depth of every concept from the Content Map using BFS.
 
     Returns a dict mapping concept name (lowered) -> BFS depth.
     Also returns depths by tile ID for cross-referencing.
     """
-    # Import here to avoid circular dependency
-    _scripts_dir = str(Path(__file__).parent)
-    if _scripts_dir not in sys.path:
-        sys.path.insert(0, _scripts_dir)
     from analyzeTree import load_content_map, calc_depths
 
     graph = load_content_map(content_map_path)
@@ -1092,14 +1104,8 @@ def print_report(
     philosophers: dict[str, Philosopher],
     ordering: list[tuple[str, str]],
     concept_depth_ordering: list[tuple[str, str]] | None = None,
-    verbose: bool = False,
-    prereqs: bool = False,
-    balance: bool = False,
-    effective: bool = False,
-    check_concepts: bool = False,
-    depth_check: bool = False,
-    content_map_path: Path | None = None,
-    brainstorm_path: Path | None = None,
+    *,
+    opts: ReportOptions | None = None,
     writings: dict[str, Writing] | None = None,
 ):
     """Print the full ordering analysis report to stdout.
@@ -1111,7 +1117,28 @@ def print_report(
         concept_depth_ordering = []
     if writings is None:
         writings = {}
+    if opts is None:
+        opts = ReportOptions()
+
+    verbose = opts.verbose
+    prereqs = opts.prereqs
+    balance = opts.balance
+    effective = opts.effective
+    check_concepts = opts.check_concepts
+    depth_check = opts.depth_check
+    content_map_path = opts.content_map_path
+    brainstorm_path = opts.brainstorm_path
+
     w = 70
+
+    # Shared era constants
+    era_order: dict[str, int] = {
+        "Ancient": 0,
+        "Medieval": 1,
+        "Modern": 2,
+        "Contemporary": 3,
+    }
+    era_names: list[str] = list(era_order.keys())
     print()
     print("=" * w)
     print("  PHILOSOPHER ORDERING ANALYSIS")
@@ -1167,10 +1194,9 @@ def print_report(
                 ed = _get_effective_depth(r["name"])
                 if ed is not None:
                     eff_depths[r["name"]] = ed
-        except Exception:
-            pass  # Fall back to era-based sorting
-
-    era_order = {"Ancient": 0, "Medieval": 1, "Modern": 2, "Contemporary": 3}
+        except (FileNotFoundError, ValueError, KeyError) as exc:
+            print(f"  [ii] Could not compute effective depths: {exc}", file=sys.stderr)
+            # Fall back to era-based sorting
 
     def sort_key(name: str) -> tuple:
         """Sort by effective depth, then by era, then alphabetically."""
@@ -1374,6 +1400,29 @@ def print_report(
             for concept in phil.produces:
                 concept_to_producer[concept] = phil.name
 
+        def trace_prereqs(
+            p_name: str,
+            visited_phils: set[str],
+            all_concepts: list[str],
+            all_philosophers: list[str],
+        ) -> None:
+            """Recursively gather all prerequisite concepts and philosophers."""
+            if p_name in visited_phils:
+                return
+            visited_phils.add(p_name)
+            p = philosophers[p_name]
+            for concept in p.recipe:
+                if concept not in all_concepts:
+                    all_concepts.append(concept)
+                # If this concept is produced by another philosopher, trace that too
+                if concept in concept_to_producer:
+                    producer = concept_to_producer[concept]
+                    if producer != p_name and producer not in all_philosophers:
+                        all_philosophers.append(producer)
+                        trace_prereqs(
+                            producer, visited_phils, all_concepts, all_philosophers
+                        )
+
         # For each philosopher in topological order, show prerequisites
         if topo:
             for name in topo:
@@ -1383,22 +1432,7 @@ def print_report(
                 all_philosophers: list[str] = []  # philosophers that must unlock first
                 visited_phils: set[str] = set()
 
-                def trace_prereqs(p_name: str):
-                    if p_name in visited_phils:
-                        return
-                    visited_phils.add(p_name)
-                    p = philosophers[p_name]
-                    for concept in p.recipe:
-                        if concept not in all_concepts:
-                            all_concepts.append(concept)
-                        # If this concept is produced by another philosopher, trace that philosopher too
-                        if concept in concept_to_producer:
-                            producer = concept_to_producer[concept]
-                            if producer != p_name and producer not in all_philosophers:
-                                all_philosophers.append(producer)
-                                trace_prereqs(producer)
-
-                trace_prereqs(name)
+                trace_prereqs(name, visited_phils, all_concepts, all_philosophers)
 
                 # Separate own recipe from inherited requirements
                 own_recipe = phil.recipe
@@ -1527,7 +1561,7 @@ def print_report(
             unknown_list = [r for r in dp_results if not r["known_depths"]]
 
             # Group by era for display
-            era_order = ["Ancient", "Medieval", "Modern", "Contemporary"]
+            # (era_names defined at the top of print_report)
 
             if flagged:
                 print(
@@ -1567,7 +1601,7 @@ def print_report(
                     print(
                         f"  [OK] {len(ok_list)} philosopher(s) within their era window:"
                     )
-                    for era in era_order:
+                    for era in era_names:
                         era_phils = [r for r in ok_list if r["era"] == era]
                         if not era_phils:
                             continue
@@ -1617,7 +1651,7 @@ def print_report(
             print(
                 f"  {'Era':<16} {'Count':<7} {'Window':<12} {'Actual Range':<18} {'Issues'}"
             )
-            for era in era_order:
+            for era in era_names:
                 era_phils = [r for r in dp_results if r["era"] == era]
                 if not era_phils:
                     continue
@@ -1646,12 +1680,6 @@ def print_report(
             # lower concept depth than an earlier-era philosopher.
             #
             # Reuse effective depths computed earlier for the unlock order.
-            era_order_nums = {
-                "Ancient": 0,
-                "Medieval": 1,
-                "Modern": 2,
-                "Contemporary": 3,
-            }
 
             # Use eff_depths computed at the top of the report
             effective_depths = eff_depths
@@ -1662,8 +1690,8 @@ def print_report(
                 for name_b, depth_b in effective_depths.items():
                     if name_a == name_b:
                         continue
-                    era_a = era_order_nums.get(philosophers[name_a].era, -1)
-                    era_b = era_order_nums.get(philosophers[name_b].era, -1)
+                    era_a = era_order.get(philosophers[name_a].era, -1)
+                    era_b = era_order.get(philosophers[name_b].era, -1)
                     # a is a later era but discoverable at strictly lower depth than b
                     if era_a > era_b and depth_a < depth_b:
                         era_gap = era_a - era_b  # 1 = adjacent, 2+ = non-adjacent
@@ -2199,14 +2227,16 @@ def main():
         philosophers,
         ordering,
         concept_depth_ordering=concept_depth_ordering,
-        verbose=args.verbose,
-        prereqs=args.prereqs,
-        balance=args.balance,
-        effective=args.effective,
-        check_concepts=args.check_concepts,
-        depth_check=args.depth_check,
-        content_map_path=content_map_path,
-        brainstorm_path=path,
+        opts=ReportOptions(
+            verbose=args.verbose,
+            prereqs=args.prereqs,
+            balance=args.balance,
+            effective=args.effective,
+            check_concepts=args.check_concepts,
+            depth_check=args.depth_check,
+            content_map_path=content_map_path,
+            brainstorm_path=path,
+        ),
         writings=writings,
     )
 
