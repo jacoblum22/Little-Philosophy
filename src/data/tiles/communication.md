@@ -5,18 +5,30 @@ type: concept
 quote: The limits of my language mean the limits of my world.
 quoteAuthor: Ludwig Wittgenstein
 createdFrom:
-- other
 - experience
+- other
 combinations:
-- with: questioning
+- with: reflection
   produces: dialogue
+- with: trust
+  produces: friendship
+- with: logic
+  produces: language
+- with: truth
+  produces: testimony
+- with: society
+  produces: tradition
 ---
 
 
-Communication is the attempt to share experience with another being — the drive to bridge the gap between one mind and another.
+Communication is the attempt to share what's inside one mind with another — to bridge the gap between isolated inner worlds using words, gestures, symbols, and silence.
 
-But can we ever truly communicate what we experience? Language is our primary tool, yet it has limits. The word "red" points to a color, but does your "red" look the same as mine? Philosophers of language have spent centuries exploring this gap between what we mean and what we manage to say. Wittgenstein argued that much of philosophy is just confusion caused by the imprecision of language.
+Every time you speak, write, or even make eye contact, you're trying to do something philosophically extraordinary: transmit the contents of your consciousness to a being whose consciousness you can never directly access. How do you know that the word "red" produces the same experience in someone else's mind that it does in yours? You don't — and yet, most of the time, communication works well enough to build civilizations.
+
+The philosophy of language has spent centuries trying to figure out how this is possible. Plato worried that writing was a degraded form of communication — fixed symbols that couldn't answer questions the way a living teacher could. Wittgenstein argued that meaning doesn't live in words themselves but in how we use them — that "language games" are woven into the fabric of our shared activities. Derrida pushed further, suggesting that every text contains meanings its author never intended and contradictions no reader can fully resolve.
+
+Beyond the Western tradition, communication is central to Confucian ethics — the right word spoken at the right time is a moral act. In many oral cultures, storytelling isn't just entertainment but the primary way a community preserves its identity and values. The philosophical challenge of communication is that it's simultaneously essential to being human and perpetually imperfect. We can never say exactly what we mean — and yet we never stop trying.
 
 #epistemology #social
-Parents: [[other]] [[experience]]
-Children: [[dialogue]]
+Parents: [[experience]] [[other]]
+Children: [[dialogue]] [[friendship]] [[language]] [[testimony]] [[tradition]]

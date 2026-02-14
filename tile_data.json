@@ -1,0 +1,6844 @@
+[
+  {
+    "id": "absurdity",
+    "name": "Absurdity",
+    "type": "concept",
+    "createdFrom": [
+      "meaning",
+      "nothingness"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "action",
+    "name": "Action",
+    "type": "concept",
+    "createdFrom": [
+      "duty",
+      "freedom"
+    ],
+    "combinations": [
+      {
+        "with": "evil",
+        "produces": "harm"
+      },
+      {
+        "with": "society",
+        "produces": "labor"
+      },
+      {
+        "with": "consequences",
+        "produces": "karma"
+      },
+      {
+        "with": "theory",
+        "produces": "praxis"
+      },
+      {
+        "with": "intention",
+        "produces": "responsibility"
+      },
+      {
+        "with": "consequentialism",
+        "produces": "utility"
+      },
+      {
+        "with": "pragmatism",
+        "produces": "responsibility"
+      },
+      {
+        "with": "kairos",
+        "produces": "wisdom"
+      }
+    ]
+  },
+  {
+    "id": "aesthetic-experience",
+    "name": "Aesthetic Experience",
+    "type": "concept",
+    "createdFrom": [
+      "beauty",
+      "perception"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "afterlife",
+    "name": "Afterlife",
+    "type": "concept",
+    "createdFrom": [
+      "faith",
+      "mortality"
+    ],
+    "combinations": [
+      {
+        "with": "death",
+        "produces": "hope"
+      }
+    ]
+  },
+  {
+    "id": "agape",
+    "name": "Agape",
+    "type": "concept",
+    "createdFrom": [
+      "compassion",
+      "devotion"
+    ],
+    "combinations": [
+      {
+        "with": "sacrifice",
+        "produces": "grace"
+      }
+    ]
+  },
+  {
+    "id": "ahimsa",
+    "name": "Ahimsa",
+    "type": "concept",
+    "createdFrom": [
+      "devotion",
+      "nonviolence"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "aletheia",
+    "name": "Aletheia",
+    "type": "concept",
+    "createdFrom": [
+      "attention",
+      "truth"
+    ],
+    "combinations": [
+      {
+        "with": "doubt",
+        "produces": "inquiry"
+      }
+    ]
+  },
+  {
+    "id": "allegory",
+    "name": "Allegory",
+    "type": "concept",
+    "createdFrom": [
+      "narrative",
+      "symbol"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "alterity",
+    "name": "Alterity",
+    "type": "concept",
+    "createdFrom": [
+      "other",
+      "transcendence"
+    ],
+    "combinations": [
+      {
+        "with": "empathy",
+        "produces": "understanding"
+      }
+    ]
+  },
+  {
+    "id": "altruism",
+    "name": "Altruism",
+    "type": "concept",
+    "createdFrom": [
+      "compassion",
+      "sacrifice"
+    ],
+    "combinations": [
+      {
+        "with": "cooperation",
+        "produces": "community"
+      }
+    ]
+  },
+  {
+    "id": "amor-mundi",
+    "name": "Amor Mundi",
+    "type": "concept",
+    "createdFrom": [
+      "happiness",
+      "world"
+    ],
+    "combinations": [
+      {
+        "with": "community",
+        "produces": "cooperation"
+      }
+    ]
+  },
+  {
+    "id": "anatta",
+    "name": "Anatta",
+    "type": "concept",
+    "createdFrom": [
+      "self",
+      "sunyata"
+    ],
+    "combinations": [
+      {
+        "with": "impermanence",
+        "produces": "sunyata"
+      }
+    ]
+  },
+  {
+    "id": "angst",
+    "name": "Angst",
+    "type": "concept",
+    "createdFrom": [
+      "freedom",
+      "nothingness"
+    ],
+    "combinations": [
+      {
+        "with": "freedom",
+        "produces": "choice"
+      }
+    ]
+  },
+  {
+    "id": "animism",
+    "name": "Animism",
+    "type": "concept",
+    "createdFrom": [
+      "nature",
+      "the-sacred"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "aporia",
+    "name": "Aporia",
+    "type": "concept",
+    "createdFrom": [
+      "paradox",
+      "questioning"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "appreciation",
+    "name": "Appreciation",
+    "type": "concept",
+    "createdFrom": [
+      "experience",
+      "wonder"
+    ],
+    "combinations": [
+      {
+        "with": "form",
+        "produces": "beauty"
+      },
+      {
+        "with": "subjectivity",
+        "produces": "taste"
+      },
+      {
+        "with": "impermanence",
+        "produces": "mono-no-aware"
+      }
+    ]
+  },
+  {
+    "id": "argument",
+    "name": "Argument",
+    "type": "concept",
+    "createdFrom": [
+      "dialogue",
+      "logic"
+    ],
+    "combinations": [
+      {
+        "with": "truth",
+        "produces": "dialectic"
+      },
+      {
+        "with": "language",
+        "produces": "rhetoric"
+      }
+    ]
+  },
+  {
+    "id": "art",
+    "name": "Art",
+    "type": "concept",
+    "createdFrom": [
+      "beauty",
+      "creativity"
+    ],
+    "combinations": [
+      {
+        "with": "reality",
+        "produces": "mimesis"
+      },
+      {
+        "with": "method",
+        "produces": "craft"
+      },
+      {
+        "with": "play",
+        "produces": "performance"
+      },
+      {
+        "with": "resistance",
+        "produces": "protest"
+      },
+      {
+        "with": "society",
+        "produces": "culture"
+      },
+      {
+        "with": "impermanence",
+        "produces": "kintsugi"
+      },
+      {
+        "with": "suffering",
+        "produces": "tragedy"
+      }
+    ]
+  },
+  {
+    "id": "atheism",
+    "name": "Atheism",
+    "type": "concept",
+    "createdFrom": [
+      "doubt",
+      "god"
+    ],
+    "combinations": [
+      {
+        "with": "faith",
+        "produces": "doubt"
+      }
+    ]
+  },
+  {
+    "id": "atman",
+    "name": "Atman",
+    "type": "concept",
+    "createdFrom": [
+      "self",
+      "soul"
+    ],
+    "combinations": [
+      {
+        "with": "brahman",
+        "produces": "non-dualism"
+      },
+      {
+        "with": "liberation",
+        "produces": "moksha"
+      }
+    ]
+  },
+  {
+    "id": "attention",
+    "name": "Attention",
+    "type": "concept",
+    "createdFrom": [
+      "awareness",
+      "will"
+    ],
+    "combinations": [
+      {
+        "with": "care",
+        "produces": "mindfulness"
+      },
+      {
+        "with": "meditation",
+        "produces": "contemplation"
+      },
+      {
+        "with": "truth",
+        "produces": "aletheia"
+      }
+    ]
+  },
+  {
+    "id": "authenticity",
+    "name": "Authenticity",
+    "type": "concept",
+    "createdFrom": [
+      "choice",
+      "identity"
+    ],
+    "combinations": [
+      {
+        "with": "self-awareness",
+        "produces": "self-knowledge"
+      },
+      {
+        "with": "existence",
+        "produces": "existential-courage"
+      }
+    ]
+  },
+  {
+    "id": "authority",
+    "name": "Authority",
+    "type": "concept",
+    "createdFrom": [
+      "integrity",
+      "power"
+    ],
+    "combinations": [
+      {
+        "with": "evil",
+        "produces": "tyranny"
+      },
+      {
+        "with": "consent",
+        "produces": "legitimacy"
+      }
+    ]
+  },
+  {
+    "id": "autonomy",
+    "name": "Autonomy",
+    "type": "concept",
+    "createdFrom": [
+      "rights",
+      "self"
+    ],
+    "combinations": [
+      {
+        "with": "cooperation",
+        "produces": "consent"
+      },
+      {
+        "with": "power",
+        "produces": "sovereignty"
+      }
+    ]
+  },
+  {
+    "id": "awakening",
+    "name": "Awakening",
+    "type": "concept",
+    "createdFrom": [
+      "enlightenment",
+      "maya"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "awareness",
+    "name": "Awareness",
+    "type": "concept",
+    "createdFrom": [
+      "consciousness",
+      "reflection"
+    ],
+    "combinations": [
+      {
+        "with": "will",
+        "produces": "attention"
+      },
+      {
+        "with": "subjectivity",
+        "produces": "self-awareness"
+      },
+      {
+        "with": "reflection",
+        "produces": "meditation"
+      }
+    ]
+  },
+  {
+    "id": "balance",
+    "name": "Balance",
+    "type": "concept",
+    "createdFrom": [
+      "harmony",
+      "yin-and-yang"
+    ],
+    "combinations": [
+      {
+        "with": "change",
+        "produces": "harmony"
+      }
+    ]
+  },
+  {
+    "id": "beauty",
+    "name": "Beauty",
+    "type": "concept",
+    "createdFrom": [
+      "appreciation",
+      "form"
+    ],
+    "combinations": [
+      {
+        "with": "creativity",
+        "produces": "art"
+      },
+      {
+        "with": "transcendence",
+        "produces": "the-sublime"
+      },
+      {
+        "with": "imagination",
+        "produces": "inspiration"
+      },
+      {
+        "with": "language",
+        "produces": "poetry"
+      },
+      {
+        "with": "perception",
+        "produces": "aesthetic-experience"
+      },
+      {
+        "with": "impermanence",
+        "produces": "wabi-sabi"
+      },
+      {
+        "with": "mono-no-aware",
+        "produces": "the-sublime"
+      },
+      {
+        "with": "nature",
+        "produces": "aesthetic-experience"
+      },
+      {
+        "with": "experience",
+        "produces": "rasa"
+      },
+      {
+        "with": "desire",
+        "produces": "eros"
+      }
+    ]
+  },
+  {
+    "id": "becoming",
+    "name": "Becoming",
+    "type": "concept",
+    "createdFrom": [
+      "being",
+      "time"
+    ],
+    "combinations": [
+      {
+        "with": "being",
+        "produces": "reality"
+      }
+    ]
+  },
+  {
+    "id": "being",
+    "name": "Being",
+    "type": "concept",
+    "createdFrom": [
+      "world",
+      "world"
+    ],
+    "combinations": [
+      {
+        "with": "experience",
+        "produces": "time"
+      },
+      {
+        "with": "world",
+        "produces": "nature"
+      },
+      {
+        "with": "time",
+        "produces": "becoming"
+      },
+      {
+        "with": "becoming",
+        "produces": "reality"
+      },
+      {
+        "with": "truth",
+        "produces": "permanence"
+      },
+      {
+        "with": "reality",
+        "produces": "existence"
+      },
+      {
+        "with": "impermanence",
+        "produces": "nothingness"
+      },
+      {
+        "with": "substance",
+        "produces": "monism"
+      },
+      {
+        "with": "consciousness",
+        "produces": "soul"
+      },
+      {
+        "with": "nature",
+        "produces": "life"
+      },
+      {
+        "with": "nothingness",
+        "produces": "existentialism"
+      }
+    ]
+  },
+  {
+    "id": "belief",
+    "name": "Belief",
+    "type": "concept",
+    "createdFrom": [
+      "experience",
+      "trust"
+    ],
+    "combinations": [
+      {
+        "with": "truth",
+        "produces": "knowledge"
+      },
+      {
+        "with": "impermanence",
+        "produces": "maya"
+      },
+      {
+        "with": "evidence",
+        "produces": "justification"
+      },
+      {
+        "with": "skepticism",
+        "produces": "critical-thinking"
+      },
+      {
+        "with": "propaganda",
+        "produces": "power"
+      },
+      {
+        "with": "testimony",
+        "produces": "knowledge"
+      }
+    ]
+  },
+  {
+    "id": "body",
+    "name": "Body",
+    "type": "concept",
+    "createdFrom": [
+      "self",
+      "substance"
+    ],
+    "combinations": [
+      {
+        "with": "soul",
+        "produces": "incarnation"
+      },
+      {
+        "with": "consciousness",
+        "produces": "dualism"
+      },
+      {
+        "with": "meditation",
+        "produces": "yoga"
+      },
+      {
+        "with": "mind",
+        "produces": "dualism"
+      },
+      {
+        "with": "materialism",
+        "produces": "substance"
+      }
+    ]
+  },
+  {
+    "id": "brahman",
+    "name": "Brahman",
+    "type": "concept",
+    "createdFrom": [
+      "consciousness",
+      "permanence"
+    ],
+    "combinations": [
+      {
+        "with": "atman",
+        "produces": "non-dualism"
+      }
+    ]
+  },
+  {
+    "id": "buen-vivir",
+    "name": "Buen Vivir",
+    "type": "concept",
+    "createdFrom": [
+      "community",
+      "harmony"
+    ],
+    "combinations": [
+      {
+        "with": "nature",
+        "produces": "harmony"
+      }
+    ]
+  },
+  {
+    "id": "care",
+    "name": "Care",
+    "type": "concept",
+    "createdFrom": [
+      "compassion",
+      "responsibility"
+    ],
+    "combinations": [
+      {
+        "with": "attention",
+        "produces": "mindfulness"
+      }
+    ]
+  },
+  {
+    "id": "catharsis",
+    "name": "Catharsis",
+    "type": "concept",
+    "createdFrom": [
+      "emotion",
+      "tragedy"
+    ],
+    "combinations": [
+      {
+        "with": "happiness",
+        "produces": "contentment"
+      },
+      {
+        "with": "suffering",
+        "produces": "forgiveness"
+      }
+    ]
+  },
+  {
+    "id": "causation",
+    "name": "Causation",
+    "type": "concept",
+    "createdFrom": [
+      "change",
+      "observation"
+    ],
+    "combinations": [
+      {
+        "with": "free-will",
+        "produces": "determinism"
+      },
+      {
+        "with": "evidence",
+        "produces": "explanation"
+      },
+      {
+        "with": "morality",
+        "produces": "consequences"
+      },
+      {
+        "with": "god",
+        "produces": "providence"
+      }
+    ]
+  },
+  {
+    "id": "certainty",
+    "name": "Certainty",
+    "type": "concept",
+    "createdFrom": [
+      "knowledge",
+      "truth"
+    ],
+    "combinations": [
+      {
+        "with": "reason",
+        "produces": "rationalism"
+      },
+      {
+        "with": "doubt",
+        "produces": "intellectual-humility"
+      },
+      {
+        "with": "proof",
+        "produces": "truth"
+      }
+    ]
+  },
+  {
+    "id": "change",
+    "name": "Change",
+    "type": "concept",
+    "createdFrom": [
+      "time",
+      "world"
+    ],
+    "combinations": [
+      {
+        "with": "observation",
+        "produces": "causation"
+      },
+      {
+        "with": "self",
+        "produces": "freedom"
+      },
+      {
+        "with": "nature",
+        "produces": "impermanence"
+      },
+      {
+        "with": "harmony",
+        "produces": "yin-and-yang"
+      },
+      {
+        "with": "existence",
+        "produces": "contingency"
+      },
+      {
+        "with": "power",
+        "produces": "war"
+      },
+      {
+        "with": "tradition",
+        "produces": "progress"
+      },
+      {
+        "with": "theory",
+        "produces": "paradigm"
+      },
+      {
+        "with": "balance",
+        "produces": "harmony"
+      },
+      {
+        "with": "dialectic",
+        "produces": "becoming"
+      },
+      {
+        "with": "identity",
+        "produces": "liminality"
+      }
+    ]
+  },
+  {
+    "id": "character",
+    "name": "Character",
+    "type": "concept",
+    "createdFrom": [
+      "conscience",
+      "identity"
+    ],
+    "combinations": [
+      {
+        "with": "virtue",
+        "produces": "integrity"
+      },
+      {
+        "with": "virtue-ethics",
+        "produces": "integrity"
+      }
+    ]
+  },
+  {
+    "id": "choice",
+    "name": "Choice",
+    "type": "concept",
+    "createdFrom": [
+      "freedom",
+      "reflection"
+    ],
+    "combinations": [
+      {
+        "with": "identity",
+        "produces": "authenticity"
+      },
+      {
+        "with": "determinism",
+        "produces": "fate"
+      },
+      {
+        "with": "memory",
+        "produces": "regret"
+      }
+    ]
+  },
+  {
+    "id": "citizenship",
+    "name": "Citizenship",
+    "type": "concept",
+    "createdFrom": [
+      "rights",
+      "social-contract"
+    ],
+    "combinations": [
+      {
+        "with": "equality",
+        "produces": "civil-rights"
+      }
+    ]
+  },
+  {
+    "id": "civic-virtue",
+    "name": "Civic Virtue",
+    "type": "concept",
+    "createdFrom": [
+      "democracy",
+      "virtue"
+    ],
+    "combinations": [
+      {
+        "with": "law",
+        "produces": "justice"
+      }
+    ]
+  },
+  {
+    "id": "civil-disobedience",
+    "name": "Civil Disobedience",
+    "type": "concept",
+    "createdFrom": [
+      "law",
+      "nonviolence"
+    ],
+    "combinations": [
+      {
+        "with": "justice",
+        "produces": "freedom"
+      }
+    ]
+  },
+  {
+    "id": "civil-rights",
+    "name": "Civil Rights",
+    "type": "concept",
+    "createdFrom": [
+      "citizenship",
+      "equality"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "class",
+    "name": "Class",
+    "type": "concept",
+    "createdFrom": [
+      "labor",
+      "power"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "colonialism",
+    "name": "Colonialism",
+    "type": "concept",
+    "createdFrom": [
+      "culture",
+      "oppression"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "comedy",
+    "name": "Comedy",
+    "type": "concept",
+    "createdFrom": [
+      "narrative",
+      "play"
+    ],
+    "combinations": [
+      {
+        "with": "tragedy",
+        "produces": "art"
+      },
+      {
+        "with": "happiness",
+        "produces": "play"
+      }
+    ]
+  },
+  {
+    "id": "commitment",
+    "name": "Commitment",
+    "type": "concept",
+    "createdFrom": [
+      "identity",
+      "trust"
+    ],
+    "combinations": [
+      {
+        "with": "uncertainty",
+        "produces": "faith"
+      },
+      {
+        "with": "consciousness",
+        "produces": "will"
+      },
+      {
+        "with": "trust",
+        "produces": "devotion"
+      },
+      {
+        "with": "friendship",
+        "produces": "loyalty"
+      },
+      {
+        "with": "morality",
+        "produces": "virtue"
+      }
+    ]
+  },
+  {
+    "id": "common-good",
+    "name": "Common Good",
+    "type": "concept",
+    "createdFrom": [
+      "community",
+      "value"
+    ],
+    "combinations": [
+      {
+        "with": "justice",
+        "produces": "law"
+      },
+      {
+        "with": "democracy",
+        "produces": "equality"
+      }
+    ]
+  },
+  {
+    "id": "communication",
+    "name": "Communication",
+    "type": "concept",
+    "createdFrom": [
+      "experience",
+      "other"
+    ],
+    "combinations": [
+      {
+        "with": "society",
+        "produces": "tradition"
+      },
+      {
+        "with": "reflection",
+        "produces": "dialogue"
+      },
+      {
+        "with": "truth",
+        "produces": "testimony"
+      },
+      {
+        "with": "logic",
+        "produces": "language"
+      },
+      {
+        "with": "trust",
+        "produces": "friendship"
+      }
+    ]
+  },
+  {
+    "id": "community",
+    "name": "Community",
+    "type": "concept",
+    "createdFrom": [
+      "society",
+      "trust"
+    ],
+    "combinations": [
+      {
+        "with": "tradition",
+        "produces": "culture"
+      },
+      {
+        "with": "cooperation",
+        "produces": "power"
+      },
+      {
+        "with": "fairness",
+        "produces": "justice"
+      },
+      {
+        "with": "morality",
+        "produces": "duty"
+      },
+      {
+        "with": "value",
+        "produces": "common-good"
+      },
+      {
+        "with": "courage",
+        "produces": "solidarity"
+      },
+      {
+        "with": "compassion",
+        "produces": "ubuntu"
+      },
+      {
+        "with": "sacrifice",
+        "produces": "devotion"
+      },
+      {
+        "with": "generosity",
+        "produces": "cooperation"
+      },
+      {
+        "with": "education",
+        "produces": "progress"
+      },
+      {
+        "with": "loyalty",
+        "produces": "trust"
+      },
+      {
+        "with": "ritual",
+        "produces": "tradition"
+      },
+      {
+        "with": "harmony",
+        "produces": "buen-vivir"
+      },
+      {
+        "with": "sankofa",
+        "produces": "culture"
+      },
+      {
+        "with": "amor-mundi",
+        "produces": "cooperation"
+      }
+    ]
+  },
+  {
+    "id": "compassion",
+    "name": "Compassion",
+    "type": "concept",
+    "createdFrom": [
+      "empathy",
+      "suffering"
+    ],
+    "combinations": [
+      {
+        "with": "understanding",
+        "produces": "happiness"
+      },
+      {
+        "with": "justice",
+        "produces": "nonviolence"
+      },
+      {
+        "with": "responsibility",
+        "produces": "care"
+      },
+      {
+        "with": "sacrifice",
+        "produces": "altruism"
+      },
+      {
+        "with": "law",
+        "produces": "mercy"
+      },
+      {
+        "with": "trust",
+        "produces": "grace"
+      },
+      {
+        "with": "gratitude",
+        "produces": "generosity"
+      },
+      {
+        "with": "desire",
+        "produces": "love"
+      },
+      {
+        "with": "community",
+        "produces": "ubuntu"
+      },
+      {
+        "with": "dharma",
+        "produces": "nonviolence"
+      },
+      {
+        "with": "wisdom",
+        "produces": "enlightenment"
+      },
+      {
+        "with": "devotion",
+        "produces": "agape"
+      },
+      {
+        "with": "prajna",
+        "produces": "enlightenment"
+      }
+    ]
+  },
+  {
+    "id": "conscience",
+    "name": "Conscience",
+    "type": "concept",
+    "createdFrom": [
+      "empathy",
+      "reflection"
+    ],
+    "combinations": [
+      {
+        "with": "empathy",
+        "produces": "morality"
+      },
+      {
+        "with": "identity",
+        "produces": "character"
+      },
+      {
+        "with": "trust",
+        "produces": "courage"
+      },
+      {
+        "with": "duty",
+        "produces": "responsibility"
+      },
+      {
+        "with": "harm",
+        "produces": "guilt"
+      }
+    ]
+  },
+  {
+    "id": "consciousness",
+    "name": "Consciousness",
+    "type": "concept",
+    "createdFrom": [
+      "experience",
+      "self"
+    ],
+    "combinations": [
+      {
+        "with": "society",
+        "produces": "identity"
+      },
+      {
+        "with": "observation",
+        "produces": "wonder"
+      },
+      {
+        "with": "reflection",
+        "produces": "awareness"
+      },
+      {
+        "with": "time",
+        "produces": "dream"
+      },
+      {
+        "with": "trust",
+        "produces": "intuition"
+      },
+      {
+        "with": "freedom",
+        "produces": "free-will"
+      },
+      {
+        "with": "permanence",
+        "produces": "brahman"
+      },
+      {
+        "with": "knowledge",
+        "produces": "subjectivity"
+      },
+      {
+        "with": "being",
+        "produces": "soul"
+      },
+      {
+        "with": "commitment",
+        "produces": "will"
+      },
+      {
+        "with": "reason",
+        "produces": "thought"
+      },
+      {
+        "with": "body",
+        "produces": "dualism"
+      },
+      {
+        "with": "method",
+        "produces": "phenomenology"
+      }
+    ]
+  },
+  {
+    "id": "consent",
+    "name": "Consent",
+    "type": "concept",
+    "createdFrom": [
+      "autonomy",
+      "cooperation"
+    ],
+    "combinations": [
+      {
+        "with": "authority",
+        "produces": "legitimacy"
+      }
+    ]
+  },
+  {
+    "id": "consequences",
+    "name": "Consequences",
+    "type": "concept",
+    "createdFrom": [
+      "causation",
+      "morality"
+    ],
+    "combinations": [
+      {
+        "with": "happiness",
+        "produces": "utility"
+      },
+      {
+        "with": "value",
+        "produces": "consequentialism"
+      },
+      {
+        "with": "hubris",
+        "produces": "tragedy"
+      },
+      {
+        "with": "utility",
+        "produces": "pragmatism"
+      },
+      {
+        "with": "action",
+        "produces": "karma"
+      }
+    ]
+  },
+  {
+    "id": "consequentialism",
+    "name": "Consequentialism",
+    "type": "concept",
+    "createdFrom": [
+      "consequences",
+      "value"
+    ],
+    "combinations": [
+      {
+        "with": "action",
+        "produces": "utility"
+      }
+    ]
+  },
+  {
+    "id": "constitution",
+    "name": "Constitution",
+    "type": "concept",
+    "createdFrom": [
+      "law",
+      "sovereignty"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "contemplation",
+    "name": "Contemplation",
+    "type": "concept",
+    "createdFrom": [
+      "attention",
+      "meditation"
+    ],
+    "combinations": [
+      {
+        "with": "self",
+        "produces": "self-awareness"
+      }
+    ]
+  },
+  {
+    "id": "contentment",
+    "name": "Contentment",
+    "type": "concept",
+    "createdFrom": [
+      "happiness",
+      "pleasure"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "contingency",
+    "name": "Contingency",
+    "type": "concept",
+    "createdFrom": [
+      "change",
+      "existence"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "cooperation",
+    "name": "Cooperation",
+    "type": "concept",
+    "createdFrom": [
+      "empathy",
+      "society"
+    ],
+    "combinations": [
+      {
+        "with": "empathy",
+        "produces": "fairness"
+      },
+      {
+        "with": "understanding",
+        "produces": "peace"
+      },
+      {
+        "with": "trust",
+        "produces": "harmony"
+      },
+      {
+        "with": "community",
+        "produces": "power"
+      },
+      {
+        "with": "happiness",
+        "produces": "play"
+      },
+      {
+        "with": "autonomy",
+        "produces": "consent"
+      },
+      {
+        "with": "altruism",
+        "produces": "community"
+      }
+    ]
+  },
+  {
+    "id": "cosmology",
+    "name": "Cosmology",
+    "type": "concept",
+    "createdFrom": [
+      "god",
+      "world"
+    ],
+    "combinations": [
+      {
+        "with": "nature",
+        "produces": "being"
+      }
+    ]
+  },
+  {
+    "id": "courage",
+    "name": "Courage",
+    "type": "concept",
+    "createdFrom": [
+      "conscience",
+      "trust"
+    ],
+    "combinations": [
+      {
+        "with": "morality",
+        "produces": "virtue"
+      },
+      {
+        "with": "oppression",
+        "produces": "resistance"
+      },
+      {
+        "with": "community",
+        "produces": "solidarity"
+      },
+      {
+        "with": "dignity",
+        "produces": "honor"
+      },
+      {
+        "with": "truth",
+        "produces": "integrity"
+      },
+      {
+        "with": "temptation",
+        "produces": "virtue"
+      },
+      {
+        "with": "sacrifice",
+        "produces": "heroism"
+      }
+    ]
+  },
+  {
+    "id": "craft",
+    "name": "Craft",
+    "type": "concept",
+    "createdFrom": [
+      "art",
+      "method"
+    ],
+    "combinations": [
+      {
+        "with": "creativity",
+        "produces": "mastery"
+      }
+    ]
+  },
+  {
+    "id": "creativity",
+    "name": "Creativity",
+    "type": "concept",
+    "createdFrom": [
+      "imagination",
+      "play"
+    ],
+    "combinations": [
+      {
+        "with": "beauty",
+        "produces": "art"
+      },
+      {
+        "with": "craft",
+        "produces": "mastery"
+      },
+      {
+        "with": "inspiration",
+        "produces": "art"
+      }
+    ]
+  },
+  {
+    "id": "critical-thinking",
+    "name": "Critical Thinking",
+    "type": "concept",
+    "createdFrom": [
+      "belief",
+      "skepticism"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "culture",
+    "name": "Culture",
+    "type": "concept",
+    "createdFrom": [
+      "community",
+      "tradition"
+    ],
+    "combinations": [
+      {
+        "with": "tradition",
+        "produces": "order"
+      },
+      {
+        "with": "oppression",
+        "produces": "colonialism"
+      },
+      {
+        "with": "myth",
+        "produces": "tradition"
+      },
+      {
+        "with": "taste",
+        "produces": "appreciation"
+      },
+      {
+        "with": "performance",
+        "produces": "tradition"
+      }
+    ]
+  },
+  {
+    "id": "curiosity",
+    "name": "Curiosity",
+    "type": "concept",
+    "createdFrom": [
+      "desire",
+      "wonder"
+    ],
+    "combinations": [
+      {
+        "with": "knowledge",
+        "produces": "inquiry"
+      },
+      {
+        "with": "learning",
+        "produces": "wonder"
+      }
+    ]
+  },
+  {
+    "id": "death",
+    "name": "Death",
+    "type": "concept",
+    "createdFrom": [
+      "life",
+      "mortality"
+    ],
+    "combinations": [
+      {
+        "with": "meaning",
+        "produces": "purpose"
+      },
+      {
+        "with": "reflection",
+        "produces": "mortality"
+      },
+      {
+        "with": "afterlife",
+        "produces": "hope"
+      }
+    ]
+  },
+  {
+    "id": "deconstruction",
+    "name": "Deconstruction",
+    "type": "concept",
+    "createdFrom": [
+      "interpretation",
+      "paradox"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "democracy",
+    "name": "Democracy",
+    "type": "concept",
+    "createdFrom": [
+      "fairness",
+      "society"
+    ],
+    "combinations": [
+      {
+        "with": "virtue",
+        "produces": "civic-virtue"
+      },
+      {
+        "with": "common-good",
+        "produces": "equality"
+      },
+      {
+        "with": "resistance",
+        "produces": "revolution"
+      }
+    ]
+  },
+  {
+    "id": "deontology",
+    "name": "Deontology",
+    "type": "concept",
+    "createdFrom": [
+      "duty",
+      "reason"
+    ],
+    "combinations": [
+      {
+        "with": "duty",
+        "produces": "responsibility"
+      }
+    ]
+  },
+  {
+    "id": "desire",
+    "name": "Desire",
+    "type": "concept",
+    "createdFrom": [
+      "pleasure",
+      "will"
+    ],
+    "combinations": [
+      {
+        "with": "compassion",
+        "produces": "love"
+      },
+      {
+        "with": "wonder",
+        "produces": "curiosity"
+      },
+      {
+        "with": "morality",
+        "produces": "temptation"
+      },
+      {
+        "with": "beauty",
+        "produces": "eros"
+      }
+    ]
+  },
+  {
+    "id": "determinism",
+    "name": "Determinism",
+    "type": "concept",
+    "createdFrom": [
+      "causation",
+      "free-will"
+    ],
+    "combinations": [
+      {
+        "with": "choice",
+        "produces": "fate"
+      }
+    ]
+  },
+  {
+    "id": "devotion",
+    "name": "Devotion",
+    "type": "concept",
+    "createdFrom": [
+      "commitment",
+      "trust"
+    ],
+    "combinations": [
+      {
+        "with": "wonder",
+        "produces": "the-sacred"
+      },
+      {
+        "with": "dialogue",
+        "produces": "prayer"
+      },
+      {
+        "with": "tradition",
+        "produces": "ritual"
+      },
+      {
+        "with": "duty",
+        "produces": "piety"
+      },
+      {
+        "with": "suffering",
+        "produces": "sacrifice"
+      },
+      {
+        "with": "nonviolence",
+        "produces": "ahimsa"
+      },
+      {
+        "with": "compassion",
+        "produces": "agape"
+      }
+    ]
+  },
+  {
+    "id": "dharma",
+    "name": "Dharma",
+    "type": "concept",
+    "createdFrom": [
+      "duty",
+      "order"
+    ],
+    "combinations": [
+      {
+        "with": "compassion",
+        "produces": "nonviolence"
+      }
+    ]
+  },
+  {
+    "id": "dialectic",
+    "name": "Dialectic",
+    "type": "concept",
+    "createdFrom": [
+      "argument",
+      "truth"
+    ],
+    "combinations": [
+      {
+        "with": "truth",
+        "produces": "knowledge"
+      },
+      {
+        "with": "change",
+        "produces": "becoming"
+      }
+    ]
+  },
+  {
+    "id": "dialogue",
+    "name": "Dialogue",
+    "type": "concept",
+    "createdFrom": [
+      "communication",
+      "reflection"
+    ],
+    "combinations": [
+      {
+        "with": "wonder",
+        "produces": "questioning"
+      },
+      {
+        "with": "logic",
+        "produces": "argument"
+      },
+      {
+        "with": "devotion",
+        "produces": "prayer"
+      }
+    ]
+  },
+  {
+    "id": "dignity",
+    "name": "Dignity",
+    "type": "concept",
+    "createdFrom": [
+      "identity",
+      "value"
+    ],
+    "combinations": [
+      {
+        "with": "other",
+        "produces": "respect"
+      },
+      {
+        "with": "courage",
+        "produces": "honor"
+      },
+      {
+        "with": "equality",
+        "produces": "human-rights"
+      }
+    ]
+  },
+  {
+    "id": "doubt",
+    "name": "Doubt",
+    "type": "concept",
+    "createdFrom": [
+      "self",
+      "wonder"
+    ],
+    "combinations": [
+      {
+        "with": "wonder",
+        "produces": "uncertainty"
+      },
+      {
+        "with": "reason",
+        "produces": "skepticism"
+      },
+      {
+        "with": "method",
+        "produces": "hypothesis"
+      },
+      {
+        "with": "god",
+        "produces": "atheism"
+      },
+      {
+        "with": "knowledge",
+        "produces": "intellectual-humility"
+      },
+      {
+        "with": "truth",
+        "produces": "paradox"
+      },
+      {
+        "with": "subjectivity",
+        "produces": "solipsism"
+      },
+      {
+        "with": "certainty",
+        "produces": "intellectual-humility"
+      },
+      {
+        "with": "koan",
+        "produces": "aporia"
+      },
+      {
+        "with": "aletheia",
+        "produces": "inquiry"
+      }
+    ]
+  },
+  {
+    "id": "dream",
+    "name": "Dream",
+    "type": "concept",
+    "createdFrom": [
+      "consciousness",
+      "time"
+    ],
+    "combinations": [
+      {
+        "with": "imagination",
+        "produces": "vision"
+      },
+      {
+        "with": "reality",
+        "produces": "vision"
+      }
+    ]
+  },
+  {
+    "id": "dualism",
+    "name": "Dualism",
+    "type": "concept",
+    "createdFrom": [
+      "body",
+      "consciousness"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "duty",
+    "name": "Duty",
+    "type": "concept",
+    "createdFrom": [
+      "community",
+      "morality"
+    ],
+    "combinations": [
+      {
+        "with": "freedom",
+        "produces": "action"
+      },
+      {
+        "with": "conscience",
+        "produces": "responsibility"
+      },
+      {
+        "with": "reason",
+        "produces": "deontology"
+      },
+      {
+        "with": "devotion",
+        "produces": "piety"
+      },
+      {
+        "with": "order",
+        "produces": "dharma"
+      },
+      {
+        "with": "honor",
+        "produces": "commitment"
+      },
+      {
+        "with": "deontology",
+        "produces": "responsibility"
+      }
+    ]
+  },
+  {
+    "id": "dystopia",
+    "name": "Dystopia",
+    "type": "concept",
+    "createdFrom": [
+      "oppression",
+      "utopia"
+    ],
+    "combinations": [
+      {
+        "with": "freedom",
+        "produces": "revolution"
+      }
+    ]
+  },
+  {
+    "id": "education",
+    "name": "Education",
+    "type": "concept",
+    "createdFrom": [
+      "learning",
+      "play"
+    ],
+    "combinations": [
+      {
+        "with": "tradition",
+        "produces": "culture"
+      },
+      {
+        "with": "community",
+        "produces": "progress"
+      },
+      {
+        "with": "mastery",
+        "produces": "learning"
+      }
+    ]
+  },
+  {
+    "id": "elegy",
+    "name": "Elegy",
+    "type": "concept",
+    "createdFrom": [
+      "poetry",
+      "tragedy"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "emotion",
+    "name": "Emotion",
+    "type": "concept",
+    "createdFrom": [
+      "experience",
+      "subjectivity"
+    ],
+    "combinations": [
+      {
+        "with": "thought",
+        "produces": "mind"
+      },
+      {
+        "with": "form",
+        "produces": "expression"
+      },
+      {
+        "with": "tragedy",
+        "produces": "catharsis"
+      },
+      {
+        "with": "stoicism",
+        "produces": "awareness"
+      },
+      {
+        "with": "music",
+        "produces": "expression"
+      },
+      {
+        "with": "rasa",
+        "produces": "aesthetic-experience"
+      }
+    ]
+  },
+  {
+    "id": "empathy",
+    "name": "Empathy",
+    "type": "concept",
+    "createdFrom": [
+      "other",
+      "self"
+    ],
+    "combinations": [
+      {
+        "with": "world",
+        "produces": "suffering"
+      },
+      {
+        "with": "other",
+        "produces": "trust"
+      },
+      {
+        "with": "society",
+        "produces": "cooperation"
+      },
+      {
+        "with": "reflection",
+        "produces": "conscience"
+      },
+      {
+        "with": "suffering",
+        "produces": "compassion"
+      },
+      {
+        "with": "observation",
+        "produces": "understanding"
+      },
+      {
+        "with": "cooperation",
+        "produces": "fairness"
+      },
+      {
+        "with": "conscience",
+        "produces": "morality"
+      },
+      {
+        "with": "freedom",
+        "produces": "tolerance"
+      },
+      {
+        "with": "solipsism",
+        "produces": "intersubjectivity"
+      },
+      {
+        "with": "alterity",
+        "produces": "understanding"
+      }
+    ]
+  },
+  {
+    "id": "empiricism",
+    "name": "Empiricism",
+    "type": "concept",
+    "createdFrom": [
+      "experience",
+      "knowledge"
+    ],
+    "combinations": [
+      {
+        "with": "observation",
+        "produces": "method"
+      }
+    ]
+  },
+  {
+    "id": "enlightenment",
+    "name": "Enlightenment",
+    "type": "concept",
+    "createdFrom": [
+      "meditation",
+      "wisdom"
+    ],
+    "combinations": [
+      {
+        "with": "maya",
+        "produces": "awakening"
+      },
+      {
+        "with": "suffering",
+        "produces": "nirvana"
+      },
+      {
+        "with": "yoga",
+        "produces": "meditation"
+      },
+      {
+        "with": "intuition",
+        "produces": "satori"
+      }
+    ]
+  },
+  {
+    "id": "equality",
+    "name": "Equality",
+    "type": "concept",
+    "createdFrom": [
+      "fairness",
+      "rights"
+    ],
+    "combinations": [
+      {
+        "with": "dignity",
+        "produces": "human-rights"
+      },
+      {
+        "with": "citizenship",
+        "produces": "civil-rights"
+      }
+    ]
+  },
+  {
+    "id": "eros",
+    "name": "Eros",
+    "type": "concept",
+    "createdFrom": [
+      "beauty",
+      "desire"
+    ],
+    "combinations": [
+      {
+        "with": "knowledge",
+        "produces": "wonder"
+      }
+    ]
+  },
+  {
+    "id": "essence",
+    "name": "Essence",
+    "type": "concept",
+    "createdFrom": [
+      "identity",
+      "reality"
+    ],
+    "combinations": [
+      {
+        "with": "value",
+        "produces": "purpose"
+      }
+    ]
+  },
+  {
+    "id": "evidence",
+    "name": "Evidence",
+    "type": "concept",
+    "createdFrom": [
+      "observation",
+      "truth"
+    ],
+    "combinations": [
+      {
+        "with": "reason",
+        "produces": "objectivity"
+      },
+      {
+        "with": "belief",
+        "produces": "justification"
+      },
+      {
+        "with": "causation",
+        "produces": "explanation"
+      },
+      {
+        "with": "inquiry",
+        "produces": "method"
+      },
+      {
+        "with": "logic",
+        "produces": "proof"
+      },
+      {
+        "with": "hypothesis",
+        "produces": "method"
+      }
+    ]
+  },
+  {
+    "id": "evil",
+    "name": "Evil",
+    "type": "concept",
+    "createdFrom": [
+      "suffering",
+      "the-good"
+    ],
+    "combinations": [
+      {
+        "with": "action",
+        "produces": "harm"
+      },
+      {
+        "with": "power",
+        "produces": "oppression"
+      },
+      {
+        "with": "authority",
+        "produces": "tyranny"
+      },
+      {
+        "with": "morality",
+        "produces": "sin"
+      },
+      {
+        "with": "god",
+        "produces": "problem-of-evil"
+      },
+      {
+        "with": "providence",
+        "produces": "theodicy"
+      }
+    ]
+  },
+  {
+    "id": "existence",
+    "name": "Existence",
+    "type": "concept",
+    "createdFrom": [
+      "being",
+      "reality"
+    ],
+    "combinations": [
+      {
+        "with": "permanence",
+        "produces": "the-absolute"
+      },
+      {
+        "with": "change",
+        "produces": "contingency"
+      },
+      {
+        "with": "authenticity",
+        "produces": "existential-courage"
+      }
+    ]
+  },
+  {
+    "id": "existential-courage",
+    "name": "Existential Courage",
+    "type": "concept",
+    "createdFrom": [
+      "freedom",
+      "responsibility"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "existentialism",
+    "name": "Existentialism",
+    "type": "concept",
+    "createdFrom": [
+      "being",
+      "nothingness"
+    ],
+    "combinations": [
+      {
+        "with": "freedom",
+        "produces": "authenticity"
+      },
+      {
+        "with": "meaning",
+        "produces": "purpose"
+      }
+    ]
+  },
+  {
+    "id": "experience",
+    "name": "Experience",
+    "type": "concept",
+    "createdFrom": [
+      "self",
+      "world"
+    ],
+    "combinations": [
+      {
+        "with": "self",
+        "produces": "consciousness"
+      },
+      {
+        "with": "world",
+        "produces": "observation"
+      },
+      {
+        "with": "other",
+        "produces": "communication"
+      },
+      {
+        "with": "being",
+        "produces": "time"
+      },
+      {
+        "with": "reflection",
+        "produces": "learning"
+      },
+      {
+        "with": "trust",
+        "produces": "belief"
+      },
+      {
+        "with": "wonder",
+        "produces": "appreciation"
+      },
+      {
+        "with": "knowledge",
+        "produces": "empiricism"
+      },
+      {
+        "with": "observation",
+        "produces": "perception"
+      },
+      {
+        "with": "time",
+        "produces": "memory"
+      },
+      {
+        "with": "subjectivity",
+        "produces": "emotion"
+      },
+      {
+        "with": "phenomenology",
+        "produces": "consciousness"
+      },
+      {
+        "with": "beauty",
+        "produces": "rasa"
+      }
+    ]
+  },
+  {
+    "id": "explanation",
+    "name": "Explanation",
+    "type": "concept",
+    "createdFrom": [
+      "causation",
+      "evidence"
+    ],
+    "combinations": [
+      {
+        "with": "method",
+        "produces": "scientific-method"
+      }
+    ]
+  },
+  {
+    "id": "exploitation",
+    "name": "Exploitation",
+    "type": "concept",
+    "createdFrom": [
+      "labor",
+      "oppression"
+    ],
+    "combinations": [
+      {
+        "with": "suffering",
+        "produces": "oppression"
+      }
+    ]
+  },
+  {
+    "id": "expression",
+    "name": "Expression",
+    "type": "concept",
+    "createdFrom": [
+      "emotion",
+      "form"
+    ],
+    "combinations": [
+      {
+        "with": "harmony",
+        "produces": "music"
+      }
+    ]
+  },
+  {
+    "id": "fairness",
+    "name": "Fairness",
+    "type": "concept",
+    "createdFrom": [
+      "cooperation",
+      "empathy"
+    ],
+    "combinations": [
+      {
+        "with": "community",
+        "produces": "justice"
+      },
+      {
+        "with": "society",
+        "produces": "democracy"
+      },
+      {
+        "with": "freedom",
+        "produces": "rights"
+      },
+      {
+        "with": "rights",
+        "produces": "equality"
+      }
+    ]
+  },
+  {
+    "id": "faith",
+    "name": "Faith",
+    "type": "concept",
+    "createdFrom": [
+      "commitment",
+      "uncertainty"
+    ],
+    "combinations": [
+      {
+        "with": "liberation",
+        "produces": "salvation"
+      },
+      {
+        "with": "imagination",
+        "produces": "hope"
+      },
+      {
+        "with": "atheism",
+        "produces": "doubt"
+      },
+      {
+        "with": "mortality",
+        "produces": "afterlife"
+      }
+    ]
+  },
+  {
+    "id": "fate",
+    "name": "Fate",
+    "type": "concept",
+    "createdFrom": [
+      "choice",
+      "determinism"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "fitra",
+    "name": "Fitra",
+    "type": "concept",
+    "createdFrom": [
+      "nature",
+      "soul"
+    ],
+    "combinations": [
+      {
+        "with": "morality",
+        "produces": "conscience"
+      }
+    ]
+  },
+  {
+    "id": "forgiveness",
+    "name": "Forgiveness",
+    "type": "concept",
+    "createdFrom": [
+      "grace",
+      "harm"
+    ],
+    "combinations": [
+      {
+        "with": "guilt",
+        "produces": "reconciliation"
+      },
+      {
+        "with": "regret",
+        "produces": "reconciliation"
+      }
+    ]
+  },
+  {
+    "id": "form",
+    "name": "Form",
+    "type": "concept",
+    "createdFrom": [
+      "observation",
+      "understanding"
+    ],
+    "combinations": [
+      {
+        "with": "appreciation",
+        "produces": "beauty"
+      },
+      {
+        "with": "impermanence",
+        "produces": "sunyata"
+      },
+      {
+        "with": "reality",
+        "produces": "idealism"
+      },
+      {
+        "with": "emotion",
+        "produces": "expression"
+      },
+      {
+        "with": "meaning",
+        "produces": "symbol"
+      }
+    ]
+  },
+  {
+    "id": "free-will",
+    "name": "Free Will",
+    "type": "concept",
+    "createdFrom": [
+      "consciousness",
+      "freedom"
+    ],
+    "combinations": [
+      {
+        "with": "causation",
+        "produces": "determinism"
+      }
+    ]
+  },
+  {
+    "id": "freedom",
+    "name": "Freedom",
+    "type": "concept",
+    "createdFrom": [
+      "change",
+      "self"
+    ],
+    "combinations": [
+      {
+        "with": "consciousness",
+        "produces": "free-will"
+      },
+      {
+        "with": "fairness",
+        "produces": "rights"
+      },
+      {
+        "with": "reflection",
+        "produces": "choice"
+      },
+      {
+        "with": "duty",
+        "produces": "action"
+      },
+      {
+        "with": "empathy",
+        "produces": "tolerance"
+      },
+      {
+        "with": "oppression",
+        "produces": "liberation"
+      },
+      {
+        "with": "tyranny",
+        "produces": "revolution"
+      },
+      {
+        "with": "nothingness",
+        "produces": "angst"
+      },
+      {
+        "with": "responsibility",
+        "produces": "existential-courage"
+      },
+      {
+        "with": "order",
+        "produces": "democracy"
+      },
+      {
+        "with": "existentialism",
+        "produces": "authenticity"
+      },
+      {
+        "with": "angst",
+        "produces": "choice"
+      },
+      {
+        "with": "dystopia",
+        "produces": "revolution"
+      }
+    ]
+  },
+  {
+    "id": "friendship",
+    "name": "Friendship",
+    "type": "concept",
+    "createdFrom": [
+      "communication",
+      "trust"
+    ],
+    "combinations": [
+      {
+        "with": "commitment",
+        "produces": "loyalty"
+      },
+      {
+        "with": "love",
+        "produces": "happiness"
+      },
+      {
+        "with": "happiness",
+        "produces": "contentment"
+      }
+    ]
+  },
+  {
+    "id": "generosity",
+    "name": "Generosity",
+    "type": "concept",
+    "createdFrom": [
+      "compassion",
+      "gratitude"
+    ],
+    "combinations": [
+      {
+        "with": "community",
+        "produces": "cooperation"
+      }
+    ]
+  },
+  {
+    "id": "god",
+    "name": "God",
+    "type": "concept",
+    "createdFrom": [
+      "permanence",
+      "the-good"
+    ],
+    "combinations": [
+      {
+        "with": "knowledge",
+        "produces": "theology"
+      },
+      {
+        "with": "doubt",
+        "produces": "atheism"
+      },
+      {
+        "with": "world",
+        "produces": "cosmology"
+      },
+      {
+        "with": "evil",
+        "produces": "problem-of-evil"
+      },
+      {
+        "with": "causation",
+        "produces": "providence"
+      }
+    ]
+  },
+  {
+    "id": "grace",
+    "name": "Grace",
+    "type": "concept",
+    "createdFrom": [
+      "compassion",
+      "trust"
+    ],
+    "combinations": [
+      {
+        "with": "sin",
+        "produces": "redemption"
+      },
+      {
+        "with": "harm",
+        "produces": "forgiveness"
+      }
+    ]
+  },
+  {
+    "id": "gratitude",
+    "name": "Gratitude",
+    "type": "concept",
+    "createdFrom": [
+      "happiness",
+      "reflection"
+    ],
+    "combinations": [
+      {
+        "with": "compassion",
+        "produces": "generosity"
+      }
+    ]
+  },
+  {
+    "id": "guilt",
+    "name": "Guilt",
+    "type": "concept",
+    "createdFrom": [
+      "conscience",
+      "harm"
+    ],
+    "combinations": [
+      {
+        "with": "society",
+        "produces": "shame"
+      },
+      {
+        "with": "forgiveness",
+        "produces": "reconciliation"
+      },
+      {
+        "with": "responsibility",
+        "produces": "conscience"
+      }
+    ]
+  },
+  {
+    "id": "habit",
+    "name": "Habit",
+    "type": "concept",
+    "createdFrom": [
+      "memory",
+      "will"
+    ],
+    "combinations": [
+      {
+        "with": "time",
+        "produces": "tradition"
+      }
+    ]
+  },
+  {
+    "id": "happiness",
+    "name": "Happiness",
+    "type": "concept",
+    "createdFrom": [
+      "compassion",
+      "understanding"
+    ],
+    "combinations": [
+      {
+        "with": "cooperation",
+        "produces": "play"
+      },
+      {
+        "with": "reflection",
+        "produces": "gratitude"
+      },
+      {
+        "with": "consequences",
+        "produces": "utility"
+      },
+      {
+        "with": "virtue",
+        "produces": "virtue-ethics"
+      },
+      {
+        "with": "pleasure",
+        "produces": "contentment"
+      },
+      {
+        "with": "memory",
+        "produces": "nostalgia"
+      },
+      {
+        "with": "friendship",
+        "produces": "contentment"
+      },
+      {
+        "with": "comedy",
+        "produces": "play"
+      },
+      {
+        "with": "catharsis",
+        "produces": "contentment"
+      },
+      {
+        "with": "world",
+        "produces": "amor-mundi"
+      },
+      {
+        "with": "ikigai",
+        "produces": "contentment"
+      }
+    ]
+  },
+  {
+    "id": "harm",
+    "name": "Harm",
+    "type": "concept",
+    "createdFrom": [
+      "action",
+      "evil"
+    ],
+    "combinations": [
+      {
+        "with": "conscience",
+        "produces": "guilt"
+      },
+      {
+        "with": "law",
+        "produces": "punishment"
+      },
+      {
+        "with": "grace",
+        "produces": "forgiveness"
+      }
+    ]
+  },
+  {
+    "id": "harmony",
+    "name": "Harmony",
+    "type": "concept",
+    "createdFrom": [
+      "cooperation",
+      "trust"
+    ],
+    "combinations": [
+      {
+        "with": "change",
+        "produces": "yin-and-yang"
+      },
+      {
+        "with": "peace",
+        "produces": "serenity"
+      },
+      {
+        "with": "yin-and-yang",
+        "produces": "balance"
+      },
+      {
+        "with": "expression",
+        "produces": "music"
+      },
+      {
+        "with": "community",
+        "produces": "buen-vivir"
+      }
+    ]
+  },
+  {
+    "id": "hedonism",
+    "name": "Hedonism",
+    "type": "concept",
+    "createdFrom": [
+      "pleasure",
+      "value"
+    ],
+    "combinations": [
+      {
+        "with": "suffering",
+        "produces": "pleasure"
+      }
+    ]
+  },
+  {
+    "id": "hermeneutics",
+    "name": "Hermeneutics",
+    "type": "concept",
+    "createdFrom": [
+      "interpretation",
+      "meaning"
+    ],
+    "combinations": [
+      {
+        "with": "understanding",
+        "produces": "meaning"
+      }
+    ]
+  },
+  {
+    "id": "heroism",
+    "name": "Heroism",
+    "type": "concept",
+    "createdFrom": [
+      "courage",
+      "sacrifice"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "honor",
+    "name": "Honor",
+    "type": "concept",
+    "createdFrom": [
+      "courage",
+      "dignity"
+    ],
+    "combinations": [
+      {
+        "with": "duty",
+        "produces": "commitment"
+      }
+    ]
+  },
+  {
+    "id": "hope",
+    "name": "Hope",
+    "type": "concept",
+    "createdFrom": [
+      "faith",
+      "imagination"
+    ],
+    "combinations": [
+      {
+        "with": "nihilism",
+        "produces": "existential-courage"
+      },
+      {
+        "with": "suffering",
+        "produces": "faith"
+      },
+      {
+        "with": "prayer",
+        "produces": "faith"
+      },
+      {
+        "with": "salvation",
+        "produces": "faith"
+      }
+    ]
+  },
+  {
+    "id": "hubris",
+    "name": "Hubris",
+    "type": "concept",
+    "createdFrom": [
+      "power",
+      "self"
+    ],
+    "combinations": [
+      {
+        "with": "consequences",
+        "produces": "tragedy"
+      }
+    ]
+  },
+  {
+    "id": "human-rights",
+    "name": "Human Rights",
+    "type": "concept",
+    "createdFrom": [
+      "dignity",
+      "equality"
+    ],
+    "combinations": [
+      {
+        "with": "law",
+        "produces": "justice"
+      }
+    ]
+  },
+  {
+    "id": "hypothesis",
+    "name": "Hypothesis",
+    "type": "concept",
+    "createdFrom": [
+      "doubt",
+      "method"
+    ],
+    "combinations": [
+      {
+        "with": "evidence",
+        "produces": "method"
+      }
+    ]
+  },
+  {
+    "id": "idealism",
+    "name": "Idealism",
+    "type": "concept",
+    "createdFrom": [
+      "form",
+      "reality"
+    ],
+    "combinations": [
+      {
+        "with": "mind",
+        "produces": "consciousness"
+      }
+    ]
+  },
+  {
+    "id": "identity",
+    "name": "Identity",
+    "type": "concept",
+    "createdFrom": [
+      "consciousness",
+      "society"
+    ],
+    "combinations": [
+      {
+        "with": "trust",
+        "produces": "commitment"
+      },
+      {
+        "with": "conscience",
+        "produces": "character"
+      },
+      {
+        "with": "reality",
+        "produces": "essence"
+      },
+      {
+        "with": "value",
+        "produces": "dignity"
+      },
+      {
+        "with": "choice",
+        "produces": "authenticity"
+      },
+      {
+        "with": "ubuntu",
+        "produces": "community"
+      },
+      {
+        "with": "nostalgia",
+        "produces": "memory"
+      },
+      {
+        "with": "shame",
+        "produces": "authenticity"
+      },
+      {
+        "with": "change",
+        "produces": "liminality"
+      }
+    ]
+  },
+  {
+    "id": "ikigai",
+    "name": "Ikigai",
+    "type": "concept",
+    "createdFrom": [
+      "meaning",
+      "purpose"
+    ],
+    "combinations": [
+      {
+        "with": "happiness",
+        "produces": "contentment"
+      }
+    ]
+  },
+  {
+    "id": "imagination",
+    "name": "Imagination",
+    "type": "concept",
+    "createdFrom": [
+      "reflection",
+      "wonder"
+    ],
+    "combinations": [
+      {
+        "with": "play",
+        "produces": "creativity"
+      },
+      {
+        "with": "method",
+        "produces": "thought-experiment"
+      },
+      {
+        "with": "reality",
+        "produces": "transcendence"
+      },
+      {
+        "with": "beauty",
+        "produces": "inspiration"
+      },
+      {
+        "with": "language",
+        "produces": "metaphor"
+      },
+      {
+        "with": "dream",
+        "produces": "vision"
+      },
+      {
+        "with": "faith",
+        "produces": "hope"
+      },
+      {
+        "with": "justice",
+        "produces": "utopia"
+      },
+      {
+        "with": "thought-experiment",
+        "produces": "creativity"
+      }
+    ]
+  },
+  {
+    "id": "impermanence",
+    "name": "Impermanence",
+    "type": "concept",
+    "createdFrom": [
+      "change",
+      "nature"
+    ],
+    "combinations": [
+      {
+        "with": "belief",
+        "produces": "maya"
+      },
+      {
+        "with": "form",
+        "produces": "sunyata"
+      },
+      {
+        "with": "being",
+        "produces": "nothingness"
+      },
+      {
+        "with": "beauty",
+        "produces": "wabi-sabi"
+      },
+      {
+        "with": "appreciation",
+        "produces": "mono-no-aware"
+      },
+      {
+        "with": "time",
+        "produces": "mortality"
+      },
+      {
+        "with": "anatta",
+        "produces": "sunyata"
+      },
+      {
+        "with": "art",
+        "produces": "kintsugi"
+      }
+    ]
+  },
+  {
+    "id": "incarnation",
+    "name": "Incarnation",
+    "type": "concept",
+    "createdFrom": [
+      "body",
+      "soul"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "inquiry",
+    "name": "Inquiry",
+    "type": "concept",
+    "createdFrom": [
+      "knowledge",
+      "questioning"
+    ],
+    "combinations": [
+      {
+        "with": "evidence",
+        "produces": "method"
+      },
+      {
+        "with": "understanding",
+        "produces": "meaning"
+      }
+    ]
+  },
+  {
+    "id": "inspiration",
+    "name": "Inspiration",
+    "type": "concept",
+    "createdFrom": [
+      "beauty",
+      "imagination"
+    ],
+    "combinations": [
+      {
+        "with": "creativity",
+        "produces": "art"
+      }
+    ]
+  },
+  {
+    "id": "integrity",
+    "name": "Integrity",
+    "type": "concept",
+    "createdFrom": [
+      "courage",
+      "truth"
+    ],
+    "combinations": [
+      {
+        "with": "power",
+        "produces": "authority"
+      }
+    ]
+  },
+  {
+    "id": "intellectual-humility",
+    "name": "Intellectual Humility",
+    "type": "concept",
+    "createdFrom": [
+      "doubt",
+      "knowledge"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "intention",
+    "name": "Intention",
+    "type": "concept",
+    "createdFrom": [
+      "morality",
+      "will"
+    ],
+    "combinations": [
+      {
+        "with": "action",
+        "produces": "responsibility"
+      }
+    ]
+  },
+  {
+    "id": "interpretation",
+    "name": "Interpretation",
+    "type": "concept",
+    "createdFrom": [
+      "language",
+      "meaning"
+    ],
+    "combinations": [
+      {
+        "with": "paradox",
+        "produces": "deconstruction"
+      },
+      {
+        "with": "meaning",
+        "produces": "hermeneutics"
+      }
+    ]
+  },
+  {
+    "id": "intersubjectivity",
+    "name": "Intersubjectivity",
+    "type": "concept",
+    "createdFrom": [
+      "empathy",
+      "solipsism"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "intuition",
+    "name": "Intuition",
+    "type": "concept",
+    "createdFrom": [
+      "consciousness",
+      "trust"
+    ],
+    "combinations": [
+      {
+        "with": "wonder",
+        "produces": "mysticism"
+      },
+      {
+        "with": "enlightenment",
+        "produces": "satori"
+      }
+    ]
+  },
+  {
+    "id": "irony",
+    "name": "Irony",
+    "type": "concept",
+    "createdFrom": [
+      "meaning",
+      "paradox"
+    ],
+    "combinations": [
+      {
+        "with": "truth",
+        "produces": "paradox"
+      }
+    ]
+  },
+  {
+    "id": "justice",
+    "name": "Justice",
+    "type": "concept",
+    "createdFrom": [
+      "community",
+      "fairness"
+    ],
+    "combinations": [
+      {
+        "with": "compassion",
+        "produces": "nonviolence"
+      },
+      {
+        "with": "order",
+        "produces": "law"
+      },
+      {
+        "with": "trust",
+        "produces": "social-contract"
+      },
+      {
+        "with": "imagination",
+        "produces": "utopia"
+      },
+      {
+        "with": "mercy",
+        "produces": "forgiveness"
+      },
+      {
+        "with": "common-good",
+        "produces": "law"
+      },
+      {
+        "with": "civil-disobedience",
+        "produces": "freedom"
+      }
+    ]
+  },
+  {
+    "id": "justification",
+    "name": "Justification",
+    "type": "concept",
+    "createdFrom": [
+      "belief",
+      "evidence"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "kairos",
+    "name": "Kairos",
+    "type": "concept",
+    "createdFrom": [
+      "time",
+      "wisdom"
+    ],
+    "combinations": [
+      {
+        "with": "action",
+        "produces": "wisdom"
+      }
+    ]
+  },
+  {
+    "id": "karma",
+    "name": "Karma",
+    "type": "concept",
+    "createdFrom": [
+      "action",
+      "consequences"
+    ],
+    "combinations": [
+      {
+        "with": "time",
+        "produces": "samsara"
+      }
+    ]
+  },
+  {
+    "id": "kintsugi",
+    "name": "Kintsugi",
+    "type": "concept",
+    "createdFrom": [
+      "art",
+      "impermanence"
+    ],
+    "combinations": [
+      {
+        "with": "suffering",
+        "produces": "beauty"
+      }
+    ]
+  },
+  {
+    "id": "knowledge",
+    "name": "Knowledge",
+    "type": "concept",
+    "createdFrom": [
+      "belief",
+      "truth"
+    ],
+    "combinations": [
+      {
+        "with": "truth",
+        "produces": "certainty"
+      },
+      {
+        "with": "questioning",
+        "produces": "inquiry"
+      },
+      {
+        "with": "consciousness",
+        "produces": "subjectivity"
+      },
+      {
+        "with": "reason",
+        "produces": "logic"
+      },
+      {
+        "with": "experience",
+        "produces": "empiricism"
+      },
+      {
+        "with": "god",
+        "produces": "theology"
+      },
+      {
+        "with": "doubt",
+        "produces": "intellectual-humility"
+      },
+      {
+        "with": "wonder",
+        "produces": "inquiry"
+      },
+      {
+        "with": "curiosity",
+        "produces": "inquiry"
+      },
+      {
+        "with": "eros",
+        "produces": "wonder"
+      }
+    ]
+  },
+  {
+    "id": "koan",
+    "name": "Koan",
+    "type": "concept",
+    "createdFrom": [
+      "meditation",
+      "paradox"
+    ],
+    "combinations": [
+      {
+        "with": "doubt",
+        "produces": "aporia"
+      }
+    ]
+  },
+  {
+    "id": "labor",
+    "name": "Labor",
+    "type": "concept",
+    "createdFrom": [
+      "action",
+      "society"
+    ],
+    "combinations": [
+      {
+        "with": "power",
+        "produces": "class"
+      },
+      {
+        "with": "oppression",
+        "produces": "exploitation"
+      },
+      {
+        "with": "rights",
+        "produces": "property"
+      }
+    ]
+  },
+  {
+    "id": "language",
+    "name": "Language",
+    "type": "concept",
+    "createdFrom": [
+      "communication",
+      "logic"
+    ],
+    "combinations": [
+      {
+        "with": "memory",
+        "produces": "narrative"
+      },
+      {
+        "with": "beauty",
+        "produces": "poetry"
+      },
+      {
+        "with": "imagination",
+        "produces": "metaphor"
+      },
+      {
+        "with": "meaning",
+        "produces": "interpretation"
+      },
+      {
+        "with": "argument",
+        "produces": "rhetoric"
+      }
+    ]
+  },
+  {
+    "id": "law",
+    "name": "Law",
+    "type": "concept",
+    "createdFrom": [
+      "justice",
+      "order"
+    ],
+    "combinations": [
+      {
+        "with": "compassion",
+        "produces": "mercy"
+      },
+      {
+        "with": "nonviolence",
+        "produces": "civil-disobedience"
+      },
+      {
+        "with": "harm",
+        "produces": "punishment"
+      },
+      {
+        "with": "sovereignty",
+        "produces": "constitution"
+      },
+      {
+        "with": "power",
+        "produces": "authority"
+      },
+      {
+        "with": "civic-virtue",
+        "produces": "justice"
+      },
+      {
+        "with": "human-rights",
+        "produces": "justice"
+      }
+    ]
+  },
+  {
+    "id": "learning",
+    "name": "Learning",
+    "type": "concept",
+    "createdFrom": [
+      "experience",
+      "reflection"
+    ],
+    "combinations": [
+      {
+        "with": "observation",
+        "produces": "reason"
+      },
+      {
+        "with": "play",
+        "produces": "education"
+      },
+      {
+        "with": "curiosity",
+        "produces": "wonder"
+      },
+      {
+        "with": "tradition",
+        "produces": "sankofa"
+      }
+    ]
+  },
+  {
+    "id": "legitimacy",
+    "name": "Legitimacy",
+    "type": "concept",
+    "createdFrom": [
+      "authority",
+      "consent"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "liberation",
+    "name": "Liberation",
+    "type": "concept",
+    "createdFrom": [
+      "freedom",
+      "oppression"
+    ],
+    "combinations": [
+      {
+        "with": "faith",
+        "produces": "salvation"
+      },
+      {
+        "with": "atman",
+        "produces": "moksha"
+      }
+    ]
+  },
+  {
+    "id": "life",
+    "name": "Life",
+    "type": "concept",
+    "createdFrom": [
+      "being",
+      "nature"
+    ],
+    "combinations": [
+      {
+        "with": "mortality",
+        "produces": "death"
+      },
+      {
+        "with": "meaning",
+        "produces": "purpose"
+      },
+      {
+        "with": "value",
+        "produces": "dignity"
+      }
+    ]
+  },
+  {
+    "id": "liminality",
+    "name": "Liminality",
+    "type": "concept",
+    "createdFrom": [
+      "change",
+      "identity"
+    ],
+    "combinations": [
+      {
+        "with": "reflection",
+        "produces": "identity"
+      }
+    ]
+  },
+  {
+    "id": "logic",
+    "name": "Logic",
+    "type": "concept",
+    "createdFrom": [
+      "knowledge",
+      "reason"
+    ],
+    "combinations": [
+      {
+        "with": "permanence",
+        "produces": "necessity"
+      },
+      {
+        "with": "truth",
+        "produces": "proposition"
+      },
+      {
+        "with": "dialogue",
+        "produces": "argument"
+      },
+      {
+        "with": "evidence",
+        "produces": "proof"
+      },
+      {
+        "with": "communication",
+        "produces": "language"
+      },
+      {
+        "with": "rationalism",
+        "produces": "certainty"
+      }
+    ]
+  },
+  {
+    "id": "love",
+    "name": "Love",
+    "type": "concept",
+    "createdFrom": [
+      "compassion",
+      "desire"
+    ],
+    "combinations": [
+      {
+        "with": "wisdom",
+        "produces": "philosophy"
+      },
+      {
+        "with": "friendship",
+        "produces": "happiness"
+      },
+      {
+        "with": "self",
+        "produces": "desire"
+      }
+    ]
+  },
+  {
+    "id": "loyalty",
+    "name": "Loyalty",
+    "type": "concept",
+    "createdFrom": [
+      "commitment",
+      "friendship"
+    ],
+    "combinations": [
+      {
+        "with": "community",
+        "produces": "trust"
+      }
+    ]
+  },
+  {
+    "id": "mastery",
+    "name": "Mastery",
+    "type": "concept",
+    "createdFrom": [
+      "craft",
+      "creativity"
+    ],
+    "combinations": [
+      {
+        "with": "education",
+        "produces": "learning"
+      }
+    ]
+  },
+  {
+    "id": "materialism",
+    "name": "Materialism",
+    "type": "concept",
+    "createdFrom": [
+      "nature",
+      "substance"
+    ],
+    "combinations": [
+      {
+        "with": "body",
+        "produces": "substance"
+      }
+    ]
+  },
+  {
+    "id": "maya",
+    "name": "Maya",
+    "type": "concept",
+    "createdFrom": [
+      "belief",
+      "impermanence"
+    ],
+    "combinations": [
+      {
+        "with": "enlightenment",
+        "produces": "awakening"
+      }
+    ]
+  },
+  {
+    "id": "meaning",
+    "name": "Meaning",
+    "type": "concept",
+    "createdFrom": [
+      "inquiry",
+      "understanding"
+    ],
+    "combinations": [
+      {
+        "with": "form",
+        "produces": "symbol"
+      },
+      {
+        "with": "nothingness",
+        "produces": "absurdity"
+      },
+      {
+        "with": "language",
+        "produces": "interpretation"
+      },
+      {
+        "with": "interpretation",
+        "produces": "hermeneutics"
+      },
+      {
+        "with": "paradox",
+        "produces": "irony"
+      },
+      {
+        "with": "mortality",
+        "produces": "purpose"
+      },
+      {
+        "with": "existentialism",
+        "produces": "purpose"
+      },
+      {
+        "with": "death",
+        "produces": "purpose"
+      },
+      {
+        "with": "life",
+        "produces": "purpose"
+      },
+      {
+        "with": "metaphor",
+        "produces": "symbol"
+      },
+      {
+        "with": "purpose",
+        "produces": "ikigai"
+      }
+    ]
+  },
+  {
+    "id": "meditation",
+    "name": "Meditation",
+    "type": "concept",
+    "createdFrom": [
+      "awareness",
+      "reflection"
+    ],
+    "combinations": [
+      {
+        "with": "wisdom",
+        "produces": "enlightenment"
+      },
+      {
+        "with": "attention",
+        "produces": "contemplation"
+      },
+      {
+        "with": "body",
+        "produces": "yoga"
+      },
+      {
+        "with": "paradox",
+        "produces": "koan"
+      }
+    ]
+  },
+  {
+    "id": "memory",
+    "name": "Memory",
+    "type": "concept",
+    "createdFrom": [
+      "experience",
+      "time"
+    ],
+    "combinations": [
+      {
+        "with": "language",
+        "produces": "narrative"
+      },
+      {
+        "with": "will",
+        "produces": "habit"
+      },
+      {
+        "with": "happiness",
+        "produces": "nostalgia"
+      },
+      {
+        "with": "choice",
+        "produces": "regret"
+      }
+    ]
+  },
+  {
+    "id": "mercy",
+    "name": "Mercy",
+    "type": "concept",
+    "createdFrom": [
+      "compassion",
+      "law"
+    ],
+    "combinations": [
+      {
+        "with": "justice",
+        "produces": "forgiveness"
+      },
+      {
+        "with": "punishment",
+        "produces": "grace"
+      }
+    ]
+  },
+  {
+    "id": "metaphor",
+    "name": "Metaphor",
+    "type": "concept",
+    "createdFrom": [
+      "imagination",
+      "language"
+    ],
+    "combinations": [
+      {
+        "with": "meaning",
+        "produces": "symbol"
+      }
+    ]
+  },
+  {
+    "id": "method",
+    "name": "Method",
+    "type": "concept",
+    "createdFrom": [
+      "evidence",
+      "inquiry"
+    ],
+    "combinations": [
+      {
+        "with": "imagination",
+        "produces": "thought-experiment"
+      },
+      {
+        "with": "doubt",
+        "produces": "hypothesis"
+      },
+      {
+        "with": "art",
+        "produces": "craft"
+      },
+      {
+        "with": "explanation",
+        "produces": "scientific-method"
+      },
+      {
+        "with": "consciousness",
+        "produces": "phenomenology"
+      }
+    ]
+  },
+  {
+    "id": "mimesis",
+    "name": "Mimesis",
+    "type": "concept",
+    "createdFrom": [
+      "art",
+      "reality"
+    ],
+    "combinations": [
+      {
+        "with": "truth",
+        "produces": "art"
+      }
+    ]
+  },
+  {
+    "id": "mind",
+    "name": "Mind",
+    "type": "concept",
+    "createdFrom": [
+      "emotion",
+      "thought"
+    ],
+    "combinations": [
+      {
+        "with": "body",
+        "produces": "dualism"
+      },
+      {
+        "with": "idealism",
+        "produces": "consciousness"
+      }
+    ]
+  },
+  {
+    "id": "mindfulness",
+    "name": "Mindfulness",
+    "type": "concept",
+    "createdFrom": [
+      "attention",
+      "care"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "moksha",
+    "name": "Moksha",
+    "type": "concept",
+    "createdFrom": [
+      "atman",
+      "liberation"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "monism",
+    "name": "Monism",
+    "type": "concept",
+    "createdFrom": [
+      "being",
+      "substance"
+    ],
+    "combinations": [
+      {
+        "with": "non-dualism",
+        "produces": "the-absolute"
+      }
+    ]
+  },
+  {
+    "id": "mono-no-aware",
+    "name": "Mono no Aware",
+    "type": "concept",
+    "createdFrom": [
+      "appreciation",
+      "impermanence"
+    ],
+    "combinations": [
+      {
+        "with": "beauty",
+        "produces": "the-sublime"
+      }
+    ]
+  },
+  {
+    "id": "morality",
+    "name": "Morality",
+    "type": "concept",
+    "createdFrom": [
+      "conscience",
+      "empathy"
+    ],
+    "combinations": [
+      {
+        "with": "courage",
+        "produces": "virtue"
+      },
+      {
+        "with": "truth",
+        "produces": "the-good"
+      },
+      {
+        "with": "community",
+        "produces": "duty"
+      },
+      {
+        "with": "perspective",
+        "produces": "relativism"
+      },
+      {
+        "with": "causation",
+        "produces": "consequences"
+      },
+      {
+        "with": "evil",
+        "produces": "sin"
+      },
+      {
+        "with": "will",
+        "produces": "intention"
+      },
+      {
+        "with": "desire",
+        "produces": "temptation"
+      },
+      {
+        "with": "commitment",
+        "produces": "virtue"
+      },
+      {
+        "with": "piety",
+        "produces": "virtue"
+      },
+      {
+        "with": "punishment",
+        "produces": "justice"
+      },
+      {
+        "with": "fitra",
+        "produces": "conscience"
+      }
+    ]
+  },
+  {
+    "id": "mortality",
+    "name": "Mortality",
+    "type": "concept",
+    "createdFrom": [
+      "impermanence",
+      "time"
+    ],
+    "combinations": [
+      {
+        "with": "life",
+        "produces": "death"
+      },
+      {
+        "with": "reflection",
+        "produces": "wisdom"
+      },
+      {
+        "with": "meaning",
+        "produces": "purpose"
+      },
+      {
+        "with": "faith",
+        "produces": "afterlife"
+      }
+    ]
+  },
+  {
+    "id": "music",
+    "name": "Music",
+    "type": "concept",
+    "createdFrom": [
+      "expression",
+      "harmony"
+    ],
+    "combinations": [
+      {
+        "with": "emotion",
+        "produces": "expression"
+      }
+    ]
+  },
+  {
+    "id": "mysticism",
+    "name": "Mysticism",
+    "type": "concept",
+    "createdFrom": [
+      "intuition",
+      "wonder"
+    ],
+    "combinations": [
+      {
+        "with": "nothingness",
+        "produces": "void"
+      }
+    ]
+  },
+  {
+    "id": "myth",
+    "name": "Myth",
+    "type": "concept",
+    "createdFrom": [
+      "narrative",
+      "the-sacred"
+    ],
+    "combinations": [
+      {
+        "with": "culture",
+        "produces": "tradition"
+      }
+    ]
+  },
+  {
+    "id": "narrative",
+    "name": "Narrative",
+    "type": "concept",
+    "createdFrom": [
+      "language",
+      "memory"
+    ],
+    "combinations": [
+      {
+        "with": "play",
+        "produces": "comedy"
+      },
+      {
+        "with": "symbol",
+        "produces": "allegory"
+      },
+      {
+        "with": "the-sacred",
+        "produces": "myth"
+      }
+    ]
+  },
+  {
+    "id": "nature",
+    "name": "Nature",
+    "type": "concept",
+    "createdFrom": [
+      "being",
+      "world"
+    ],
+    "combinations": [
+      {
+        "with": "self",
+        "produces": "pleasure"
+      },
+      {
+        "with": "change",
+        "produces": "impermanence"
+      },
+      {
+        "with": "substance",
+        "produces": "materialism"
+      },
+      {
+        "with": "the-sacred",
+        "produces": "animism"
+      },
+      {
+        "with": "being",
+        "produces": "life"
+      },
+      {
+        "with": "virtue",
+        "produces": "stoicism"
+      },
+      {
+        "with": "beauty",
+        "produces": "aesthetic-experience"
+      },
+      {
+        "with": "cosmology",
+        "produces": "being"
+      },
+      {
+        "with": "wabi-sabi",
+        "produces": "beauty"
+      },
+      {
+        "with": "soul",
+        "produces": "fitra"
+      },
+      {
+        "with": "buen-vivir",
+        "produces": "harmony"
+      }
+    ]
+  },
+  {
+    "id": "necessity",
+    "name": "Necessity",
+    "type": "concept",
+    "createdFrom": [
+      "logic",
+      "permanence"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "nihilism",
+    "name": "Nihilism",
+    "type": "concept",
+    "createdFrom": [
+      "nothingness",
+      "value"
+    ],
+    "combinations": [
+      {
+        "with": "hope",
+        "produces": "existential-courage"
+      }
+    ]
+  },
+  {
+    "id": "nirvana",
+    "name": "Nirvana",
+    "type": "concept",
+    "createdFrom": [
+      "enlightenment",
+      "suffering"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "non-dualism",
+    "name": "Non-Dualism",
+    "type": "concept",
+    "createdFrom": [
+      "atman",
+      "brahman"
+    ],
+    "combinations": [
+      {
+        "with": "monism",
+        "produces": "the-absolute"
+      }
+    ]
+  },
+  {
+    "id": "nonviolence",
+    "name": "Nonviolence",
+    "type": "concept",
+    "createdFrom": [
+      "compassion",
+      "justice"
+    ],
+    "combinations": [
+      {
+        "with": "law",
+        "produces": "civil-disobedience"
+      },
+      {
+        "with": "devotion",
+        "produces": "ahimsa"
+      }
+    ]
+  },
+  {
+    "id": "nostalgia",
+    "name": "Nostalgia",
+    "type": "concept",
+    "createdFrom": [
+      "happiness",
+      "memory"
+    ],
+    "combinations": [
+      {
+        "with": "time",
+        "produces": "memory"
+      },
+      {
+        "with": "identity",
+        "produces": "memory"
+      }
+    ]
+  },
+  {
+    "id": "nothingness",
+    "name": "Nothingness",
+    "type": "concept",
+    "createdFrom": [
+      "being",
+      "impermanence"
+    ],
+    "combinations": [
+      {
+        "with": "freedom",
+        "produces": "angst"
+      },
+      {
+        "with": "meaning",
+        "produces": "absurdity"
+      },
+      {
+        "with": "mysticism",
+        "produces": "void"
+      },
+      {
+        "with": "being",
+        "produces": "existentialism"
+      },
+      {
+        "with": "value",
+        "produces": "nihilism"
+      }
+    ]
+  },
+  {
+    "id": "objectivity",
+    "name": "Objectivity",
+    "type": "concept",
+    "createdFrom": [
+      "evidence",
+      "reason"
+    ],
+    "combinations": [
+      {
+        "with": "subjectivity",
+        "produces": "perspective"
+      }
+    ]
+  },
+  {
+    "id": "observation",
+    "name": "Observation",
+    "type": "concept",
+    "createdFrom": [
+      "experience",
+      "world"
+    ],
+    "combinations": [
+      {
+        "with": "empathy",
+        "produces": "understanding"
+      },
+      {
+        "with": "consciousness",
+        "produces": "wonder"
+      },
+      {
+        "with": "reflection",
+        "produces": "truth"
+      },
+      {
+        "with": "understanding",
+        "produces": "form"
+      },
+      {
+        "with": "learning",
+        "produces": "reason"
+      },
+      {
+        "with": "change",
+        "produces": "causation"
+      },
+      {
+        "with": "truth",
+        "produces": "evidence"
+      },
+      {
+        "with": "experience",
+        "produces": "perception"
+      },
+      {
+        "with": "empiricism",
+        "produces": "method"
+      }
+    ]
+  },
+  {
+    "id": "oppression",
+    "name": "Oppression",
+    "type": "concept",
+    "createdFrom": [
+      "evil",
+      "power"
+    ],
+    "combinations": [
+      {
+        "with": "culture",
+        "produces": "colonialism"
+      },
+      {
+        "with": "courage",
+        "produces": "resistance"
+      },
+      {
+        "with": "freedom",
+        "produces": "liberation"
+      },
+      {
+        "with": "labor",
+        "produces": "exploitation"
+      },
+      {
+        "with": "utopia",
+        "produces": "dystopia"
+      }
+    ]
+  },
+  {
+    "id": "order",
+    "name": "Order",
+    "type": "concept",
+    "createdFrom": [
+      "culture",
+      "tradition"
+    ],
+    "combinations": [
+      {
+        "with": "justice",
+        "produces": "law"
+      },
+      {
+        "with": "duty",
+        "produces": "dharma"
+      },
+      {
+        "with": "freedom",
+        "produces": "democracy"
+      }
+    ]
+  },
+  {
+    "id": "other",
+    "name": "Other",
+    "type": "concept",
+    "createdFrom": [],
+    "combinations": [
+      {
+        "with": "self",
+        "produces": "empathy"
+      },
+      {
+        "with": "world",
+        "produces": "society"
+      },
+      {
+        "with": "experience",
+        "produces": "communication"
+      },
+      {
+        "with": "empathy",
+        "produces": "trust"
+      },
+      {
+        "with": "dignity",
+        "produces": "respect"
+      },
+      {
+        "with": "solipsism",
+        "produces": "doubt"
+      },
+      {
+        "with": "transcendence",
+        "produces": "alterity"
+      }
+    ]
+  },
+  {
+    "id": "paradigm",
+    "name": "Paradigm",
+    "type": "concept",
+    "createdFrom": [
+      "change",
+      "theory"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "paradox",
+    "name": "Paradox",
+    "type": "concept",
+    "createdFrom": [
+      "doubt",
+      "truth"
+    ],
+    "combinations": [
+      {
+        "with": "interpretation",
+        "produces": "deconstruction"
+      },
+      {
+        "with": "questioning",
+        "produces": "aporia"
+      },
+      {
+        "with": "meaning",
+        "produces": "irony"
+      },
+      {
+        "with": "meditation",
+        "produces": "koan"
+      }
+    ]
+  },
+  {
+    "id": "peace",
+    "name": "Peace",
+    "type": "concept",
+    "createdFrom": [
+      "cooperation",
+      "understanding"
+    ],
+    "combinations": [
+      {
+        "with": "harmony",
+        "produces": "serenity"
+      },
+      {
+        "with": "war",
+        "produces": "power"
+      },
+      {
+        "with": "tolerance",
+        "produces": "cooperation"
+      }
+    ]
+  },
+  {
+    "id": "perception",
+    "name": "Perception",
+    "type": "concept",
+    "createdFrom": [
+      "experience",
+      "observation"
+    ],
+    "combinations": [
+      {
+        "with": "beauty",
+        "produces": "aesthetic-experience"
+      },
+      {
+        "with": "subjectivity",
+        "produces": "qualia"
+      }
+    ]
+  },
+  {
+    "id": "performance",
+    "name": "Performance",
+    "type": "concept",
+    "createdFrom": [
+      "art",
+      "play"
+    ],
+    "combinations": [
+      {
+        "with": "culture",
+        "produces": "tradition"
+      }
+    ]
+  },
+  {
+    "id": "permanence",
+    "name": "Permanence",
+    "type": "concept",
+    "createdFrom": [
+      "being",
+      "truth"
+    ],
+    "combinations": [
+      {
+        "with": "reality",
+        "produces": "substance"
+      },
+      {
+        "with": "consciousness",
+        "produces": "brahman"
+      },
+      {
+        "with": "existence",
+        "produces": "the-absolute"
+      },
+      {
+        "with": "logic",
+        "produces": "necessity"
+      },
+      {
+        "with": "the-good",
+        "produces": "god"
+      }
+    ]
+  },
+  {
+    "id": "perspective",
+    "name": "Perspective",
+    "type": "concept",
+    "createdFrom": [
+      "objectivity",
+      "subjectivity"
+    ],
+    "combinations": [
+      {
+        "with": "morality",
+        "produces": "relativism"
+      },
+      {
+        "with": "truth",
+        "produces": "wisdom"
+      }
+    ]
+  },
+  {
+    "id": "phenomenology",
+    "name": "Phenomenology",
+    "type": "concept",
+    "createdFrom": [
+      "consciousness",
+      "method"
+    ],
+    "combinations": [
+      {
+        "with": "experience",
+        "produces": "consciousness"
+      }
+    ]
+  },
+  {
+    "id": "philosophy",
+    "name": "Philosophy",
+    "type": "concept",
+    "createdFrom": [
+      "love",
+      "wisdom"
+    ],
+    "combinations": [
+      {
+        "with": "questioning",
+        "produces": "inquiry"
+      }
+    ]
+  },
+  {
+    "id": "piety",
+    "name": "Piety",
+    "type": "concept",
+    "createdFrom": [
+      "devotion",
+      "duty"
+    ],
+    "combinations": [
+      {
+        "with": "morality",
+        "produces": "virtue"
+      }
+    ]
+  },
+  {
+    "id": "play",
+    "name": "Play",
+    "type": "concept",
+    "createdFrom": [
+      "cooperation",
+      "happiness"
+    ],
+    "combinations": [
+      {
+        "with": "imagination",
+        "produces": "creativity"
+      },
+      {
+        "with": "narrative",
+        "produces": "comedy"
+      },
+      {
+        "with": "art",
+        "produces": "performance"
+      },
+      {
+        "with": "learning",
+        "produces": "education"
+      }
+    ]
+  },
+  {
+    "id": "pleasure",
+    "name": "Pleasure",
+    "type": "concept",
+    "createdFrom": [
+      "nature",
+      "self"
+    ],
+    "combinations": [
+      {
+        "with": "happiness",
+        "produces": "contentment"
+      },
+      {
+        "with": "will",
+        "produces": "desire"
+      },
+      {
+        "with": "value",
+        "produces": "hedonism"
+      }
+    ]
+  },
+  {
+    "id": "poetry",
+    "name": "Poetry",
+    "type": "concept",
+    "createdFrom": [
+      "beauty",
+      "language"
+    ],
+    "combinations": [
+      {
+        "with": "tragedy",
+        "produces": "elegy"
+      }
+    ]
+  },
+  {
+    "id": "power",
+    "name": "Power",
+    "type": "concept",
+    "createdFrom": [
+      "community",
+      "cooperation"
+    ],
+    "combinations": [
+      {
+        "with": "integrity",
+        "produces": "authority"
+      },
+      {
+        "with": "evil",
+        "produces": "oppression"
+      },
+      {
+        "with": "autonomy",
+        "produces": "sovereignty"
+      },
+      {
+        "with": "labor",
+        "produces": "class"
+      },
+      {
+        "with": "truth",
+        "produces": "propaganda"
+      },
+      {
+        "with": "change",
+        "produces": "war"
+      },
+      {
+        "with": "property",
+        "produces": "wealth"
+      },
+      {
+        "with": "law",
+        "produces": "authority"
+      },
+      {
+        "with": "rhetoric",
+        "produces": "propaganda"
+      },
+      {
+        "with": "wealth",
+        "produces": "class"
+      },
+      {
+        "with": "self",
+        "produces": "hubris"
+      }
+    ]
+  },
+  {
+    "id": "pragmatism",
+    "name": "Pragmatism",
+    "type": "concept",
+    "createdFrom": [
+      "consequences",
+      "utility"
+    ],
+    "combinations": [
+      {
+        "with": "action",
+        "produces": "responsibility"
+      },
+      {
+        "with": "truth",
+        "produces": "method"
+      }
+    ]
+  },
+  {
+    "id": "prajna",
+    "name": "Prajna",
+    "type": "concept",
+    "createdFrom": [
+      "sunyata",
+      "wisdom"
+    ],
+    "combinations": [
+      {
+        "with": "compassion",
+        "produces": "enlightenment"
+      }
+    ]
+  },
+  {
+    "id": "praxis",
+    "name": "Praxis",
+    "type": "concept",
+    "createdFrom": [
+      "action",
+      "theory"
+    ],
+    "combinations": [
+      {
+        "with": "society",
+        "produces": "change"
+      }
+    ]
+  },
+  {
+    "id": "prayer",
+    "name": "Prayer",
+    "type": "concept",
+    "createdFrom": [
+      "devotion",
+      "dialogue"
+    ],
+    "combinations": [
+      {
+        "with": "hope",
+        "produces": "faith"
+      }
+    ]
+  },
+  {
+    "id": "problem-of-evil",
+    "name": "Problem of Evil",
+    "type": "concept",
+    "createdFrom": [
+      "evil",
+      "god"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "progress",
+    "name": "Progress",
+    "type": "concept",
+    "createdFrom": [
+      "change",
+      "tradition"
+    ],
+    "combinations": [
+      {
+        "with": "society",
+        "produces": "change"
+      }
+    ]
+  },
+  {
+    "id": "proof",
+    "name": "Proof",
+    "type": "concept",
+    "createdFrom": [
+      "evidence",
+      "logic"
+    ],
+    "combinations": [
+      {
+        "with": "certainty",
+        "produces": "truth"
+      }
+    ]
+  },
+  {
+    "id": "propaganda",
+    "name": "Propaganda",
+    "type": "concept",
+    "createdFrom": [
+      "power",
+      "truth"
+    ],
+    "combinations": [
+      {
+        "with": "belief",
+        "produces": "power"
+      }
+    ]
+  },
+  {
+    "id": "property",
+    "name": "Property",
+    "type": "concept",
+    "createdFrom": [
+      "labor",
+      "rights"
+    ],
+    "combinations": [
+      {
+        "with": "power",
+        "produces": "wealth"
+      }
+    ]
+  },
+  {
+    "id": "proposition",
+    "name": "Proposition",
+    "type": "concept",
+    "createdFrom": [
+      "logic",
+      "truth"
+    ],
+    "combinations": [
+      {
+        "with": "thought",
+        "produces": "theory"
+      }
+    ]
+  },
+  {
+    "id": "protest",
+    "name": "Protest",
+    "type": "concept",
+    "createdFrom": [
+      "art",
+      "resistance"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "providence",
+    "name": "Providence",
+    "type": "concept",
+    "createdFrom": [
+      "causation",
+      "god"
+    ],
+    "combinations": [
+      {
+        "with": "evil",
+        "produces": "theodicy"
+      }
+    ]
+  },
+  {
+    "id": "punishment",
+    "name": "Punishment",
+    "type": "concept",
+    "createdFrom": [
+      "harm",
+      "law"
+    ],
+    "combinations": [
+      {
+        "with": "mercy",
+        "produces": "grace"
+      },
+      {
+        "with": "morality",
+        "produces": "justice"
+      }
+    ]
+  },
+  {
+    "id": "purpose",
+    "name": "Purpose",
+    "type": "concept",
+    "createdFrom": [
+      "essence",
+      "value"
+    ],
+    "combinations": [
+      {
+        "with": "meaning",
+        "produces": "ikigai"
+      }
+    ]
+  },
+  {
+    "id": "qualia",
+    "name": "Qualia",
+    "type": "concept",
+    "createdFrom": [
+      "perception",
+      "subjectivity"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "questioning",
+    "name": "Questioning",
+    "type": "concept",
+    "createdFrom": [
+      "dialogue",
+      "wonder"
+    ],
+    "combinations": [
+      {
+        "with": "knowledge",
+        "produces": "inquiry"
+      },
+      {
+        "with": "paradox",
+        "produces": "aporia"
+      },
+      {
+        "with": "philosophy",
+        "produces": "inquiry"
+      }
+    ]
+  },
+  {
+    "id": "rasa",
+    "name": "Rasa",
+    "type": "concept",
+    "createdFrom": [
+      "beauty",
+      "experience"
+    ],
+    "combinations": [
+      {
+        "with": "emotion",
+        "produces": "aesthetic-experience"
+      }
+    ]
+  },
+  {
+    "id": "rationalism",
+    "name": "Rationalism",
+    "type": "concept",
+    "createdFrom": [
+      "certainty",
+      "reason"
+    ],
+    "combinations": [
+      {
+        "with": "logic",
+        "produces": "certainty"
+      }
+    ]
+  },
+  {
+    "id": "reality",
+    "name": "Reality",
+    "type": "concept",
+    "createdFrom": [
+      "becoming",
+      "being"
+    ],
+    "combinations": [
+      {
+        "with": "identity",
+        "produces": "essence"
+      },
+      {
+        "with": "being",
+        "produces": "existence"
+      },
+      {
+        "with": "permanence",
+        "produces": "substance"
+      },
+      {
+        "with": "form",
+        "produces": "idealism"
+      },
+      {
+        "with": "imagination",
+        "produces": "transcendence"
+      },
+      {
+        "with": "art",
+        "produces": "mimesis"
+      },
+      {
+        "with": "dream",
+        "produces": "vision"
+      }
+    ]
+  },
+  {
+    "id": "reason",
+    "name": "Reason",
+    "type": "concept",
+    "createdFrom": [
+      "learning",
+      "observation"
+    ],
+    "combinations": [
+      {
+        "with": "doubt",
+        "produces": "skepticism"
+      },
+      {
+        "with": "knowledge",
+        "produces": "logic"
+      },
+      {
+        "with": "evidence",
+        "produces": "objectivity"
+      },
+      {
+        "with": "certainty",
+        "produces": "rationalism"
+      },
+      {
+        "with": "duty",
+        "produces": "deontology"
+      },
+      {
+        "with": "consciousness",
+        "produces": "thought"
+      }
+    ]
+  },
+  {
+    "id": "reconciliation",
+    "name": "Reconciliation",
+    "type": "concept",
+    "createdFrom": [
+      "forgiveness",
+      "guilt"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "redemption",
+    "name": "Redemption",
+    "type": "concept",
+    "createdFrom": [
+      "grace",
+      "sin"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "reflection",
+    "name": "Reflection",
+    "type": "concept",
+    "createdFrom": [
+      "self",
+      "self"
+    ],
+    "combinations": [
+      {
+        "with": "empathy",
+        "produces": "conscience"
+      },
+      {
+        "with": "experience",
+        "produces": "learning"
+      },
+      {
+        "with": "observation",
+        "produces": "truth"
+      },
+      {
+        "with": "communication",
+        "produces": "dialogue"
+      },
+      {
+        "with": "consciousness",
+        "produces": "awareness"
+      },
+      {
+        "with": "wonder",
+        "produces": "imagination"
+      },
+      {
+        "with": "happiness",
+        "produces": "gratitude"
+      },
+      {
+        "with": "freedom",
+        "produces": "choice"
+      },
+      {
+        "with": "the-good",
+        "produces": "value"
+      },
+      {
+        "with": "awareness",
+        "produces": "meditation"
+      },
+      {
+        "with": "mortality",
+        "produces": "wisdom"
+      },
+      {
+        "with": "death",
+        "produces": "mortality"
+      },
+      {
+        "with": "liminality",
+        "produces": "identity"
+      }
+    ]
+  },
+  {
+    "id": "regret",
+    "name": "Regret",
+    "type": "concept",
+    "createdFrom": [
+      "choice",
+      "memory"
+    ],
+    "combinations": [
+      {
+        "with": "forgiveness",
+        "produces": "reconciliation"
+      }
+    ]
+  },
+  {
+    "id": "relativism",
+    "name": "Relativism",
+    "type": "concept",
+    "createdFrom": [
+      "morality",
+      "perspective"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "resistance",
+    "name": "Resistance",
+    "type": "concept",
+    "createdFrom": [
+      "courage",
+      "oppression"
+    ],
+    "combinations": [
+      {
+        "with": "art",
+        "produces": "protest"
+      },
+      {
+        "with": "solidarity",
+        "produces": "liberation"
+      },
+      {
+        "with": "democracy",
+        "produces": "revolution"
+      }
+    ]
+  },
+  {
+    "id": "respect",
+    "name": "Respect",
+    "type": "concept",
+    "createdFrom": [
+      "dignity",
+      "other"
+    ],
+    "combinations": [
+      {
+        "with": "trust",
+        "produces": "cooperation"
+      }
+    ]
+  },
+  {
+    "id": "responsibility",
+    "name": "Responsibility",
+    "type": "concept",
+    "createdFrom": [
+      "conscience",
+      "duty"
+    ],
+    "combinations": [
+      {
+        "with": "compassion",
+        "produces": "care"
+      },
+      {
+        "with": "freedom",
+        "produces": "existential-courage"
+      },
+      {
+        "with": "guilt",
+        "produces": "conscience"
+      }
+    ]
+  },
+  {
+    "id": "revolution",
+    "name": "Revolution",
+    "type": "concept",
+    "createdFrom": [
+      "freedom",
+      "tyranny"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "rhetoric",
+    "name": "Rhetoric",
+    "type": "concept",
+    "createdFrom": [
+      "argument",
+      "language"
+    ],
+    "combinations": [
+      {
+        "with": "power",
+        "produces": "propaganda"
+      },
+      {
+        "with": "truth",
+        "produces": "argument"
+      }
+    ]
+  },
+  {
+    "id": "rights",
+    "name": "Rights",
+    "type": "concept",
+    "createdFrom": [
+      "fairness",
+      "freedom"
+    ],
+    "combinations": [
+      {
+        "with": "self",
+        "produces": "autonomy"
+      },
+      {
+        "with": "fairness",
+        "produces": "equality"
+      },
+      {
+        "with": "social-contract",
+        "produces": "citizenship"
+      },
+      {
+        "with": "labor",
+        "produces": "property"
+      }
+    ]
+  },
+  {
+    "id": "ritual",
+    "name": "Ritual",
+    "type": "concept",
+    "createdFrom": [
+      "devotion",
+      "tradition"
+    ],
+    "combinations": [
+      {
+        "with": "community",
+        "produces": "tradition"
+      }
+    ]
+  },
+  {
+    "id": "sacrifice",
+    "name": "Sacrifice",
+    "type": "concept",
+    "createdFrom": [
+      "devotion",
+      "suffering"
+    ],
+    "combinations": [
+      {
+        "with": "compassion",
+        "produces": "altruism"
+      },
+      {
+        "with": "community",
+        "produces": "devotion"
+      },
+      {
+        "with": "courage",
+        "produces": "heroism"
+      },
+      {
+        "with": "agape",
+        "produces": "grace"
+      }
+    ]
+  },
+  {
+    "id": "salvation",
+    "name": "Salvation",
+    "type": "concept",
+    "createdFrom": [
+      "faith",
+      "liberation"
+    ],
+    "combinations": [
+      {
+        "with": "hope",
+        "produces": "faith"
+      }
+    ]
+  },
+  {
+    "id": "samsara",
+    "name": "Samsara",
+    "type": "concept",
+    "createdFrom": [
+      "karma",
+      "time"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "sankofa",
+    "name": "Sankofa",
+    "type": "concept",
+    "createdFrom": [
+      "learning",
+      "tradition"
+    ],
+    "combinations": [
+      {
+        "with": "community",
+        "produces": "culture"
+      }
+    ]
+  },
+  {
+    "id": "satori",
+    "name": "Satori",
+    "type": "concept",
+    "createdFrom": [
+      "enlightenment",
+      "intuition"
+    ],
+    "combinations": [
+      {
+        "with": "self",
+        "produces": "self-awareness"
+      }
+    ]
+  },
+  {
+    "id": "scientific-method",
+    "name": "Scientific Method",
+    "type": "concept",
+    "createdFrom": [
+      "explanation",
+      "method"
+    ],
+    "combinations": [
+      {
+        "with": "truth",
+        "produces": "knowledge"
+      }
+    ]
+  },
+  {
+    "id": "self",
+    "name": "Self",
+    "type": "concept",
+    "createdFrom": [],
+    "combinations": [
+      {
+        "with": "world",
+        "produces": "experience"
+      },
+      {
+        "with": "other",
+        "produces": "empathy"
+      },
+      {
+        "with": "self",
+        "produces": "reflection"
+      },
+      {
+        "with": "experience",
+        "produces": "consciousness"
+      },
+      {
+        "with": "nature",
+        "produces": "pleasure"
+      },
+      {
+        "with": "wonder",
+        "produces": "doubt"
+      },
+      {
+        "with": "change",
+        "produces": "freedom"
+      },
+      {
+        "with": "rights",
+        "produces": "autonomy"
+      },
+      {
+        "with": "soul",
+        "produces": "atman"
+      },
+      {
+        "with": "substance",
+        "produces": "body"
+      },
+      {
+        "with": "sunyata",
+        "produces": "anatta"
+      },
+      {
+        "with": "contemplation",
+        "produces": "self-awareness"
+      },
+      {
+        "with": "love",
+        "produces": "desire"
+      },
+      {
+        "with": "power",
+        "produces": "hubris"
+      },
+      {
+        "with": "satori",
+        "produces": "self-awareness"
+      }
+    ]
+  },
+  {
+    "id": "self-awareness",
+    "name": "Self-Awareness",
+    "type": "concept",
+    "createdFrom": [
+      "awareness",
+      "subjectivity"
+    ],
+    "combinations": [
+      {
+        "with": "authenticity",
+        "produces": "self-knowledge"
+      }
+    ]
+  },
+  {
+    "id": "self-knowledge",
+    "name": "Self-Knowledge",
+    "type": "concept",
+    "createdFrom": [
+      "authenticity",
+      "self-awareness"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "serenity",
+    "name": "Serenity",
+    "type": "concept",
+    "createdFrom": [
+      "harmony",
+      "peace"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "shame",
+    "name": "Shame",
+    "type": "concept",
+    "createdFrom": [
+      "guilt",
+      "society"
+    ],
+    "combinations": [
+      {
+        "with": "society",
+        "produces": "morality"
+      },
+      {
+        "with": "identity",
+        "produces": "authenticity"
+      }
+    ]
+  },
+  {
+    "id": "sin",
+    "name": "Sin",
+    "type": "concept",
+    "createdFrom": [
+      "evil",
+      "morality"
+    ],
+    "combinations": [
+      {
+        "with": "grace",
+        "produces": "redemption"
+      }
+    ]
+  },
+  {
+    "id": "skepticism",
+    "name": "Skepticism",
+    "type": "concept",
+    "createdFrom": [
+      "doubt",
+      "reason"
+    ],
+    "combinations": [
+      {
+        "with": "belief",
+        "produces": "critical-thinking"
+      }
+    ]
+  },
+  {
+    "id": "social-contract",
+    "name": "Social Contract",
+    "type": "concept",
+    "createdFrom": [
+      "justice",
+      "trust"
+    ],
+    "combinations": [
+      {
+        "with": "rights",
+        "produces": "citizenship"
+      }
+    ]
+  },
+  {
+    "id": "society",
+    "name": "Society",
+    "type": "concept",
+    "createdFrom": [
+      "other",
+      "world"
+    ],
+    "combinations": [
+      {
+        "with": "empathy",
+        "produces": "cooperation"
+      },
+      {
+        "with": "trust",
+        "produces": "community"
+      },
+      {
+        "with": "consciousness",
+        "produces": "identity"
+      },
+      {
+        "with": "communication",
+        "produces": "tradition"
+      },
+      {
+        "with": "fairness",
+        "produces": "democracy"
+      },
+      {
+        "with": "guilt",
+        "produces": "shame"
+      },
+      {
+        "with": "action",
+        "produces": "labor"
+      },
+      {
+        "with": "art",
+        "produces": "culture"
+      },
+      {
+        "with": "progress",
+        "produces": "change"
+      },
+      {
+        "with": "tolerance",
+        "produces": "peace"
+      },
+      {
+        "with": "shame",
+        "produces": "morality"
+      },
+      {
+        "with": "praxis",
+        "produces": "change"
+      }
+    ]
+  },
+  {
+    "id": "solidarity",
+    "name": "Solidarity",
+    "type": "concept",
+    "createdFrom": [
+      "community",
+      "courage"
+    ],
+    "combinations": [
+      {
+        "with": "resistance",
+        "produces": "liberation"
+      }
+    ]
+  },
+  {
+    "id": "solipsism",
+    "name": "Solipsism",
+    "type": "concept",
+    "createdFrom": [
+      "doubt",
+      "subjectivity"
+    ],
+    "combinations": [
+      {
+        "with": "other",
+        "produces": "doubt"
+      },
+      {
+        "with": "empathy",
+        "produces": "intersubjectivity"
+      }
+    ]
+  },
+  {
+    "id": "soul",
+    "name": "Soul",
+    "type": "concept",
+    "createdFrom": [
+      "being",
+      "consciousness"
+    ],
+    "combinations": [
+      {
+        "with": "self",
+        "produces": "atman"
+      },
+      {
+        "with": "body",
+        "produces": "incarnation"
+      },
+      {
+        "with": "nature",
+        "produces": "fitra"
+      }
+    ]
+  },
+  {
+    "id": "sovereignty",
+    "name": "Sovereignty",
+    "type": "concept",
+    "createdFrom": [
+      "autonomy",
+      "power"
+    ],
+    "combinations": [
+      {
+        "with": "law",
+        "produces": "constitution"
+      }
+    ]
+  },
+  {
+    "id": "stoicism",
+    "name": "Stoicism",
+    "type": "concept",
+    "createdFrom": [
+      "nature",
+      "virtue"
+    ],
+    "combinations": [
+      {
+        "with": "suffering",
+        "produces": "virtue"
+      },
+      {
+        "with": "emotion",
+        "produces": "awareness"
+      }
+    ]
+  },
+  {
+    "id": "subjectivity",
+    "name": "Subjectivity",
+    "type": "concept",
+    "createdFrom": [
+      "consciousness",
+      "knowledge"
+    ],
+    "combinations": [
+      {
+        "with": "awareness",
+        "produces": "self-awareness"
+      },
+      {
+        "with": "experience",
+        "produces": "emotion"
+      },
+      {
+        "with": "appreciation",
+        "produces": "taste"
+      },
+      {
+        "with": "objectivity",
+        "produces": "perspective"
+      },
+      {
+        "with": "perception",
+        "produces": "qualia"
+      },
+      {
+        "with": "doubt",
+        "produces": "solipsism"
+      }
+    ]
+  },
+  {
+    "id": "substance",
+    "name": "Substance",
+    "type": "concept",
+    "createdFrom": [
+      "permanence",
+      "reality"
+    ],
+    "combinations": [
+      {
+        "with": "nature",
+        "produces": "materialism"
+      },
+      {
+        "with": "being",
+        "produces": "monism"
+      },
+      {
+        "with": "self",
+        "produces": "body"
+      }
+    ]
+  },
+  {
+    "id": "suffering",
+    "name": "Suffering",
+    "type": "concept",
+    "createdFrom": [
+      "empathy",
+      "world"
+    ],
+    "combinations": [
+      {
+        "with": "empathy",
+        "produces": "compassion"
+      },
+      {
+        "with": "the-good",
+        "produces": "evil"
+      },
+      {
+        "with": "enlightenment",
+        "produces": "nirvana"
+      },
+      {
+        "with": "devotion",
+        "produces": "sacrifice"
+      },
+      {
+        "with": "hope",
+        "produces": "faith"
+      },
+      {
+        "with": "stoicism",
+        "produces": "virtue"
+      },
+      {
+        "with": "war",
+        "produces": "harm"
+      },
+      {
+        "with": "hedonism",
+        "produces": "pleasure"
+      },
+      {
+        "with": "exploitation",
+        "produces": "oppression"
+      },
+      {
+        "with": "catharsis",
+        "produces": "forgiveness"
+      },
+      {
+        "with": "kintsugi",
+        "produces": "beauty"
+      },
+      {
+        "with": "art",
+        "produces": "tragedy"
+      }
+    ]
+  },
+  {
+    "id": "sunyata",
+    "name": "Sunyata",
+    "type": "concept",
+    "createdFrom": [
+      "form",
+      "impermanence"
+    ],
+    "combinations": [
+      {
+        "with": "self",
+        "produces": "anatta"
+      },
+      {
+        "with": "wisdom",
+        "produces": "prajna"
+      }
+    ]
+  },
+  {
+    "id": "symbol",
+    "name": "Symbol",
+    "type": "concept",
+    "createdFrom": [
+      "form",
+      "meaning"
+    ],
+    "combinations": [
+      {
+        "with": "narrative",
+        "produces": "allegory"
+      }
+    ]
+  },
+  {
+    "id": "taste",
+    "name": "Taste",
+    "type": "concept",
+    "createdFrom": [
+      "appreciation",
+      "subjectivity"
+    ],
+    "combinations": [
+      {
+        "with": "culture",
+        "produces": "appreciation"
+      }
+    ]
+  },
+  {
+    "id": "temptation",
+    "name": "Temptation",
+    "type": "concept",
+    "createdFrom": [
+      "desire",
+      "morality"
+    ],
+    "combinations": [
+      {
+        "with": "courage",
+        "produces": "virtue"
+      }
+    ]
+  },
+  {
+    "id": "testimony",
+    "name": "Testimony",
+    "type": "concept",
+    "createdFrom": [
+      "communication",
+      "truth"
+    ],
+    "combinations": [
+      {
+        "with": "belief",
+        "produces": "knowledge"
+      }
+    ]
+  },
+  {
+    "id": "the-absolute",
+    "name": "The Absolute",
+    "type": "concept",
+    "createdFrom": [
+      "existence",
+      "permanence"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "the-good",
+    "name": "The Good",
+    "type": "concept",
+    "createdFrom": [
+      "morality",
+      "truth"
+    ],
+    "combinations": [
+      {
+        "with": "suffering",
+        "produces": "evil"
+      },
+      {
+        "with": "reflection",
+        "produces": "value"
+      },
+      {
+        "with": "permanence",
+        "produces": "god"
+      }
+    ]
+  },
+  {
+    "id": "the-sacred",
+    "name": "The Sacred",
+    "type": "concept",
+    "createdFrom": [
+      "devotion",
+      "wonder"
+    ],
+    "combinations": [
+      {
+        "with": "nature",
+        "produces": "animism"
+      },
+      {
+        "with": "narrative",
+        "produces": "myth"
+      }
+    ]
+  },
+  {
+    "id": "the-sublime",
+    "name": "The Sublime",
+    "type": "concept",
+    "createdFrom": [
+      "beauty",
+      "transcendence"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "theodicy",
+    "name": "Theodicy",
+    "type": "concept",
+    "createdFrom": [
+      "evil",
+      "providence"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "theology",
+    "name": "Theology",
+    "type": "concept",
+    "createdFrom": [
+      "god",
+      "knowledge"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "theory",
+    "name": "Theory",
+    "type": "concept",
+    "createdFrom": [
+      "proposition",
+      "thought"
+    ],
+    "combinations": [
+      {
+        "with": "action",
+        "produces": "praxis"
+      },
+      {
+        "with": "change",
+        "produces": "paradigm"
+      }
+    ]
+  },
+  {
+    "id": "thought",
+    "name": "Thought",
+    "type": "concept",
+    "createdFrom": [
+      "consciousness",
+      "reason"
+    ],
+    "combinations": [
+      {
+        "with": "emotion",
+        "produces": "mind"
+      },
+      {
+        "with": "proposition",
+        "produces": "theory"
+      }
+    ]
+  },
+  {
+    "id": "thought-experiment",
+    "name": "Thought Experiment",
+    "type": "concept",
+    "createdFrom": [
+      "imagination",
+      "method"
+    ],
+    "combinations": [
+      {
+        "with": "imagination",
+        "produces": "creativity"
+      }
+    ]
+  },
+  {
+    "id": "time",
+    "name": "Time",
+    "type": "concept",
+    "createdFrom": [
+      "being",
+      "experience"
+    ],
+    "combinations": [
+      {
+        "with": "being",
+        "produces": "becoming"
+      },
+      {
+        "with": "world",
+        "produces": "change"
+      },
+      {
+        "with": "consciousness",
+        "produces": "dream"
+      },
+      {
+        "with": "experience",
+        "produces": "memory"
+      },
+      {
+        "with": "karma",
+        "produces": "samsara"
+      },
+      {
+        "with": "impermanence",
+        "produces": "mortality"
+      },
+      {
+        "with": "habit",
+        "produces": "tradition"
+      },
+      {
+        "with": "nostalgia",
+        "produces": "memory"
+      },
+      {
+        "with": "wisdom",
+        "produces": "kairos"
+      }
+    ]
+  },
+  {
+    "id": "tolerance",
+    "name": "Tolerance",
+    "type": "concept",
+    "createdFrom": [
+      "empathy",
+      "freedom"
+    ],
+    "combinations": [
+      {
+        "with": "society",
+        "produces": "peace"
+      },
+      {
+        "with": "peace",
+        "produces": "cooperation"
+      }
+    ]
+  },
+  {
+    "id": "tradition",
+    "name": "Tradition",
+    "type": "concept",
+    "createdFrom": [
+      "communication",
+      "society"
+    ],
+    "combinations": [
+      {
+        "with": "community",
+        "produces": "culture"
+      },
+      {
+        "with": "culture",
+        "produces": "order"
+      },
+      {
+        "with": "devotion",
+        "produces": "ritual"
+      },
+      {
+        "with": "change",
+        "produces": "progress"
+      },
+      {
+        "with": "education",
+        "produces": "culture"
+      },
+      {
+        "with": "learning",
+        "produces": "sankofa"
+      }
+    ]
+  },
+  {
+    "id": "tragedy",
+    "name": "Tragedy",
+    "type": "concept",
+    "createdFrom": [
+      "consequences",
+      "hubris"
+    ],
+    "combinations": [
+      {
+        "with": "emotion",
+        "produces": "catharsis"
+      },
+      {
+        "with": "poetry",
+        "produces": "elegy"
+      },
+      {
+        "with": "comedy",
+        "produces": "art"
+      }
+    ]
+  },
+  {
+    "id": "transcendence",
+    "name": "Transcendence",
+    "type": "concept",
+    "createdFrom": [
+      "imagination",
+      "reality"
+    ],
+    "combinations": [
+      {
+        "with": "beauty",
+        "produces": "the-sublime"
+      },
+      {
+        "with": "other",
+        "produces": "alterity"
+      }
+    ]
+  },
+  {
+    "id": "trust",
+    "name": "Trust",
+    "type": "concept",
+    "createdFrom": [
+      "empathy",
+      "other"
+    ],
+    "combinations": [
+      {
+        "with": "society",
+        "produces": "community"
+      },
+      {
+        "with": "experience",
+        "produces": "belief"
+      },
+      {
+        "with": "identity",
+        "produces": "commitment"
+      },
+      {
+        "with": "cooperation",
+        "produces": "harmony"
+      },
+      {
+        "with": "conscience",
+        "produces": "courage"
+      },
+      {
+        "with": "consciousness",
+        "produces": "intuition"
+      },
+      {
+        "with": "justice",
+        "produces": "social-contract"
+      },
+      {
+        "with": "compassion",
+        "produces": "grace"
+      },
+      {
+        "with": "commitment",
+        "produces": "devotion"
+      },
+      {
+        "with": "communication",
+        "produces": "friendship"
+      },
+      {
+        "with": "respect",
+        "produces": "cooperation"
+      }
+    ]
+  },
+  {
+    "id": "truth",
+    "name": "Truth",
+    "type": "concept",
+    "createdFrom": [
+      "observation",
+      "reflection"
+    ],
+    "combinations": [
+      {
+        "with": "belief",
+        "produces": "knowledge"
+      },
+      {
+        "with": "being",
+        "produces": "permanence"
+      },
+      {
+        "with": "morality",
+        "produces": "the-good"
+      },
+      {
+        "with": "understanding",
+        "produces": "wisdom"
+      },
+      {
+        "with": "observation",
+        "produces": "evidence"
+      },
+      {
+        "with": "knowledge",
+        "produces": "certainty"
+      },
+      {
+        "with": "logic",
+        "produces": "proposition"
+      },
+      {
+        "with": "communication",
+        "produces": "testimony"
+      },
+      {
+        "with": "argument",
+        "produces": "dialectic"
+      },
+      {
+        "with": "power",
+        "produces": "propaganda"
+      },
+      {
+        "with": "courage",
+        "produces": "integrity"
+      },
+      {
+        "with": "doubt",
+        "produces": "paradox"
+      },
+      {
+        "with": "perspective",
+        "produces": "wisdom"
+      },
+      {
+        "with": "rhetoric",
+        "produces": "argument"
+      },
+      {
+        "with": "dialectic",
+        "produces": "knowledge"
+      },
+      {
+        "with": "pragmatism",
+        "produces": "method"
+      },
+      {
+        "with": "mimesis",
+        "produces": "art"
+      },
+      {
+        "with": "scientific-method",
+        "produces": "knowledge"
+      },
+      {
+        "with": "irony",
+        "produces": "paradox"
+      },
+      {
+        "with": "attention",
+        "produces": "aletheia"
+      }
+    ]
+  },
+  {
+    "id": "tyranny",
+    "name": "Tyranny",
+    "type": "concept",
+    "createdFrom": [
+      "authority",
+      "evil"
+    ],
+    "combinations": [
+      {
+        "with": "freedom",
+        "produces": "revolution"
+      }
+    ]
+  },
+  {
+    "id": "ubuntu",
+    "name": "Ubuntu",
+    "type": "concept",
+    "createdFrom": [
+      "community",
+      "compassion"
+    ],
+    "combinations": [
+      {
+        "with": "identity",
+        "produces": "community"
+      }
+    ]
+  },
+  {
+    "id": "uncertainty",
+    "name": "Uncertainty",
+    "type": "concept",
+    "createdFrom": [
+      "doubt",
+      "wonder"
+    ],
+    "combinations": [
+      {
+        "with": "commitment",
+        "produces": "faith"
+      }
+    ]
+  },
+  {
+    "id": "understanding",
+    "name": "Understanding",
+    "type": "concept",
+    "createdFrom": [
+      "empathy",
+      "observation"
+    ],
+    "combinations": [
+      {
+        "with": "observation",
+        "produces": "form"
+      },
+      {
+        "with": "cooperation",
+        "produces": "peace"
+      },
+      {
+        "with": "compassion",
+        "produces": "happiness"
+      },
+      {
+        "with": "truth",
+        "produces": "wisdom"
+      },
+      {
+        "with": "inquiry",
+        "produces": "meaning"
+      },
+      {
+        "with": "hermeneutics",
+        "produces": "meaning"
+      }
+    ]
+  },
+  {
+    "id": "utility",
+    "name": "Utility",
+    "type": "concept",
+    "createdFrom": [
+      "consequences",
+      "happiness"
+    ],
+    "combinations": [
+      {
+        "with": "consequences",
+        "produces": "pragmatism"
+      }
+    ]
+  },
+  {
+    "id": "utopia",
+    "name": "Utopia",
+    "type": "concept",
+    "createdFrom": [
+      "imagination",
+      "justice"
+    ],
+    "combinations": [
+      {
+        "with": "oppression",
+        "produces": "dystopia"
+      }
+    ]
+  },
+  {
+    "id": "value",
+    "name": "Value",
+    "type": "concept",
+    "createdFrom": [
+      "reflection",
+      "the-good"
+    ],
+    "combinations": [
+      {
+        "with": "identity",
+        "produces": "dignity"
+      },
+      {
+        "with": "consequences",
+        "produces": "consequentialism"
+      },
+      {
+        "with": "community",
+        "produces": "common-good"
+      },
+      {
+        "with": "essence",
+        "produces": "purpose"
+      },
+      {
+        "with": "pleasure",
+        "produces": "hedonism"
+      },
+      {
+        "with": "nothingness",
+        "produces": "nihilism"
+      },
+      {
+        "with": "life",
+        "produces": "dignity"
+      }
+    ]
+  },
+  {
+    "id": "virtue",
+    "name": "Virtue",
+    "type": "concept",
+    "createdFrom": [
+      "courage",
+      "morality"
+    ],
+    "combinations": [
+      {
+        "with": "happiness",
+        "produces": "virtue-ethics"
+      },
+      {
+        "with": "democracy",
+        "produces": "civic-virtue"
+      },
+      {
+        "with": "nature",
+        "produces": "stoicism"
+      },
+      {
+        "with": "character",
+        "produces": "integrity"
+      }
+    ]
+  },
+  {
+    "id": "virtue-ethics",
+    "name": "Virtue Ethics",
+    "type": "concept",
+    "createdFrom": [
+      "happiness",
+      "virtue"
+    ],
+    "combinations": [
+      {
+        "with": "character",
+        "produces": "integrity"
+      }
+    ]
+  },
+  {
+    "id": "vision",
+    "name": "Vision",
+    "type": "concept",
+    "createdFrom": [
+      "dream",
+      "imagination"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "void",
+    "name": "Void",
+    "type": "concept",
+    "createdFrom": [
+      "mysticism",
+      "nothingness"
+    ],
+    "combinations": []
+  },
+  {
+    "id": "wabi-sabi",
+    "name": "Wabi-Sabi",
+    "type": "concept",
+    "createdFrom": [
+      "beauty",
+      "impermanence"
+    ],
+    "combinations": [
+      {
+        "with": "nature",
+        "produces": "beauty"
+      }
+    ]
+  },
+  {
+    "id": "war",
+    "name": "War",
+    "type": "concept",
+    "createdFrom": [
+      "change",
+      "power"
+    ],
+    "combinations": [
+      {
+        "with": "peace",
+        "produces": "power"
+      },
+      {
+        "with": "suffering",
+        "produces": "harm"
+      }
+    ]
+  },
+  {
+    "id": "wealth",
+    "name": "Wealth",
+    "type": "concept",
+    "createdFrom": [
+      "power",
+      "property"
+    ],
+    "combinations": [
+      {
+        "with": "power",
+        "produces": "class"
+      }
+    ]
+  },
+  {
+    "id": "will",
+    "name": "Will",
+    "type": "concept",
+    "createdFrom": [
+      "commitment",
+      "consciousness"
+    ],
+    "combinations": [
+      {
+        "with": "awareness",
+        "produces": "attention"
+      },
+      {
+        "with": "pleasure",
+        "produces": "desire"
+      },
+      {
+        "with": "memory",
+        "produces": "habit"
+      },
+      {
+        "with": "morality",
+        "produces": "intention"
+      }
+    ]
+  },
+  {
+    "id": "wisdom",
+    "name": "Wisdom",
+    "type": "concept",
+    "createdFrom": [
+      "truth",
+      "understanding"
+    ],
+    "combinations": [
+      {
+        "with": "meditation",
+        "produces": "enlightenment"
+      },
+      {
+        "with": "love",
+        "produces": "philosophy"
+      },
+      {
+        "with": "compassion",
+        "produces": "enlightenment"
+      },
+      {
+        "with": "sunyata",
+        "produces": "prajna"
+      },
+      {
+        "with": "time",
+        "produces": "kairos"
+      }
+    ]
+  },
+  {
+    "id": "wonder",
+    "name": "Wonder",
+    "type": "concept",
+    "createdFrom": [
+      "consciousness",
+      "observation"
+    ],
+    "combinations": [
+      {
+        "with": "self",
+        "produces": "doubt"
+      },
+      {
+        "with": "experience",
+        "produces": "appreciation"
+      },
+      {
+        "with": "dialogue",
+        "produces": "questioning"
+      },
+      {
+        "with": "reflection",
+        "produces": "imagination"
+      },
+      {
+        "with": "doubt",
+        "produces": "uncertainty"
+      },
+      {
+        "with": "intuition",
+        "produces": "mysticism"
+      },
+      {
+        "with": "devotion",
+        "produces": "the-sacred"
+      },
+      {
+        "with": "desire",
+        "produces": "curiosity"
+      },
+      {
+        "with": "knowledge",
+        "produces": "inquiry"
+      }
+    ]
+  },
+  {
+    "id": "world",
+    "name": "World",
+    "type": "concept",
+    "createdFrom": [],
+    "combinations": [
+      {
+        "with": "self",
+        "produces": "experience"
+      },
+      {
+        "with": "other",
+        "produces": "society"
+      },
+      {
+        "with": "world",
+        "produces": "being"
+      },
+      {
+        "with": "experience",
+        "produces": "observation"
+      },
+      {
+        "with": "empathy",
+        "produces": "suffering"
+      },
+      {
+        "with": "being",
+        "produces": "nature"
+      },
+      {
+        "with": "time",
+        "produces": "change"
+      },
+      {
+        "with": "god",
+        "produces": "cosmology"
+      },
+      {
+        "with": "happiness",
+        "produces": "amor-mundi"
+      }
+    ]
+  },
+  {
+    "id": "yin-and-yang",
+    "name": "Yin and Yang",
+    "type": "concept",
+    "createdFrom": [
+      "change",
+      "harmony"
+    ],
+    "combinations": [
+      {
+        "with": "harmony",
+        "produces": "balance"
+      }
+    ]
+  },
+  {
+    "id": "yoga",
+    "name": "Yoga",
+    "type": "concept",
+    "createdFrom": [
+      "body",
+      "meditation"
+    ],
+    "combinations": [
+      {
+        "with": "enlightenment",
+        "produces": "meditation"
+      }
+    ]
+  }
+]
