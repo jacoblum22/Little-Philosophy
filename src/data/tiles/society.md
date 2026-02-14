@@ -2,29 +2,47 @@
 id: society
 name: Society
 type: concept
-quote: Man is by nature a social animal.
+quote: Man is by nature a political animal.
 quoteAuthor: Aristotle
 createdFrom:
 - other
 - world
 combinations:
-- with: self
-  produces: identity
-- with: world
-  produces: culture
-- with: other
+- with: progress
+  produces: change
+- with: praxis
+  produces: change
+- with: trust
   produces: community
-- with: experience
-  produces: tradition
 - with: empathy
   produces: cooperation
+- with: art
+  produces: culture
+- with: fairness
+  produces: democracy
+- with: consciousness
+  produces: identity
+- with: action
+  produces: labor
+- with: shame
+  produces: morality
+- with: tolerance
+  produces: peace
+- with: guilt
+  produces: shame
+- with: communication
+  produces: tradition
 ---
 
 
-Society is what emerges when multiple beings share a world. It's more than just a group of individuals — it's the web of relationships, rules, customs, and institutions that people create when they live together.
+Society is what happens when individuals come together and create something larger than themselves — shared rules, shared stories, shared ways of being.
 
-Why do we form societies at all? Some philosophers, like Thomas Hobbes, argued that without society, life would be "solitary, poor, nasty, brutish, and short" — we band together out of fear and self-interest. Others, like Aristotle, believed that humans are naturally social creatures who can only flourish in community. Either way, society raises profound questions: Who gets to make the rules? What do we owe each other? Can a society be just?
+No human being has ever lived entirely alone. Even the most rugged individualist was raised in a family, learned a language invented by others, and uses tools developed over generations. Society is the invisible infrastructure that makes human life possible. But it's also a source of deep philosophical puzzles. If society shapes who we are — our values, our beliefs, our sense of right and wrong — then how much of what we call "individual choice" is really our own?
 
-#political #social
+Political philosophers have argued about the foundations of society for millennia. Hobbes imagined life without society — the "state of nature" — as a war of all against all, making any government better than none. Rousseau turned this on its head: humans are naturally good, and it's society that corrupts them. Confucius saw society not as a necessary evil or a corrupting force but as the natural expression of human relationships — the family writ large. Marx argued that the shape of society is determined by its economic structure, and that ideas about justice and morality are just reflections of who holds power.
+
+The question that runs through all social philosophy is this: does society exist for the individual, or does the individual exist for society? Liberalism answers one way, communitarianism another, and most real human lives are lived somewhere in the tension between the two.
+
+#political-philosophy #social
 Parents: [[other]] [[world]]
-Children: [[identity]] [[culture]] [[community]] [[tradition]] [[cooperation]]
+Children: [[change]] [[community]] [[cooperation]] [[culture]] [[democracy]] [[identity]] [[labor]] [[morality]] [[peace]] [[shame]] [[tradition]]
