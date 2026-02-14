@@ -57,7 +57,13 @@ LA2 = {
 }
 
 # ---------------------------------------------------------------------------
-# Thresholds  (scaled for a ~40-100 tile game)
+# Thresholds  (scaled for a ~150-250 tile game)
+#
+# Key insight: LA2 has 720 elements and 3452 combos, giving 4.8
+# combos/element. But that raw ratio scales with element count.
+# The scale-independent metric is **combo density** (combos /
+# possible pairs): LA2 = 1.33%.  At 200 elements, matching that
+# density only needs ~267 combos = 1.3 combos/element.
 # ---------------------------------------------------------------------------
 
 
@@ -65,25 +71,25 @@ LA2 = {
 class Thresholds:
     """Configurable thresholds for health warnings."""
 
-    combos_per_element_min: float = 2.0
-    combos_per_element_ideal: float = 3.5
-    combos_per_element_max: float = 6.0
+    # Combo density = combos / (N*(N+1)/2).  Scale-independent.
+    combo_density_min: float = 0.008  # 0.8% - minimum viable
+    combo_density_ideal: float = 0.013  # 1.3% - LA2 equivalent
 
     leaf_ratio_max: float = 0.40
     leaf_ratio_ideal: float = 0.30
 
     hub_degree_threshold: int = 7  # what counts as a "hub" at our scale
     hub_ratio_min: float = 0.05
-    hub_ratio_ideal: float = 0.10
+    hub_ratio_max: float = 0.15  # too many hubs = no clear connectors
 
     gen0_hit_rate_min: float = 0.80  # starting combos should mostly work
     max_burst_ratio: float = 0.35  # no single gen should discover >35% of total
+    max_burst_pct: float = 0.20  # no single gen should discover >20% of total tiles
 
     median_depth_min: int = 4
     median_depth_max: int = 12
 
-    min_recipes_ideal: float = 1.5  # median alternate recipes per element
-    max_single_burst: int = 15  # max elements discovered in one BFS gen
+    min_recipes_ideal: float = 1.3  # median alternate recipes per element
 
 
 # ---------------------------------------------------------------------------
@@ -207,6 +213,12 @@ class GameGraph:
     combos: dict[tuple[str, str], str]  # sorted (a,b) → output
     combo_partners: dict[str, set[str]]
     starting_tiles: set[str]
+    collisions: list[tuple[tuple[str, str], str, str]] = field(
+        default_factory=list
+    )  # (pair, old_out, new_out)
+    main_combos: dict[tuple[str, str], str] = field(
+        default_factory=dict
+    )  # combos from non-alternate sections
 
 
 def load_tiles() -> GameGraph:
@@ -274,11 +286,11 @@ def load_tiles() -> GameGraph:
         combos=combos,
         combo_partners=dict(combo_partners),
         starting_tiles=starting_tiles,
+        collisions=[],
+        main_combos=dict(combos),  # all combos are "main" when loaded from tiles
     )
 
 
-# ---------------------------------------------------------------------------
-# Content Map Parser
 # ---------------------------------------------------------------------------
 
 
@@ -326,9 +338,12 @@ def load_content_map(path: Path | None = None) -> GameGraph:
     combos: dict[tuple[str, str], str] = {}
     combo_partners: defaultdict[str, set[str]] = defaultdict(set)
     starting_tiles: set[str] = set()
+    collisions: list[tuple[tuple[str, str], str, str]] = []  # (pair, old_out, new_out)
+    main_combos: dict[tuple[str, str], str] = {}  # combos from non-alternate sections
 
     # Track which section we're in
     section: str | None = None  # "starting", "combinations", "philosopher", "writing"
+    subsection: str = ""  # ### sub-heading within combinations section
     current_entity_id: str | None = None  # id of current philosopher/writing
 
     # Regex patterns
@@ -373,20 +388,35 @@ def load_content_map(path: Path | None = None) -> GameGraph:
             starting_tiles.add(tid)
         return tid
 
-    def register_combo(
-        name_a: str, name_b: str, name_out: str
-    ):
+    def is_alternate_section() -> bool:
+        """Check if we're currently in an alternate/additional recipes subsection."""
+        return "alternate" in subsection.lower()
+
+    def register_combo(name_a: str, name_b: str, name_out: str):
         """Register a combination and ensure all tiles exist."""
         id_a = ensure_tile(name_a)
         id_b = ensure_tile(name_b)
         id_out = ensure_tile(name_out)
 
         key = tuple(sorted([id_a, id_b]))
+
+        # Detect collisions (same pair, different output)
+        if key in combos and combos[key] != id_out:
+            collisions.append((key, combos[key], id_out))
+
         combos[key] = id_out
 
-        # Add to both source tiles' combinations lists
-        tiles[id_a].combinations.append({"with": id_b, "produces": id_out})
-        tiles[id_b].combinations.append({"with": id_a, "produces": id_out})
+        # Track main-section-only combos
+        if not is_alternate_section():
+            main_combos[key] = id_out
+
+        # Add to both source tiles' combinations lists (deduplicate)
+        combo_entry_a = {"with": id_b, "produces": id_out}
+        combo_entry_b = {"with": id_a, "produces": id_out}
+        if combo_entry_a not in tiles[id_a].combinations:
+            tiles[id_a].combinations.append(combo_entry_a)
+        if combo_entry_b not in tiles[id_b].combinations:
+            tiles[id_b].combinations.append(combo_entry_b)
         combo_partners[id_a].add(id_b)
         combo_partners[id_b].add(id_a)
 
@@ -397,11 +427,18 @@ def load_content_map(path: Path | None = None) -> GameGraph:
     for line in lines:
         stripped = line.strip()
 
+        # Detect ### sub-headings (within combinations section)
+        sub_heading_match = re.match(r"^###\s+(.+)$", stripped)
+        if sub_heading_match and section == "combinations":
+            subsection = sub_heading_match.group(1).strip()
+            continue
+
         # Detect section headings
         heading_match = heading_re.match(stripped)
         if heading_match:
             heading_text = heading_match.group(1).strip()
             ht_lower = heading_text.lower()
+            subsection = ""  # reset subsection on new ## heading
 
             if "starting" in ht_lower:
                 section = "starting"
@@ -471,6 +508,8 @@ def load_content_map(path: Path | None = None) -> GameGraph:
         combos=combos,
         combo_partners=dict(combo_partners),
         starting_tiles=starting_tiles,
+        collisions=collisions,
+        main_combos=main_combos,
     )
 
 
@@ -481,7 +520,16 @@ def load_content_map(path: Path | None = None) -> GameGraph:
 
 def run_bfs(graph: GameGraph) -> list[dict[str, Any]]:
     """Simulate discovery from starting tiles, generation by generation."""
-    discovered = set(graph.starting_tiles)
+    return run_bfs_with_combos(graph.combos, graph.starting_tiles, graph.tiles)
+
+
+def run_bfs_with_combos(
+    combos: dict[tuple[str, str], str],
+    starting_tiles: set[str],
+    tiles: dict[str, Tile] | None = None,
+) -> list[dict[str, Any]]:
+    """Run BFS discovery using a specific combo dictionary."""
+    discovered = set(starting_tiles)
     generations = [{"gen": 0, "total": len(discovered), "new": sorted(discovered)}]
 
     for gen in range(1, 50):
@@ -491,16 +539,17 @@ def run_bfs(graph: GameGraph) -> list[dict[str, Any]]:
         for i, a in enumerate(disc_list):
             for b in disc_list[i:]:
                 key = tuple(sorted([a, b]))
-                if key in graph.combos:
-                    output = graph.combos[key]
+                if key in combos:
+                    output = combos[key]
                     if output not in discovered:
                         new_this_gen.add(output)
 
         # Check recipe unlocks
-        for tid, tile in graph.tiles.items():
-            if tile.recipe and tid not in discovered and tid not in new_this_gen:
-                if all(r in (discovered | new_this_gen) for r in tile.recipe):
-                    new_this_gen.add(tid)
+        if tiles:
+            for tid, tile in tiles.items():
+                if tile.recipe and tid not in discovered and tid not in new_this_gen:
+                    if all(r in (discovered | new_this_gen) for r in tile.recipe):
+                        new_this_gen.add(tid)
 
         if not new_this_gen:
             break
@@ -554,10 +603,19 @@ def calc_hit_rates(graph: GameGraph, generations: list[dict]) -> list[dict[str, 
 
 
 def calc_depths(graph: GameGraph) -> dict[str, int]:
-    """Calculate minimum combo depth for each tile."""
+    """Calculate minimum combo depth for each tile.
+
+    Considers ALL combos that produce each tile (not just createdFrom),
+    so alternate recipes can provide shorter paths.
+    """
     depths: dict[str, int] = {}
     for tid in graph.starting_tiles:
         depths[tid] = 0
+
+    # Build reverse lookup: output_tid -> list of (input_a, input_b)
+    all_producers: defaultdict[str, list[tuple[str, str]]] = defaultdict(list)
+    for (a, b), output in graph.combos.items():
+        all_producers[output].append((a, b))
 
     changed = True
     iterations = 0
@@ -568,9 +626,8 @@ def calc_depths(graph: GameGraph) -> dict[str, int]:
             if tid in depths and depths[tid] == 0 and tile.is_starting:
                 continue
 
-            # Check createdFrom (combo result)
-            if len(tile.created_from) == 2:
-                a, b = tile.created_from
+            # Check ALL combos that produce this tile
+            for a, b in all_producers.get(tid, []):
                 if a in depths and b in depths:
                     depth = max(depths[a], depths[b]) + 1
                     if tid not in depths or depth < depths[tid]:
@@ -636,37 +693,74 @@ def analyze(graph: GameGraph, thresholds: Thresholds) -> tuple[list[Finding], di
     raw["starting_tiles"] = n_starting
     raw["tile_types"] = dict(Counter(t.tile_type for t in graph.tiles.values()))
 
-    # --- Combos per element ---
-    cpe = n_combos / n_tiles if n_tiles > 0 else 0
-    raw["combos_per_element"] = round(cpe, 2)
-
-    if cpe < thresholds.combos_per_element_min:
+    # --- Combo collisions ---
+    raw["collisions"] = [
+        {
+            "pair": (
+                graph.tiles[p[0]].name if p[0] in graph.tiles else p[0],
+                graph.tiles[p[1]].name if p[1] in graph.tiles else p[1],
+            ),
+            "old_output": graph.tiles[old].name if old in graph.tiles else old,
+            "new_output": graph.tiles[new].name if new in graph.tiles else new,
+        }
+        for p, old, new in graph.collisions
+    ]
+    if graph.collisions:
+        collision_details = "; ".join(
+            f"{c['pair'][0]}+{c['pair'][1]}: {c['old_output']} -> {c['new_output']}"
+            for c in raw["collisions"]
+        )
         findings.append(
             Finding(
                 STATUS_BAD,
-                "Combos/element",
-                f"{cpe:.2f}",
-                f"target >= {thresholds.combos_per_element_min} (LA2: {LA2['combos_per_element']})",
-                "Add more combinations to existing tiles. Most tiles should combine with 2-4 others.",
+                "Combo collisions",
+                f"{len(graph.collisions)} pair(s) overwritten",
+                "0 (each input pair should have exactly one output)",
+                f"Pairs with conflicting outputs: {collision_details}",
             )
         )
-    elif cpe < thresholds.combos_per_element_ideal:
+
+    # --- Combos per element (reference only, not a finding) ---
+    cpe = n_combos / n_tiles if n_tiles > 0 else 0
+    raw["combos_per_element"] = round(cpe, 2)
+
+    # --- Combo density (scale-independent primary metric) ---
+    max_possible = n_tiles * (n_tiles + 1) // 2  # includes self-combos
+    combo_density = n_combos / max_possible if max_possible > 0 else 0
+    la2_density = LA2["total_combos"] / (
+        LA2["total_elements"] * (LA2["total_elements"] + 1) // 2
+    )
+    raw["combo_density"] = round(combo_density, 4)
+    raw["combo_density_la2"] = round(la2_density, 4)
+    raw["max_possible_combos"] = max_possible
+
+    if combo_density < thresholds.combo_density_min:
+        findings.append(
+            Finding(
+                STATUS_BAD,
+                "Combo density",
+                f"{combo_density:.2%} ({n_combos}/{max_possible})",
+                f"target >= {thresholds.combo_density_min:.1%} (LA2: {la2_density:.2%})",
+                "Scale-independent interconnection is low. Add more combos between existing tiles.",
+            )
+        )
+    elif combo_density < thresholds.combo_density_ideal:
         findings.append(
             Finding(
                 STATUS_WARN,
-                "Combos/element",
-                f"{cpe:.2f}",
-                f"ideal >= {thresholds.combos_per_element_ideal} (LA2: {LA2['combos_per_element']})",
-                "Getting closer! Add combinations to tiles with 0-1 combo partners.",
+                "Combo density",
+                f"{combo_density:.2%} ({n_combos}/{max_possible})",
+                f"ideal >= {thresholds.combo_density_ideal:.1%} (LA2: {la2_density:.2%})",
+                "Getting closer to LA2-level density. Add cross-branch combos.",
             )
         )
     else:
         findings.append(
             Finding(
                 STATUS_OK,
-                "Combos/element",
-                f"{cpe:.2f}",
-                f"target: {thresholds.combos_per_element_min}-{thresholds.combos_per_element_max}",
+                "Combo density",
+                f"{combo_density:.2%}",
+                f"target >= {thresholds.combo_density_ideal:.1%}",
             )
         )
 
@@ -735,8 +829,18 @@ def analyze(graph: GameGraph, thresholds: Thresholds) -> tuple[list[Finding], di
                 STATUS_WARN,
                 "Hub ratio",
                 f"{hub_ratio:.0%} ({len(hub_tiles)} hubs, deg >= {thresholds.hub_degree_threshold})",
-                f"target >= {thresholds.hub_ratio_min:.0%} (LA2: {LA2['hub_ratio']:.0%})",
+                f"target {thresholds.hub_ratio_min:.0%}-{thresholds.hub_ratio_max:.0%}",
                 "Add more combos to key connective concepts (Empathy, Wonder, Experience).",
+            )
+        )
+    elif hub_ratio > thresholds.hub_ratio_max:
+        findings.append(
+            Finding(
+                STATUS_WARN,
+                "Hub ratio",
+                f"{hub_ratio:.0%} ({len(hub_tiles)} hubs, deg >= {thresholds.hub_degree_threshold})",
+                f"target {thresholds.hub_ratio_min:.0%}-{thresholds.hub_ratio_max:.0%}",
+                "Too many hubs dilutes the feel of key connector concepts.",
             )
         )
     else:
@@ -745,7 +849,7 @@ def analyze(graph: GameGraph, thresholds: Thresholds) -> tuple[list[Finding], di
                 STATUS_OK,
                 "Hub ratio",
                 f"{hub_ratio:.0%} ({len(hub_tiles)} hubs)",
-                f"target >= {thresholds.hub_ratio_min:.0%}",
+                f"target {thresholds.hub_ratio_min:.0%}-{thresholds.hub_ratio_max:.0%}",
             )
         )
 
@@ -835,13 +939,13 @@ def analyze(graph: GameGraph, thresholds: Thresholds) -> tuple[list[Finding], di
                     f"Gen {biggest_burst['gen']} discovers too many at once. Split some combos to spread discovery.",
                 )
             )
-        elif burst_size > thresholds.max_single_burst:
+        elif burst_ratio > thresholds.max_burst_pct:
             findings.append(
                 Finding(
                     STATUS_WARN,
                     "Biggest burst",
-                    f"Gen {biggest_burst['gen']}: {burst_size} tiles",
-                    f"target < {thresholds.max_single_burst}",
+                    f"Gen {biggest_burst['gen']}: {burst_size} tiles ({burst_ratio:.0%})",
+                    f"target < {thresholds.max_burst_pct:.0%} of total",
                     "Large burst may overwhelm players. Consider adding intermediate steps.",
                 )
             )
@@ -958,6 +1062,69 @@ def analyze(graph: GameGraph, thresholds: Thresholds) -> tuple[list[Finding], di
         for g in generations
     ]
 
+    # --- Generation shift check (alternate recipes vs main-only) ---
+    if graph.main_combos and graph.main_combos != graph.combos:
+        main_gens = run_bfs_with_combos(
+            graph.main_combos, graph.starting_tiles, graph.tiles
+        )
+        all_gens = run_bfs_with_combos(graph.combos, graph.starting_tiles, graph.tiles)
+
+        # Build gen lookup: tile_id → generation number
+        main_gen_lookup: dict[str, int] = {}
+        for g in main_gens:
+            for tid in g["new"]:
+                if tid not in main_gen_lookup:
+                    main_gen_lookup[tid] = g["gen"]
+
+        all_gen_lookup: dict[str, int] = {}
+        for g in all_gens:
+            for tid in g["new"]:
+                if tid not in all_gen_lookup:
+                    all_gen_lookup[tid] = g["gen"]
+
+        shifted: list[dict[str, Any]] = []
+        for tid in sorted(all_gen_lookup.keys()):
+            main_g = main_gen_lookup.get(tid)
+            all_g = all_gen_lookup.get(tid)
+            if main_g is not None and all_g is not None and all_g < main_g:
+                shifted.append(
+                    {
+                        "tile": graph.tiles[tid].name if tid in graph.tiles else tid,
+                        "main_gen": main_g,
+                        "alt_gen": all_g,
+                        "shift": main_g - all_g,
+                    }
+                )
+
+        raw["generation_shifts"] = shifted
+        raw["generation_shift_count"] = len(shifted)
+
+        if shifted:
+            big_shifts = [s for s in shifted if s["shift"] >= 2]
+            shift_summary = ", ".join(
+                f"{s['tile']} ({s['main_gen']}->{s['alt_gen']})"
+                for s in sorted(shifted, key=lambda x: -x["shift"])[:5]
+            )
+            findings.append(
+                Finding(
+                    STATUS_INFO if not big_shifts else STATUS_WARN,
+                    "Generation shifts",
+                    f"{len(shifted)} tiles shifted earlier by alternate recipes"
+                    + (f" ({len(big_shifts)} by 2+ gens)" if big_shifts else ""),
+                    "Alternate recipes should not bypass intended progression",
+                    f"Biggest shifts: {shift_summary}",
+                )
+            )
+        else:
+            findings.append(
+                Finding(
+                    STATUS_OK,
+                    "Generation shifts",
+                    "No elements shifted earlier by alternate recipes",
+                    "Alternates should not bypass progression",
+                )
+            )
+
     return findings, raw
 
 
@@ -1006,7 +1173,7 @@ def print_report(
         if verbose:
             print(f"       benchmark: {f.benchmark}")
             if f.suggestion:
-                print(f"       → {f.suggestion}")
+                print(f"       -> {f.suggestion}")
     print()
 
     # Suggestions (only if there are warnings/problems)
@@ -1062,24 +1229,41 @@ def print_report(
 
     # Unreachable
     if raw.get("unreachable_tiles"):
-        print("  ⚠ UNREACHABLE TILES")
+        print("  !! UNREACHABLE TILES")
         print("  " + "-" * 50)
         for name in raw["unreachable_tiles"]:
             print(f"  * {name}")
         print()
 
-    # LA2 comparison table
-    print("  LA2 COMPARISON")
+    # Generation shifts
+    if raw.get("generation_shifts"):
+        print("  GENERATION SHIFTS (alternate recipes)")
+        print("  " + "-" * 50)
+        print(f"  {'Tile':<30} {'Main':<8} {'w/ Alts':<8} {'Shift'}")
+        for s in sorted(raw["generation_shifts"], key=lambda x: -x["shift"]):
+            print(
+                f"  {s['tile']:<30} Gen {s['main_gen']:<5} Gen {s['alt_gen']:<5} -{s['shift']}"
+            )
+        print()
+
+    # LA2 comparison table (targets scaled for ~200 elements)
+    print("  LA2 COMPARISON (targets scaled for our element count)")
     print("  " + "-" * 50)
     print(f"  {'Metric':<30} {'LP':<12} {'LA2':<12} {'Target'}")
+    combo_density_str = f"{raw.get('combo_density', 0):.2%}"
+    combo_density_la2_str = f"{raw.get('combo_density_la2', 0):.2%}"
     print(
-        f"  {'Combos/element':<30} {raw['combos_per_element']:<12} {LA2['combos_per_element']:<12} {'3-5'}"
+        f"  {'Combo density':<30} {combo_density_str:<12} {combo_density_la2_str:<12} {'>=0.8%'}"
+    )
+    cpe_str = f"{raw['combos_per_element']}"
+    print(
+        f"  {'Combos/element (ref)':<30} {cpe_str:<12} {LA2['combos_per_element']:<12} {'(n/a)'}"
     )
     print(
         f"  {'Leaf ratio':<30} {raw['leaf_ratio']:<12.0%} {LA2['leaf_ratio']:<12.0%} {'25-35%'}"
     )
     print(
-        f"  {'Hub ratio':<30} {raw['hub_ratio']:<12.0%} {LA2['hub_ratio']:<12.0%} {'5-10%'}"
+        f"  {'Hub ratio':<30} {raw['hub_ratio']:<12.0%} {LA2['hub_ratio']:<12.0%} {'5-15%'}"
     )
     print(
         f"  {'Median depth':<30} {raw.get('median_depth', '?'):<12} {LA2['median_depth']:<12} {'4-12'}"
@@ -1098,7 +1282,7 @@ def print_report(
     pct = max(0, score / max_score * 100) if max_score > 0 else 0
     bar_len = 30
     filled = int(pct / 100 * bar_len)
-    bar = "█" * filled + "░" * (bar_len - filled)
+    bar = "#" * filled + "-" * (bar_len - filled)
     print(f"  HEALTH SCORE: [{bar}] {pct:.0f}%")
     print()
 

@@ -18,6 +18,7 @@ import argparse
 import statistics
 from pathlib import Path
 from collections import defaultdict, deque
+from collections.abc import Callable
 from dataclasses import dataclass, field
 
 # ── Data structures ──────────────────────────────────────────────────
@@ -58,7 +59,6 @@ def parse_brainstorm(
     """Parse the Concept Brainstorm markdown for philosopher data and ordering constraints."""
     text = path.read_text(encoding="utf-8")
     philosophers: dict[str, Philosopher] = {}
-    ordering: list[tuple[str, str]] = []
 
     # Build a lookup: concept -> which philosopher produces it
     concept_to_producer: dict[str, str] = {}
@@ -299,24 +299,34 @@ def detect_cycles(graph: dict[str, set[str]]) -> list[list[str]]:
     return cycles
 
 
-def topological_sort(graph: dict[str, set[str]]) -> list[str] | None:
-    """Return topological order, or None if cycles exist."""
+def topological_sort(
+    graph: dict[str, set[str]],
+    sort_key: Callable[[str], tuple] | None = None,
+) -> list[str] | None:
+    """Return topological order, or None if cycles exist.
+
+    Within each dependency tier, nodes are sorted by sort_key if provided,
+    otherwise alphabetically.
+    """
     in_degree: dict[str, int] = defaultdict(int)
     for node in graph:
         in_degree.setdefault(node, 0)
         for neighbor in graph[node]:
             in_degree[neighbor] = in_degree.get(neighbor, 0) + 1
 
-    queue = deque(sorted(n for n in in_degree if in_degree[n] == 0))
+    key_fn = sort_key or (lambda n: (n,))
+    queue = deque(sorted((n for n in in_degree if in_degree[n] == 0), key=key_fn))
     order: list[str] = []
 
     while queue:
         node = queue.popleft()
         order.append(node)
-        for neighbor in sorted(graph.get(node, set())):
+        ready = []
+        for neighbor in graph.get(node, set()):
             in_degree[neighbor] -= 1
             if in_degree[neighbor] == 0:
-                queue.append(neighbor)
+                ready.append(neighbor)
+        queue.extend(sorted(ready, key=key_fn))
 
     if len(order) != len(in_degree):
         return None  # cycle detected
@@ -326,7 +336,6 @@ def topological_sort(graph: dict[str, set[str]]) -> list[str] | None:
 def check_implicit_ordering(
     philosophers: dict[str, Philosopher],
     ordering: list[tuple[str, str]],
-    graph: dict[str, set[str]],
 ) -> list[str]:
     """Check if ordering constraints are already satisfied by output dependencies alone."""
     # Build graph from output dependencies only (no ordering constraints)
@@ -369,48 +378,6 @@ def check_implicit_ordering(
     return warnings
 
 
-def find_missing_order_pairs(
-    philosophers: dict[str, Philosopher],
-    ordering: list[tuple[str, str]],
-    graph: dict[str, set[str]],
-) -> list[str]:
-    """Identify philosopher pairs that might need ordering but have none."""
-    # Build transitive closure of the full graph
-    reachable: dict[str, set[str]] = {}
-    for node in graph:
-        visited = set()
-        queue = deque([node])
-        while queue:
-            current = queue.popleft()
-            if current in visited:
-                continue
-            visited.add(current)
-            queue.extend(graph.get(current, set()))
-        reachable[node] = visited - {node}
-
-    era_order = {"Ancient": 0, "Medieval": 1, "Modern": 2, "Contemporary": 3}
-    suggestions = []
-
-    for name_a, phil_a in sorted(philosophers.items()):
-        for name_b, phil_b in sorted(philosophers.items()):
-            if name_a >= name_b:
-                continue
-            era_a = era_order.get(phil_a.era, -1)
-            era_b = era_order.get(phil_b.era, -1)
-
-            # If A is from an earlier era than B, A should unlock before B
-            if era_a < era_b:
-                if name_b not in reachable.get(name_a, set()):
-                    # A doesn't necessarily unlock before B — might be a problem
-                    # Only flag if they're in the same tradition or have a known relationship
-                    pass  # Too many false positives, skip for now
-
-            # If same era, check if one should come before the other
-            # (this would need specific knowledge — skip for now)
-
-    return suggestions
-
-
 # ── Recipe Balance ───────────────────────────────────────────────────
 
 
@@ -426,7 +393,9 @@ def get_concept_depths(content_map_path: Path | None = None) -> dict[str, int]:
     Also returns depths by tile ID for cross-referencing.
     """
     # Import here to avoid circular dependency
-    sys.path.insert(0, str(Path(__file__).parent))
+    _scripts_dir = str(Path(__file__).parent)
+    if _scripts_dir not in sys.path:
+        sys.path.insert(0, _scripts_dir)
     from analyzeTree import load_content_map, calc_depths
 
     graph = load_content_map(content_map_path)
@@ -581,6 +550,131 @@ def check_recipe_balance(
     return results
 
 
+# ── Philosopher Depth Placement ───────────────────────────────────────
+
+
+def check_philosopher_depth_placement(
+    philosophers: dict[str, Philosopher],
+    writings: dict[str, Writing],
+    concept_depths: dict[str, int],
+) -> list[dict]:
+    """Check if each philosopher's pure-concept recipe ingredients align with their era.
+
+    "Pure concepts" excludes:
+    - Other philosopher tiles (e.g. "Marcus Aurelius")
+    - Concepts produced by any philosopher (e.g. "Inner Citadel")
+    - Writing tiles (e.g. "Meditations")
+    - Concepts produced by any writing (e.g. "Eightfold Path")
+
+    For each philosopher, keeps only the pure concept ingredients,
+    looks up their BFS depths, and checks whether the philosopher's
+    unlock point makes sense for their era.
+
+    Era windows (max pure-concept depth expected):
+      Ancient:       0-4
+      Medieval:      0-6
+      Modern:        0-8
+      Contemporary:  0-∞  (no upper bound)
+
+    Minimum pure-concept depth (ensures the philosopher isn't trivially early):
+      Ancient:       1
+      Medieval:      3
+      Modern:        4
+      Contemporary:  5
+    """
+    # Build exclusion sets
+    philosopher_names = set(philosophers.keys())
+    philosopher_outputs: set[str] = set()
+    for phil in philosophers.values():
+        for concept in phil.produces:
+            philosopher_outputs.add(concept)
+
+    writing_titles: set[str] = set()
+    writing_outputs: set[str] = set()
+    if writings:
+        writing_titles = set(writings.keys())
+        for w in writings.values():
+            for concept in w.produces:
+                writing_outputs.add(concept)
+
+    excluded = (
+        philosopher_names | philosopher_outputs | writing_titles | writing_outputs
+    )
+
+    # Era depth windows: (min_pure_depth, max_pure_depth)
+    # 1-gen overlap between adjacent eras
+    era_windows: dict[str, tuple[int, int]] = {
+        "Ancient": (2, 4),
+        "Medieval": (4, 6),
+        "Modern": (6, 8),
+        "Contemporary": (7, 999),
+    }
+
+    results = []
+
+    for phil in sorted(philosophers.values(), key=lambda p: p.name):
+        pure_ingredients: list[dict] = []
+        excluded_ingredients: list[str] = []
+
+        for item in phil.recipe:
+            clean = item.rstrip("*").strip()
+            if clean in excluded:
+                excluded_ingredients.append(clean)
+                continue
+
+            # Look up depth
+            clean_lower = clean.lower()
+            clean_id = name_to_id(clean)
+            depth = None
+            if clean_lower in concept_depths:
+                depth = concept_depths[clean_lower]
+            elif clean_id in concept_depths:
+                depth = concept_depths[clean_id]
+
+            pure_ingredients.append(
+                {
+                    "name": clean,
+                    "depth": depth,
+                }
+            )
+
+        known_depths = [i["depth"] for i in pure_ingredients if i["depth"] is not None]
+        unknown = [i for i in pure_ingredients if i["depth"] is None]
+        max_depth = max(known_depths) if known_depths else None
+        min_depth = min(known_depths) if known_depths else None
+
+        issues: list[str] = []
+        window = era_windows.get(phil.era)
+        if window and max_depth is not None:
+            if max_depth > window[1]:
+                issues.append(
+                    f"Too deep for {phil.era}: deepest pure concept at Gen {max_depth}, "
+                    f"but {phil.era} window is Gen {window[0]}-{window[1]}"
+                )
+            if max_depth < window[0]:
+                issues.append(
+                    f"Too shallow for {phil.era}: deepest pure concept at Gen {max_depth}, "
+                    f"but {phil.era} window is Gen {window[0]}-{window[1]}"
+                )
+
+        results.append(
+            {
+                "name": phil.name,
+                "era": phil.era,
+                "pure_ingredients": pure_ingredients,
+                "excluded_ingredients": excluded_ingredients,
+                "unknown_ingredients": [i["name"] for i in unknown],
+                "known_depths": known_depths,
+                "max_pure_depth": max_depth,
+                "min_pure_depth": min_depth,
+                "era_window": window,
+                "issues": issues,
+            }
+        )
+
+    return results
+
+
 # ── Effective Recipe ──────────────────────────────────────────────────
 
 
@@ -624,7 +718,9 @@ def compute_effective_recipes(
         for concept in phil.produces:
             concept_to_producer[concept] = phil.name
 
-    def gather_inherited_concepts(phil_name: str, visited: set[str] | None = None) -> set[str]:
+    def gather_inherited_concepts(
+        phil_name: str, visited: set[str] | None = None
+    ) -> set[str]:
         """Recursively collect all recipe concepts from prerequisite philosophers."""
         if visited is None:
             visited = set()
@@ -675,17 +771,19 @@ def compute_effective_recipes(
                 f"{', '.join(phil.depends_on_output_of)}"
             )
 
-        results.append({
-            "name": phil.name,
-            "era": phil.era,
-            "type": "philosopher",
-            "recipe": phil.recipe,
-            "inherited": inherited_in_recipe,
-            "effective": effective,
-            "effective_size": len(effective),
-            "prerequisite_chain": phil.depends_on_output_of,
-            "issues": issues,
-        })
+        results.append(
+            {
+                "name": phil.name,
+                "era": phil.era,
+                "type": "philosopher",
+                "recipe": phil.recipe,
+                "inherited": inherited_in_recipe,
+                "effective": effective,
+                "effective_size": len(effective),
+                "prerequisite_chain": phil.depends_on_output_of,
+                "issues": issues,
+            }
+        )
 
     # Writings
     for w in sorted(writings.values(), key=lambda x: x.title):
@@ -726,17 +824,19 @@ def compute_effective_recipes(
                 f"may feel trivial"
             )
 
-        results.append({
-            "name": w.title,
-            "era": w.era,
-            "type": "writing",
-            "recipe": w.recipe,
-            "inherited": inherited_in_recipe,
-            "effective": effective,
-            "effective_size": len(effective),
-            "prerequisite_chain": [w.author] + w.depends_on_output_of,
-            "issues": issues,
-        })
+        results.append(
+            {
+                "name": w.title,
+                "era": w.era,
+                "type": "writing",
+                "recipe": w.recipe,
+                "inherited": inherited_in_recipe,
+                "effective": effective,
+                "effective_size": len(effective),
+                "prerequisite_chain": [w.author] + w.depends_on_output_of,
+                "issues": issues,
+            }
+        )
 
     return results
 
@@ -833,7 +933,9 @@ def check_concept_coverage(
 
     # Content Map trunk concepts
     if content_map_path and content_map_path.exists():
-        sys.path.insert(0, str(Path(__file__).parent))
+        _scripts_dir = str(Path(__file__).parent)
+        if _scripts_dir not in sys.path:
+            sys.path.insert(0, _scripts_dir)
         from analyzeTree import load_content_map
 
         graph = load_content_map(content_map_path)
@@ -901,7 +1003,9 @@ def check_concept_coverage(
             clean_words = set(clean.split())
             name_words = set(name_lower.split())
             shared = clean_words & name_words
-            if shared and len(shared) >= max(1, min(len(clean_words), len(name_words)) - 1):
+            if shared and len(shared) >= max(
+                1, min(len(clean_words), len(name_words)) - 1
+            ):
                 if name not in matches:
                     matches.append(name)
         return matches[:5]  # limit suggestions
@@ -913,18 +1017,22 @@ def check_concept_coverage(
             match = find_ingredient(ingredient)
             if match is None:
                 near = find_near_match(ingredient)
-                undefined.append({
-                    "ingredient": clean,
-                    "used_by": phil.name,
-                    "used_in": "philosopher recipe",
-                    "near_matches": near,
-                })
+                undefined.append(
+                    {
+                        "ingredient": clean,
+                        "used_by": phil.name,
+                        "used_in": "philosopher recipe",
+                        "near_matches": near,
+                    }
+                )
             elif match != clean:
-                name_mismatches.append({
-                    "recipe_name": clean,
-                    "defined_name": match,
-                    "used_by": phil.name,
-                })
+                name_mismatches.append(
+                    {
+                        "recipe_name": clean,
+                        "defined_name": match,
+                        "used_by": phil.name,
+                    }
+                )
 
     # Check writing recipes (skip author name — that's a philosopher)
     for w in writings.values():
@@ -936,18 +1044,22 @@ def check_concept_coverage(
             match = find_ingredient(ingredient)
             if match is None:
                 near = find_near_match(ingredient)
-                undefined.append({
-                    "ingredient": clean,
-                    "used_by": w.title,
-                    "used_in": "writing recipe",
-                    "near_matches": near,
-                })
+                undefined.append(
+                    {
+                        "ingredient": clean,
+                        "used_by": w.title,
+                        "used_in": "writing recipe",
+                        "near_matches": near,
+                    }
+                )
             elif match != clean:
-                name_mismatches.append({
-                    "recipe_name": clean,
-                    "defined_name": match,
-                    "used_by": w.title,
-                })
+                name_mismatches.append(
+                    {
+                        "recipe_name": clean,
+                        "defined_name": match,
+                        "used_by": w.title,
+                    }
+                )
 
     # 3. Find orphan concepts (defined but never used in any recipe)
     used_concepts: set[str] = set()
@@ -979,20 +1091,21 @@ def check_concept_coverage(
 def print_report(
     philosophers: dict[str, Philosopher],
     ordering: list[tuple[str, str]],
-    concept_depth_ordering: list[tuple[str, str]] = None,
+    concept_depth_ordering: list[tuple[str, str]] | None = None,
     verbose: bool = False,
     prereqs: bool = False,
     balance: bool = False,
     effective: bool = False,
     check_concepts: bool = False,
+    depth_check: bool = False,
     content_map_path: Path | None = None,
     brainstorm_path: Path | None = None,
-    writings: dict[str, Writing] = None,
+    writings: dict[str, Writing] | None = None,
 ):
     """Print the full ordering analysis report to stdout.
 
     Includes dependency chains, era distribution, ordering constraint checks,
-    balance analysis, prerequisite traces, and writing summaries.
+    balance analysis, prerequisite traces, depth placement, and writing summaries.
     """
     if concept_depth_ordering is None:
         concept_depth_ordering = []
@@ -1019,37 +1132,99 @@ def print_report(
         print("  [OK] No contradictions found")
         print()
 
+    # Compute effective depths for sorting (concept-depth-based unlock gen)
+    eff_depths: dict[str, int] = {}
+    if content_map_path:
+        try:
+            concept_depths = get_concept_depths(content_map_path)
+            dp_results = check_philosopher_depth_placement(
+                philosophers, writings or {}, concept_depths
+            )
+            depth_by_name = {r["name"]: r for r in dp_results}
+
+            def _get_effective_depth(
+                name: str, visited: set | None = None
+            ) -> int | None:
+                """Get effective unlock depth accounting for prerequisites."""
+                if visited is None:
+                    visited = set()
+                if name in visited:
+                    return None
+                visited.add(name)
+                r = depth_by_name.get(name)
+                if r is None or r["max_pure_depth"] is None:
+                    return None
+                depth = r["max_pure_depth"]
+                phil = philosophers.get(name)
+                if phil:
+                    for dep_name in phil.depends_on_output_of:
+                        dep_depth = _get_effective_depth(dep_name, visited.copy())
+                        if dep_depth is not None:
+                            depth = max(depth, dep_depth + 1)
+                return depth
+
+            for r in dp_results:
+                ed = _get_effective_depth(r["name"])
+                if ed is not None:
+                    eff_depths[r["name"]] = ed
+        except Exception:
+            pass  # Fall back to era-based sorting
+
+    era_order = {"Ancient": 0, "Medieval": 1, "Modern": 2, "Contemporary": 3}
+
+    def sort_key(name: str) -> tuple:
+        """Sort by effective depth, then by era, then alphabetically."""
+        phil = philosophers[name]
+        depth = eff_depths.get(name, 999)
+        era = era_order.get(phil.era, 9)
+        return (depth, era, name)
+
     # Topological sort
-    topo = topological_sort(graph)
+    topo = topological_sort(graph, sort_key=sort_key)
     if topo:
-        print("  UNLOCK ORDER (earliest to latest)")
+        print("  UNLOCK ORDER (by dependency, then effective depth)")
         print("  " + "-" * (w - 2))
-        era_order = {"Ancient": 0, "Medieval": 1, "Modern": 2, "Contemporary": 3}
         for i, name in enumerate(topo, 1):
             phil = philosophers[name]
             deps = phil.depends_on_output_of
             dep_str = f" (after {', '.join(deps)})" if deps else ""
             era_tag = f"[{phil.era[:3].upper()}]"
-            print(f"  {i:3d}. {era_tag} {name}{dep_str}")
+            depth = eff_depths.get(name)
+            depth_str = f" ~Gen {depth}" if depth is not None else ""
+            print(f"  {i:3d}. {era_tag} {name}{depth_str}{dep_str}")
         print()
 
-        # Check for era violations (later era unlocking before earlier era)
-        violations = []
-        for i, name_a in enumerate(topo):
-            for name_b in topo[i + 1 :]:
-                era_a = era_order.get(philosophers[name_a].era, -1)
-                era_b = era_order.get(philosophers[name_b].era, -1)
-                if era_a > era_b:
-                    violations.append((name_a, name_b))
+        # Check for era violations using concept depths (not topological position)
+        # A violation = later-era philosopher discoverable at a LOWER concept depth
+        # than an earlier-era philosopher. We need depth_check results for this.
+        if depth_check and content_map_path:
+            # depth_results are computed later; defer era ordering to depth section
+            pass
+        else:
+            # Fallback: topological-position-based check (less accurate)
+            violations = []
+            for i, name_a in enumerate(topo):
+                for name_b in topo[i + 1 :]:
+                    era_a = era_order.get(philosophers[name_a].era, -1)
+                    era_b = era_order.get(philosophers[name_b].era, -1)
+                    if era_a > era_b:
+                        violations.append((name_a, name_b))
 
-        if violations:
-            print(f"  [!!] ERA ORDERING WARNINGS: {len(violations)} potential issue(s)")
-            print("  " + "-" * (w - 2))
-            for a, b in violations[:20]:
-                era_a = philosophers[a].era
-                era_b = philosophers[b].era
-                print(f"  {a} ({era_a}) unlocks before {b} ({era_b})")
-            print()
+            if violations:
+                print(
+                    f"  [!!] ERA ORDERING WARNINGS (topological, not depth-based): {len(violations)} potential issue(s)"
+                )
+                print("  " + "-" * (w - 2))
+                print(
+                    "       Note: Run with --depth-check for accurate depth-based analysis"
+                )
+                for a, b in violations[:10]:
+                    era_a = philosophers[a].era
+                    era_b = philosophers[b].era
+                    print(f"  {a} ({era_a}) unlocks before {b} ({era_b})")
+                if len(violations) > 10:
+                    print(f"  ... and {len(violations) - 10} more")
+                print()
 
     # Dependency chains
     print("  DEPENDENCY CHAINS")
@@ -1107,7 +1282,7 @@ def print_report(
         print("  " + "-" * (w - 2))
 
         # Check explicit constraints (must be guaranteed by output deps)
-        explicit_warnings = check_implicit_ordering(philosophers, ordering, graph)
+        explicit_warnings = check_implicit_ordering(philosophers, ordering)
         if not explicit_warnings:
             print(
                 f"  [OK] All {len(ordering)} explicit constraints (<) satisfied by recipe dependencies"
@@ -1120,16 +1295,17 @@ def print_report(
         if concept_depth_ordering:
             verified = 0
             pending = []
+            # Build output dependency graph once for all constraint checks
+            output_graph: dict[str, set[str]] = defaultdict(set)
+            for phil in philosophers.values():
+                output_graph[phil.name]
+                for dep in phil.depends_on_output_of:
+                    output_graph[dep].add(phil.name)
             for before, after in concept_depth_ordering:
                 if before not in philosophers or after not in philosophers:
                     pending.append(f"  {before} ~ {after}: unknown philosopher")
                     continue
                 # Check if output deps happen to satisfy this anyway
-                output_graph: dict[str, set[str]] = defaultdict(set)
-                for phil in philosophers.values():
-                    output_graph[phil.name]
-                    for dep in phil.depends_on_output_of:
-                        output_graph[dep].add(phil.name)
                 visited = set()
                 queue = deque([before])
                 reachable = False
@@ -1156,7 +1332,7 @@ def print_report(
             else:
                 print(
                     f"  [OK] All {len(concept_depth_ordering)} concept-depth constraints (~) "
-                    f"happen to be satisfied by output deps"
+                    "happen to be satisfied by output deps"
                 )
 
         print()
@@ -1239,7 +1415,7 @@ def print_report(
                     total = len(set(all_concepts))
                     print(f"    Total unique concepts needed: {total}")
                 else:
-                    print(f"    No philosopher prerequisites (foundational)")
+                    print("    No philosopher prerequisites (foundational)")
                 print()
 
     # Stats
@@ -1326,9 +1502,351 @@ def print_report(
                         print(f"    {r['name']}: {', '.join(names)}")
             print()
 
-        except Exception as e:
+        except (FileNotFoundError, ImportError, ValueError, KeyError) as e:
             print(f"  [!!] Could not run balance check: {e}")
-            print(f"       Make sure the Content Map exists and is valid.")
+            print("       Make sure the Content Map exists and is valid.")
+            print()
+
+    # ── Depth Placement ──────────────────────────────────────────
+    if depth_check:
+        print()
+        print("  PHILOSOPHER DEPTH PLACEMENT")
+        print("  " + "-" * (w - 2))
+        print("  Pure-concept depth = depth of recipe ingredients that are NOT")
+        print("  philosopher tiles, philosopher outputs, or writing tiles.")
+        print()
+
+        try:
+            concept_depths = get_concept_depths(content_map_path)
+            dp_results = check_philosopher_depth_placement(
+                philosophers, writings or {}, concept_depths
+            )
+
+            flagged = [r for r in dp_results if r["issues"]]
+            ok_list = [r for r in dp_results if not r["issues"] and r["known_depths"]]
+            unknown_list = [r for r in dp_results if not r["known_depths"]]
+
+            # Group by era for display
+            era_order = ["Ancient", "Medieval", "Modern", "Contemporary"]
+
+            if flagged:
+                print(
+                    f"  [!!] {len(flagged)} philosopher(s) outside their era's depth window:"
+                )
+                print()
+                for r in flagged:
+                    depths_str = ", ".join(
+                        (
+                            f"{i['name']}={i['depth']}"
+                            if i["depth"] is not None
+                            else f"{i['name']}=?"
+                        )
+                        for i in r["pure_ingredients"]
+                    )
+                    excluded_str = (
+                        ", ".join(r["excluded_ingredients"])
+                        if r["excluded_ingredients"]
+                        else "none"
+                    )
+                    window = r["era_window"]
+                    window_str = (
+                        f"Gen {window[0]}-{window[1]}"
+                        if window and window[1] < 999
+                        else f"Gen {window[0]}+"
+                    )
+                    print(f"    {r['name']} ({r['era']}, window {window_str}):")
+                    print(f"      Pure concepts: {depths_str}")
+                    print(f"      Excluded: {excluded_str}")
+                    print(f"      Max pure depth: Gen {r['max_pure_depth']}")
+                    for issue in r["issues"]:
+                        print(f"      [!] {issue}")
+                    print()
+
+            if ok_list:
+                if verbose:
+                    print(
+                        f"  [OK] {len(ok_list)} philosopher(s) within their era window:"
+                    )
+                    for era in era_order:
+                        era_phils = [r for r in ok_list if r["era"] == era]
+                        if not era_phils:
+                            continue
+                        print(f"    {era}:")
+                        for r in era_phils:
+                            depths_str = ", ".join(
+                                f"{i['name']}={i['depth']}"
+                                for i in r["pure_ingredients"]
+                                if i["depth"] is not None
+                            )
+                            window = r["era_window"]
+                            print(
+                                f"      {r['name']}: max depth {r['max_pure_depth']} ({depths_str})"
+                            )
+                    print()
+                else:
+                    print(
+                        f"  [OK] {len(ok_list)} philosopher(s) within their era window"
+                    )
+                    print()
+
+            if unknown_list:
+                print(
+                    f"  [..] {len(unknown_list)} philosopher(s) with no known pure-concept depths "
+                    f"(all recipe items are philosopher/writing tiles, or not in Content Map)"
+                )
+                if verbose:
+                    for r in unknown_list:
+                        excluded_str = (
+                            ", ".join(r["excluded_ingredients"])
+                            if r["excluded_ingredients"]
+                            else "none"
+                        )
+                        unknown_str = (
+                            ", ".join(r["unknown_ingredients"])
+                            if r["unknown_ingredients"]
+                            else "none"
+                        )
+                        print(
+                            f"    {r['name']}: excluded={excluded_str}, unknown={unknown_str}"
+                        )
+                print()
+
+            # Summary table by era
+            print("  ERA DEPTH SUMMARY")
+            print("  " + "-" * (w - 2))
+            print(
+                f"  {'Era':<16} {'Count':<7} {'Window':<12} {'Actual Range':<18} {'Issues'}"
+            )
+            for era in era_order:
+                era_phils = [r for r in dp_results if r["era"] == era]
+                if not era_phils:
+                    continue
+                era_known = [r for r in era_phils if r["max_pure_depth"] is not None]
+                window = era_phils[0]["era_window"]
+                window_str = (
+                    f"Gen {window[0]}-{window[1]}"
+                    if window and window[1] < 999
+                    else f"Gen {window[0]}+"
+                )
+                if era_known:
+                    actual_min = min(r["max_pure_depth"] for r in era_known)
+                    actual_max = max(r["max_pure_depth"] for r in era_known)
+                    actual_str = f"Gen {actual_min}-{actual_max}"
+                else:
+                    actual_str = "no data"
+                era_issues = sum(1 for r in era_phils if r["issues"])
+                issue_str = f"{era_issues} flagged" if era_issues else "OK"
+                print(
+                    f"  {era:<16} {len(era_phils):<7} {window_str:<12} {actual_str:<18} {issue_str}"
+                )
+            print()
+
+            # ── Depth-Based Era Ordering ─────────────────────────────
+            # Check whether any later-era philosopher is discoverable at a
+            # lower concept depth than an earlier-era philosopher.
+            #
+            # Reuse effective depths computed earlier for the unlock order.
+            era_order_nums = {
+                "Ancient": 0,
+                "Medieval": 1,
+                "Modern": 2,
+                "Contemporary": 3,
+            }
+
+            # Use eff_depths computed at the top of the report
+            effective_depths = eff_depths
+
+            depth_violations = []
+            adjacent_overlaps = []
+            for name_a, depth_a in effective_depths.items():
+                for name_b, depth_b in effective_depths.items():
+                    if name_a == name_b:
+                        continue
+                    era_a = era_order_nums.get(philosophers[name_a].era, -1)
+                    era_b = era_order_nums.get(philosophers[name_b].era, -1)
+                    # a is a later era but discoverable at strictly lower depth than b
+                    if era_a > era_b and depth_a < depth_b:
+                        era_gap = era_a - era_b  # 1 = adjacent, 2+ = non-adjacent
+                        entry = {
+                            "later": name_a,
+                            "later_era": philosophers[name_a].era,
+                            "later_depth": depth_a,
+                            "earlier": name_b,
+                            "earlier_era": philosophers[name_b].era,
+                            "earlier_depth": depth_b,
+                            "era_gap": era_gap,
+                        }
+                        if era_gap == 1:
+                            adjacent_overlaps.append(entry)
+                        else:
+                            depth_violations.append(entry)
+
+            if depth_violations:
+                depth_violations.sort(
+                    key=lambda v: (-v["era_gap"], v["later_depth"], v["later"])
+                )
+                print(
+                    f"  [XX] ERA ORDERING: {len(depth_violations)} non-adjacent violation(s)"
+                )
+                print("  " + "-" * (w - 2))
+                print(
+                    f"  Later-era philosopher discoverable before MUCH earlier-era (2+ era gap):"
+                )
+                shown = 0
+                for v in depth_violations:
+                    if shown >= 30:
+                        print(f"  ... and {len(depth_violations) - 30} more")
+                        break
+                    print(
+                        f"    {v['later']} ({v['later_era']}, eff. Gen {v['later_depth']}) "
+                        f"before {v['earlier']} ({v['earlier_era']}, eff. Gen {v['earlier_depth']})"
+                    )
+                    shown += 1
+                print()
+            else:
+                print("  [OK] Era ordering: no non-adjacent era violations")
+
+            if adjacent_overlaps:
+                print(
+                    f"  [ii] Adjacent era overlaps: {len(adjacent_overlaps)} (expected from 1-gen overlap windows)"
+                )
+                # Group by the later-era philosopher to keep output concise
+                later_names = sorted(set(v["later"] for v in adjacent_overlaps))
+                for name in later_names[:10]:
+                    overlaps = [v for v in adjacent_overlaps if v["later"] == name]
+                    earlier_names = ", ".join(v["earlier"] for v in overlaps[:3])
+                    era = overlaps[0]["later_era"]
+                    depth = overlaps[0]["later_depth"]
+                    extra = f" +{len(overlaps)-3} more" if len(overlaps) > 3 else ""
+                    print(
+                        f"    {name} ({era}, Gen {depth}) before: {earlier_names}{extra}"
+                    )
+                if len(later_names) > 10:
+                    print(f"    ... and {len(later_names) - 10} more philosophers")
+                print()
+            elif not depth_violations:
+                print()
+
+            # ── Concept Depth Targets ────────────────────────────────
+            # For each undefined concept in philosopher recipes, derive the
+            # required depth range based on which philosophers need it.
+            concept_targets: dict[str, dict] = {}  # concept -> info
+
+            # Build branch lookup from brainstorm
+            branch_lookup: dict[str, str] = {}  # concept -> branch
+            if brainstorm_path and brainstorm_path.exists():
+                branches = parse_branch_concepts(brainstorm_path)
+                for branch, concepts in branches.items():
+                    for concept in concepts:
+                        branch_lookup[concept] = branch
+
+            for r in dp_results:
+                window = r["era_window"]
+                if not window:
+                    continue
+                for ing in r["pure_ingredients"]:
+                    if ing["depth"] is not None:
+                        continue  # already has a known depth
+                    cname = ing["name"]
+                    if cname not in concept_targets:
+                        # Look up branch
+                        branch = branch_lookup.get(cname, "Unknown")
+                        concept_targets[cname] = {
+                            "name": cname,
+                            "branch": branch,
+                            "needed_by": [],
+                            "min_depth": 0,
+                            "max_depth": 999,
+                        }
+                    ct = concept_targets[cname]
+                    ct["needed_by"].append({"philosopher": r["name"], "era": r["era"]})
+                    # The concept must be at most era_upper (so it doesn't push
+                    # the philosopher beyond their window). Take the strictest
+                    # (lowest) upper bound across all philosophers needing it.
+                    ct["max_depth"] = min(ct["max_depth"], window[1])
+                    # The concept should be at least era_lower (so it's not
+                    # trivially early). Take the highest lower bound.
+                    ct["min_depth"] = max(ct["min_depth"], window[0])
+
+            if concept_targets:
+                # Group by branch
+                by_branch: dict[str, list[dict]] = defaultdict(list)
+                for ct in concept_targets.values():
+                    by_branch[ct["branch"]].append(ct)
+
+                print("  CONCEPT DEPTH TARGETS")
+                print("  " + "-" * (w - 2))
+                print("  Undefined recipe concepts and their required depth ranges,")
+                print("  derived from philosopher era windows.")
+                print()
+
+                # Sort branches: known branches first, Unknown last
+                known_branches = [
+                    "Trunk",
+                    "Epistemology",
+                    "Ethics",
+                    "Metaphysics",
+                    "Political Philosophy",
+                    "Aesthetics",
+                    "Philosophy of Mind",
+                    "Philosophy of Religion",
+                ]
+                branch_order = [b for b in known_branches if b in by_branch]
+                branch_order += [
+                    b for b in sorted(by_branch) if b not in known_branches
+                ]
+
+                for branch in branch_order:
+                    concepts = sorted(by_branch[branch], key=lambda c: c["min_depth"])
+                    print(f"  {branch} ({len(concepts)} concepts):")
+                    for ct in concepts:
+                        max_str = str(ct["max_depth"]) if ct["max_depth"] < 999 else "+"
+                        phil_names = [
+                            f"{nb['philosopher']} ({nb['era'][:3]})"
+                            for nb in ct["needed_by"]
+                        ]
+                        if len(phil_names) <= 3:
+                            needed_str = ", ".join(phil_names)
+                        else:
+                            needed_str = (
+                                ", ".join(phil_names[:2])
+                                + f", +{len(phil_names)-2} more"
+                            )
+                        print(
+                            f"    {ct['name']:<28} Gen {ct['min_depth']}-{max_str:<4}  <- {needed_str}"
+                        )
+                    print()
+
+                # Summary stats
+                total_undefined = len(concept_targets)
+                branches_affected = len(by_branch)
+                feasible = sum(
+                    1
+                    for ct in concept_targets.values()
+                    if ct["min_depth"] <= ct["max_depth"]
+                )
+                infeasible = total_undefined - feasible
+                print(
+                    f"  Total undefined concepts: {total_undefined} across {branches_affected} branches"
+                )
+                if infeasible:
+                    print(
+                        f"  [!!] {infeasible} concept(s) with impossible depth range (min > max):"
+                    )
+                    for ct in concept_targets.values():
+                        if ct["min_depth"] > ct["max_depth"]:
+                            phil_names = [nb["philosopher"] for nb in ct["needed_by"]]
+                            print(
+                                f"    {ct['name']}: needs Gen {ct['min_depth']}-{ct['max_depth']} "
+                                f"(required by {', '.join(phil_names)})"
+                            )
+                else:
+                    print(f"  [OK] All concepts have feasible depth ranges")
+                print()
+
+        except (FileNotFoundError, ImportError, ValueError, KeyError) as e:
+            print(f"  [!!] Could not run depth placement check: {e}")
+            print("       Make sure the Content Map exists and is valid.")
             print()
 
     # ── Effective Recipes ─────────────────────────────────────────
@@ -1359,9 +1877,13 @@ def print_report(
                 )
                 print(f"    {r['name']} ({r['era']}):")
                 print(f"      Full recipe:      {', '.join(r['recipe'])}")
-                print(f"      Prerequisites:    {', '.join(r['prerequisite_chain']) or 'none'}")
+                print(
+                    f"      Prerequisites:    {', '.join(r['prerequisite_chain']) or 'none'}"
+                )
                 print(f"      Inherited:        {', '.join(r['inherited']) or 'none'}")
-                print(f"      Effective recipe: {', '.join(r['effective']) or '(empty!)'}")
+                print(
+                    f"      Effective recipe: {', '.join(r['effective']) or '(empty!)'}"
+                )
                 print(f"      Effective size:   {r['effective_size']}")
                 for issue in r["issues"]:
                     print(f"      [!] {issue}")
@@ -1369,13 +1891,23 @@ def print_report(
 
         if ok:
             if verbose:
-                print(f"  [OK] {len(ok)} philosopher(s) with sufficient effective recipes:")
+                print(
+                    f"  [OK] {len(ok)} philosopher(s) with sufficient effective recipes:"
+                )
                 for r in ok:
-                    eff_str = ', '.join(r['effective']) if r['effective'] else '(all inherited)'
-                    print(f"    {r['name']}: effective={eff_str} ({r['effective_size']} new)")
+                    eff_str = (
+                        ", ".join(r["effective"])
+                        if r["effective"]
+                        else "(all inherited)"
+                    )
+                    print(
+                        f"    {r['name']}: effective={eff_str} ({r['effective_size']} new)"
+                    )
                 print()
             else:
-                print(f"  [OK] {len(ok)} philosopher(s) with sufficient effective recipes")
+                print(
+                    f"  [OK] {len(ok)} philosopher(s) with sufficient effective recipes"
+                )
                 print()
 
         # Writing effective recipes
@@ -1390,7 +1922,9 @@ def print_report(
                 print(f"      Full recipe:      {', '.join(r['recipe'])}")
                 print(f"      Prerequisites:    {', '.join(r['prerequisite_chain'])}")
                 print(f"      Inherited:        {', '.join(r['inherited']) or 'none'}")
-                print(f"      Effective recipe: {', '.join(r['effective']) or '(empty!)'}")
+                print(
+                    f"      Effective recipe: {', '.join(r['effective']) or '(empty!)'}"
+                )
                 print(f"      Effective size:   {r['effective_size']}")
                 for issue in r["issues"]:
                     print(f"      [!] {issue}")
@@ -1398,29 +1932,43 @@ def print_report(
 
         if ok_w:
             if verbose:
-                print(f"  [OK] {len(ok_w)} writing(s) with sufficient effective recipes:")
+                print(
+                    f"  [OK] {len(ok_w)} writing(s) with sufficient effective recipes:"
+                )
                 for r in ok_w:
-                    eff_str = ', '.join(r['effective']) if r['effective'] else '(all inherited)'
-                    print(f"    {r['name']}: effective={eff_str} ({r['effective_size']} new)")
+                    eff_str = (
+                        ", ".join(r["effective"])
+                        if r["effective"]
+                        else "(all inherited)"
+                    )
+                    print(
+                        f"    {r['name']}: effective={eff_str} ({r['effective_size']} new)"
+                    )
                 print()
             else:
-                print(f"  [OK] {len(ok_w)} writing(s) with sufficient effective recipes")
+                print(
+                    f"  [OK] {len(ok_w)} writing(s) with sufficient effective recipes"
+                )
                 print()
 
         # Summary stats
         all_sizes = [r["effective_size"] for r in eff_results]
         phil_sizes = [r["effective_size"] for r in phil_results]
         if phil_sizes:
-            print(f"  Philosopher effective-recipe sizes: "
-                  f"min={min(phil_sizes)}, max={max(phil_sizes)}, "
-                  f"mean={statistics.mean(phil_sizes):.1f}, "
-                  f"median={statistics.median(phil_sizes):.0f}")
+            print(
+                f"  Philosopher effective-recipe sizes: "
+                f"min={min(phil_sizes)}, max={max(phil_sizes)}, "
+                f"mean={statistics.mean(phil_sizes):.1f}, "
+                f"median={statistics.median(phil_sizes):.0f}"
+            )
         writing_sizes = [r["effective_size"] for r in writing_results]
         if writing_sizes:
-            print(f"  Writing effective-recipe sizes:     "
-                  f"min={min(writing_sizes)}, max={max(writing_sizes)}, "
-                  f"mean={statistics.mean(writing_sizes):.1f}, "
-                  f"median={statistics.median(writing_sizes):.0f}")
+            print(
+                f"  Writing effective-recipe sizes:     "
+                f"min={min(writing_sizes)}, max={max(writing_sizes)}, "
+                f"mean={statistics.mean(writing_sizes):.1f}, "
+                f"median={statistics.median(writing_sizes):.0f}"
+            )
         print()
 
     # Writings analysis
@@ -1446,7 +1994,7 @@ def print_report(
         if missing_authors:
             print(f"  [!!] Missing authors: {', '.join(missing_authors)}")
         else:
-            print(f"  [OK] All writing authors are known philosophers")
+            print("  [OK] All writing authors are known philosophers")
 
         # Check for duplicate concept production (same concept from philosopher AND writing)
         phil_concepts = {}
@@ -1461,7 +2009,7 @@ def print_report(
                         f"  '{c}' produced by both {phil_concepts[c]} and {w_.title}"
                     )
         if duplicates:
-            print(f"  [!!] Duplicate concept production:")
+            print("  [!!] Duplicate concept production:")
             for d in duplicates:
                 print(d)
 
@@ -1486,15 +2034,17 @@ def print_report(
             )
 
             print(f"  Known concepts in universe: {coverage['defined_count']}")
-            for branch, count in sorted(coverage['branches'].items()):
+            for branch, count in sorted(coverage["branches"].items()):
                 print(f"    {branch}: {count}")
             print()
 
-            if coverage['undefined']:
-                print(f"  [XX] {len(coverage['undefined'])} UNDEFINED recipe ingredient(s):")
-                for item in coverage['undefined']:
+            if coverage["undefined"]:
+                print(
+                    f"  [XX] {len(coverage['undefined'])} UNDEFINED recipe ingredient(s):"
+                )
+                for item in coverage["undefined"]:
                     near_str = ""
-                    if item['near_matches']:
+                    if item["near_matches"]:
                         near_str = f"  (similar: {', '.join(item['near_matches'])})"
                     print(
                         f"    '{item['ingredient']}' in {item['used_by']} "
@@ -1505,16 +2055,18 @@ def print_report(
                 print("  [OK] All recipe ingredients are defined")
                 print()
 
-            if coverage['name_mismatches']:
-                print(f"  [!!] {len(coverage['name_mismatches'])} name mismatch(es) (recipe vs defined):")
-                for item in coverage['name_mismatches']:
+            if coverage["name_mismatches"]:
+                print(
+                    f"  [!!] {len(coverage['name_mismatches'])} name mismatch(es) (recipe vs defined):"
+                )
+                for item in coverage["name_mismatches"]:
                     print(
                         f"    '{item['recipe_name']}' in {item['used_by']} "
                         f" -> defined as '{item['defined_name']}'"
                     )
                 print()
 
-        except Exception as e:
+        except (FileNotFoundError, ImportError, ValueError, KeyError) as e:
             print(f"  [!!] Could not run concept check: {e}")
             print()
 
@@ -1582,6 +2134,12 @@ def main():
         help="Check that all recipe ingredients are defined somewhere",
     )
     parser.add_argument(
+        "--depth-check",
+        "-d",
+        action="store_true",
+        help="Check philosopher depth placement against era windows (requires Content Map)",
+    )
+    parser.add_argument(
         "--content-map",
         type=str,
         default=None,
@@ -1614,7 +2172,10 @@ def main():
     content_map_path = None
     if args.content_map:
         content_map_path = Path(args.content_map)
-    elif args.balance or args.check_concepts:
+        if not content_map_path.exists():
+            print(f"Error: Content map not found: {content_map_path}")
+            sys.exit(1)
+    elif args.balance or args.check_concepts or args.depth_check:
         # Auto-detect
         candidates = [
             Path("Planning notes/Temporary/Prototype Content Map.md"),
@@ -1643,6 +2204,7 @@ def main():
         balance=args.balance,
         effective=args.effective,
         check_concepts=args.check_concepts,
+        depth_check=args.depth_check,
         content_map_path=content_map_path,
         brainstorm_path=path,
         writings=writings,
